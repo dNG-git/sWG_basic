@@ -1,0 +1,54 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<swg_lang_file_v1>
+ <formbuilder>
+  <embed><unsupported>
+   <digitstart__1><input input="string" /></digitstart__1>
+   <digitstart__2><input input="string" /></digitstart__2>
+   <digitstart__3><input input="string" /></digitstart__3>
+  </unsupported></embed>
+
+  <error>
+   <required><element><input input="string" /></element></required>
+
+   <file><not><found>
+    <digitstart__1><input input="string" /></digitstart__1>
+    <digitstart__2><input input="string" /></digitstart__2>
+   </found></not></file>
+
+   <format><invalid><input input="string" /></invalid></format>
+
+   <number>
+    <max>
+     <digitstart__1><input input="string" /></digitstart__1>
+     <digitstart__2><input input="string" /></digitstart__2>
+    </max>
+
+    <min>
+     <digitstart__1><input input="string" /></digitstart__1>
+     <digitstart__2><input input="string" /></digitstart__2>
+    </min>
+   </number>
+
+   <string>
+    <max>
+     <digitstart__1><input input="string" /></digitstart__1>
+     <digitstart__2><input input="string" /></digitstart__2>
+    </max>
+
+    <min>
+     <digitstart__1><input input="string" /></digitstart__1>
+     <digitstart__2><input input="string" /></digitstart__2>
+    </min>
+   </string>
+
+   <password><repetition><input input="string" /></repetition></password>
+  </error>
+
+  <field>
+   <input input="string" />
+   <content><input input="string" /></content>
+  </field>
+
+  <form><password><repetition><input input="string" /></repetition></password></form>
+ </formbuilder>
+</swg_lang_file_v1>

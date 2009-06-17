@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<swg_lang_file_v1>
+ <developer>
+  <base64>
+   <decode><input input="string" /></decode>
+   <encode><input input="string" /></encode>
+  </base64>
+
+  <done><translations><saved><input input="string" /></saved></translations></done>
+
+  <input>
+   <input input="string" />
+   <result><input input="string" /></result>
+  </input>
+
+  <md5><encode><input input="string" /></encode></md5>
+
+  <sqlsource><decode>
+   <input input="string" />
+   <result><input input="string" /></result>
+  </decode></sqlsource>
+
+  <translations>
+   <file><input input="string" /></file>
+   <form><input input="string" /></form>
+   <languages><input input="string" /></languages>
+   <select><input input="string" /></select>
+  </translations>
+
+  <tmd5><encode><input input="string" /></encode></tmd5>
+ </developer>
+</swg_lang_file_v1>

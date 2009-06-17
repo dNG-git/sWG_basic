@@ -1,0 +1,91 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<swg_blockmenu_file_v1>
+ <account>
+
+  <status_login_en active='1' level='' lang='en'>
+   <title value='Log in' />
+   <link value='m=account&amp;s=status&amp;a=login' type='url0' />
+   <guests value='1' />
+   <members value='0' />
+   <group_right value='0' />
+  </status_login_en>
+
+  <status_login_de active='1' level='' lang='de'>
+   <title value='Anmelden' />
+   <link value='m=account&amp;s=status&amp;a=login' type='url0' />
+   <guests value='1' />
+   <members value='0' />
+   <group_right value='0' />
+  </status_login_de>
+
+  <status_logout_en active='1' level='' lang='en'>
+   <title value='Log out' />
+   <link value='m=account&amp;s=status&amp;a=logout' type='url0' />
+   <guests value='0' />
+   <members value='1' />
+   <group_right value='0' />
+  </status_logout_en>
+
+  <status_logout_de active='1' level='' lang='de'>
+   <title value='Abmelden' />
+   <link value='m=account&amp;s=status&amp;a=logout' type='url0' />
+   <guests value='0' />
+   <members value='1' />
+   <group_right value='0' />
+  </status_logout_de>
+
+  <services_en active='1' level='' lang='en'>
+   <title value='Account' />
+   <link value='m=account&amp;a=services' type='url0' />
+   <guests value='1' />
+   <members value='1' />
+   <group_right value='0' />
+  </services_en>
+
+  <services_de active='1' level='' lang='de'>
+   <title value='Account' />
+   <link value='m=account&amp;a=services' type='url0' />
+   <guests value='1' />
+   <members value='1' />
+   <group_right value='0' />
+  </services_de>
+
+  <actives_en active='1' level='' lang='en'>
+   <title value='Active users' />
+   <link value='m=account&amp;a=actives' type='url0' />
+   <guests value='1' />
+   <members value='1' />
+   <group_right value='0' />
+  </actives_en>
+
+  <actives_de active='1' level='' lang='de'>
+   <title value='Aktive Benutzer' />
+   <link value='m=account&amp;a=actives' type='url0' />
+   <guests value='1' />
+   <members value='1' />
+   <group_right value='0' />
+  </actives_de>
+
+ </account>
+ <cp>
+
+  <en active='1' level='' lang='en'>
+   <title value='Control Panel' />
+   <link value='m=cp' type='url0' />
+   <guests value='0' />
+   <members value='0' />
+   <group_right value='cp_access' />
+   <group_right value='srutype-ad' />
+  </en>
+
+  <de active='1' level='' lang='de'>
+   <title value='Kontrollzentrum' />
+   <link value='m=cp' type='url0' />
+   <guests value='0' />
+   <members value='0' />
+   <group_right value='cp_access' />
+   <group_right value='srutype-ad' />
+  </de>
+
+ </cp>
+</swg_blockmenu_file_v1>

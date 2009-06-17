@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<swg_lang_file_v1>
+ <aphandler>
+  <hours><input input="string" /></hours>
+  <minutes><input input="string" /></minutes>
+  <seconds><input input="string" /></seconds>
+
+  <time>
+   <elapsed><input input="string" /></elapsed>
+
+   <estimated>
+    <input input="string" />
+    <unknown><input input="string" /></unknown>
+   </estimated>
+
+   <started><input input="string" /></started>
+  </time>
+
+  <progress><input input="string" /></progress>
+
+  <please><wait><a><second>
+   <js><input input="string" /></js>
+   <nojs><input input="string" /></nojs>
+  </second></a></wait></please>
+
+  <working><input input="string" /></working>
+ </aphandler>
+</swg_lang_file_v1>

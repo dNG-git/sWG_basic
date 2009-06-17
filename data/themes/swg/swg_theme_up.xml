@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<swg_settings_file_v1>
+<theme value="swg">
+ <oset value="default" />
+ <lightmode><supported value="1" /></lightmode>
+</theme>
+</swg_settings_file_v1>

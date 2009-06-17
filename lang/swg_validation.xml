@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<swg_lang_file_v1>
+
+ <errors><validation>
+  <email><exists><input input="string" /></exists></email>
+  <username><exists><input input="string" /></exists></username>
+  <unknown><type><input input="string" /></type></unknown>
+  <vid><invalid><input input="string" /></invalid></vid>
+ </validation></errors>
+
+ <validation>
+  <done><job><input input="string" /></job></done>
+  <job><input input="string" /></job>
+ </validation>
+
+</swg_lang_file_v1>

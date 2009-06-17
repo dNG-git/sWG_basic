@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<evars>
+ <ar><national>العربية</national><international>Arabic</international></ar>
+ <bg><national>Български</national><international>Bulgarian</international></bg>
+ <cs><national>Česky</national><international>Czech</international></cs>
+ <da><national>Dansk</national><international>Danish</international></da>
+ <de><national>Deutsch</national><international>German</international></de>
+ <el><national>Ελληνικά</national><international>Greek</international></el>
+ <en><national>English</national><international>English</international></en>
+ <es><national>Español</national><international>Spanish</international></es>
+ <fi><national>Suomi</national><international>Finnish</international></fi>
+ <fr><national>Français</national><international>French</international></fr>
+ <ga><national>Gaeilge</national><international>Irish</international></ga>
+ <he><national>עברית</national><international>Hebrew</international></he>
+ <hu><national>Magyar</national><international>Hungarian</international></hu>
+ <is><national>Íslenska</national><international>Icelandic</international></is>
+ <it><national>Italiano</national><international>Italian</international></it>
+ <ja><national>日本語</national><international>Japanese</international></ja>
+ <ko><national>한국어</national><international>Korean</international></ko>
+ <nl><national>Nederlands</national><international>Dutch</international></nl>
+ <no><national>Norsk</national><international>Norwegian</international></no>
+ <pl><national>Polski</national><international>Polish</international></pl>
+ <pt><national>Português</national><international>Portuguese</international></pt>
+ <ru><national>Русский</national><international>Russian</international></ru>
+ <sr><national>Српски</national><international>Serbian</international></sr>
+ <sv><national>Svenska</national><international>Swedish</international></sv>
+ <th><national>ไทย</national><international>Thai</international></th>
+ <tr><national>Türkçe</national><international>Turkish</international></tr>
+ <vi><national>Tiếng Việt</national><international>Vietnamese</international></vi>
+ <zh><national>中文</national><international>Chinese</international></zh>
+</evars><!--
+National translations are provided by articles on wikipedia.org.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.2
+or any later version published by the Free Software Foundation;
+with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
+A copy of the license is included in the section entitled "GNU
+Free Documentation License".
+// -->

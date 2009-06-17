@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<swg_lang_file_v1>
+ <formtags>
+  <edit>
+   <digitstart__1><input input="string" /></digitstart__1>
+   <digitstart__2><input input="string" /></digitstart__2>
+   <digitstart__3><input input="string" /></digitstart__3>
+   <digitstart__4><input input="string" /></digitstart__4>
+  </edit>
+
+  <image><input input="string" /></image>
+
+  <quote>
+   <digitstart__1><input input="string" /></digitstart__1>
+
+   <digitstart__2>
+    <digitstart__1><input input="string" /></digitstart__1>
+    <digitstart__2><input input="string" /></digitstart__2>
+    <digitstart__3><input input="string" /></digitstart__3>
+   </digitstart__2>
+  </quote>
+
+  <overview><document><input input="string" /></document></overview>
+  <sourcecode><input input="string" /></sourcecode>
+  <sources><input input="string" /></sources>
+  <url><input input="string" /></url>
+ </formtags>
+</swg_lang_file_v1>
