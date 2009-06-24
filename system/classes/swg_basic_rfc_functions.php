@@ -350,54 +350,125 @@ Add a variable for the current boundary
 		if ($f_rfc2047)
 		{
 			$f_return = "=?$direct_local[lang_charset]?Q?";
-			$f_length = strlen ($f_return);
-			$f_rfc2047_length = $f_length;
+			$f_rfc2047_length = strlen ($f_return);
+
+			$f_length = $f_rfc2047_length;
+			$f_words_array = explode (" ",$f_data);
 		}
-		else { $f_length = 0; }
-
-		$f_words_array = explode (" ",$f_data);
-
-		foreach ($f_words_array as $f_word)
+		elseif (function_exists ("quoted_printable_encode")) { $f_return = quoted_printable_encode ($f_data); }
+		else
 		{
-			if (strlen ($f_word))
+			$f_length = 0;
+			$f_words_array = explode (" ",$f_data);
+		}
+
+		if (isset ($f_words_array))
+		{
+			foreach ($f_words_array as $f_word)
 			{
-				$f_word_filtered = "";
-				$f_word_length = strlen ($f_word);
-
-				for ($f_char_number = 0;$f_char_number < $f_word_length;$f_char_number++)
+				if (strlen ($f_word))
 				{
-					$f_char = ord ($f_word[$f_char_number]);
+					$f_word_filtered = "";
+					$f_word_length = strlen ($f_word);
 
-					if (((32 < $f_char)&&($f_char < 61))||((61 < $f_char)&&($f_char < 127)))
+					for ($f_char_number = 0;$f_char_number < $f_word_length;$f_char_number++)
 					{
-						if ($f_r_check) { $f_r_check = false; }
-						if ($f_n_check) { $f_n_check = false; }
-						$f_length++;
-						$f_word_filtered .= $f_word[$f_char_number];
-					}
-					else
-					{
-						switch ($f_char)
+						$f_char = ord ($f_word[$f_char_number]);
+
+						if (((32 < $f_char)&&($f_char < 61))||((61 < $f_char)&&($f_char < 127)))
 						{
-						case 9:
+							if ($f_r_check) { $f_r_check = false; }
+							if ($f_n_check) { $f_n_check = false; }
+							$f_length++;
+							$f_word_filtered .= $f_word[$f_char_number];
+						}
+						else
 						{
-							if ($f_n_check)
+							switch ($f_char)
 							{
+							case 9:
+							{
+								if ($f_n_check)
+								{
+									$f_length += 3;
+									$f_word_filtered .= "=09";
+								}
+								else
+								{
+									$f_length++;
+									$f_word_filtered .= $f_word[$f_char_number];
+								}
+
+								break 1;
+							}
+							case 10:
+							{
+								if (!$f_r_check)
+								{
+									if ($f_rfc2047)
+									{
+										$f_length = (1 + $f_rfc2047_length);
+										$f_word_filtered .= "?={$this->linesep} =?$direct_local[lang_charset]?Q?";
+									}
+									else
+									{
+										$f_length = 0;
+										$f_word_filtered .= $this->linesep;
+									}
+								}
+
+								$f_r_check = false;
+								$f_n_check = true;
+								break 1;
+							}
+							case 13:
+							{
+								$f_r_check = true;
+								$f_n_check = true;
+
+								if ($f_rfc2047)
+								{
+									$f_length = (1 + $f_rfc2047_length);
+									$f_word_filtered .= "?={$this->linesep} =?$direct_local[lang_charset]?Q?";
+								}
+								else
+								{
+									$f_length = 0;
+									$f_word_filtered .= $this->linesep;
+								}
+
+								break 1;
+							}
+							default:
+							{
+								if ($f_r_check) { $f_r_check = false; }
+								if ($f_n_check) { $f_n_check = false; }
 								$f_length += 3;
-								$f_word_filtered .= "=09";
+								$f_word_filtered .= "=".(strtoupper (dechex ($f_char)));
+							}
+							}
+						}
+
+						if ($f_length > 72)
+						{
+							if (strlen ($f_word_filtered) < 73)
+							{
+								if ($f_rfc2047)
+								{
+									$f_length = (strlen ($f_word_filtered) + 1 + $f_rfc2047_length);
+									$f_word_filtered = "?={$this->linesep} =?$direct_local[lang_charset]?Q?".$f_word_filtered;
+								}
+								else
+								{
+									$f_length = strlen ($f_word_filtered);
+									$f_word_filtered = "=".$this->linesep.$f_word_filtered;
+								}
 							}
 							else
 							{
-								$f_length++;
-								$f_word_filtered .= $f_word[$f_char_number];
-							}
+								$f_r_check = true;
+								$f_n_check = true;
 
-							break 1;
-						}
-						case 10:
-						{
-							if (!$f_r_check)
-							{
 								if ($f_rfc2047)
 								{
 									$f_length = (1 + $f_rfc2047_length);
@@ -409,117 +480,54 @@ Add a variable for the current boundary
 									$f_word_filtered .= $this->linesep;
 								}
 							}
-
-							$f_r_check = false;
-							$f_n_check = true;
-							break 1;
-						}
-						case 13:
-						{
-							$f_r_check = true;
-							$f_n_check = true;
-
-							if ($f_rfc2047)
-							{
-								$f_length = (1 + $f_rfc2047_length);
-								$f_word_filtered .= "?={$this->linesep} =?$direct_local[lang_charset]?Q?";
-							}
-							else
-							{
-								$f_length = 0;
-								$f_word_filtered .= $this->linesep;
-							}
-
-							break 1;
-						}
-						default:
-						{
-							if ($f_r_check) { $f_r_check = false; }
-							if ($f_n_check) { $f_n_check = false; }
-							$f_length += 3;
-							$f_word_filtered .= "=".(strtoupper (dechex ($f_char)));
-						}
 						}
 					}
 
-					if ($f_length > 72)
+					if (($f_n_check)||($f_rfc2047))
 					{
-						if (strlen ($f_word_filtered) < 73)
-						{
-							if ($f_rfc2047)
-							{
-								$f_length = (strlen ($f_word_filtered) + 1 + $f_rfc2047_length);
-								$f_word_filtered = "?={$this->linesep} =?$direct_local[lang_charset]?Q?".$f_word_filtered;
-							}
-							else
-							{
-								$f_length = strlen ($f_word_filtered);
-								$f_word_filtered = "=".$this->linesep.$f_word_filtered;
-							}
-						}
-						else
-						{
-							$f_r_check = true;
-							$f_n_check = true;
-						
-							if ($f_rfc2047)
-							{
-								$f_length = (1 + $f_rfc2047_length);
-								$f_word_filtered .= "?={$this->linesep} =?$direct_local[lang_charset]?Q?";
-							}
-							else
-							{
-								$f_length = 0;
-								$f_word_filtered .= $this->linesep;
-							}
-						}
-					}
-				}
-
-				if (($f_n_check)||($f_rfc2047))
-				{
-					$f_return .= $f_word_filtered."=20";
-					$f_length += 3;
-				}
-				else
-				{
-					$f_return .= $f_word_filtered." ";
-					$f_length++;
-				}
-			}
-			else
-			{
-				if ($f_length > 72)
-				{
-					$f_n_check = true;
-
-					if ($f_rfc2047)
-					{
-						$f_length = (1 + $f_rfc2047_length);
-						$f_return .= "?={$this->linesep} =?$direct_local[lang_charset]?Q?";
+						$f_return .= $f_word_filtered."=20";
+						$f_length += 3;
 					}
 					else
 					{
-						$f_length = 0;
-						$f_return .= "=".$this->linesep;
+						$f_return .= $f_word_filtered." ";
+						$f_length++;
 					}
-				}
-
-				if (($f_n_check)||($f_rfc2047))
-				{
-					$f_length += 3;
-					$f_return .= "=20";
 				}
 				else
 				{
-					$f_length++;
-					$f_return .= " ";
+					if ($f_length > 72)
+					{
+						$f_n_check = true;
+
+						if ($f_rfc2047)
+						{
+							$f_length = (1 + $f_rfc2047_length);
+							$f_return .= "?={$this->linesep} =?$direct_local[lang_charset]?Q?";
+						}
+						else
+						{
+							$f_length = 0;
+							$f_return .= "=".$this->linesep;
+						}
+					}
+
+					if (($f_n_check)||($f_rfc2047))
+					{
+						$f_length += 3;
+						$f_return .= "=20";
+					}
+					else
+					{
+						$f_length++;
+						$f_return .= " ";
+					}
 				}
 			}
-		}
 
-		if ($f_rfc2047) { $f_return = preg_replace ("#(=20)*\?=({$this->linesep} =\?".(preg_quote ($direct_local['lang_charset']))."\?Q\?(=20)+\?=)*$#s","?=",$f_return."?="); }
-		else { $f_return = rtrim ($f_return); }
+			if ($f_rfc2047) { $f_return = preg_replace ("#(=20)*\?=({$this->linesep} =\?".(preg_quote ($direct_local['lang_charset']))."\?Q\?(=20)+\?=)*$#s","?=",$f_return."?="); }
+			else { $f_return = rtrim ($f_return); }
+		}
 
 		return /*#ifdef(DEBUG):direct_debug (7,"sWG/#echo(__FILEPATH__)# -basic_rfc_functions->quoted_printable_encode ()- (#echo(__LINE__)#)",:#*/$f_return/*#ifdef(DEBUG):,true):#*/;
 	}
