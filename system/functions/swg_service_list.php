@@ -194,7 +194,7 @@ function direct_service_list_parse ($f_module,$f_list,$f_page)
 		$f_return['data']['pages'] = ceil ((count ($f_list)) / $direct_settings['swg_services_per_page']);
 
 		if ((!$f_return['data']['page'])||($f_return['data']['page'] < 1)) { $f_return['data']['page'] = 1; }
-		if ($f_return['data']['page'] > $f_return['data']['pages']) { $f_return['data']['page'] = $f_return['pages']; }
+		if ($f_return['data']['page'] > $f_return['data']['pages']) { $f_return['data']['page'] = $f_return['data']['pages']; }
 		if ($f_return['data']['pages'] < 1) { $f_return['data']['pages'] = 1; }
 
 		$f_offset_start = (($f_return['data']['page'] - 1) * $direct_settings['swg_services_per_page']);
