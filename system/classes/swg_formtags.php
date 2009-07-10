@@ -15,7 +15,6 @@ for a particular purpose.
 ----------------------------------------------------------------------------
 http://www.direct-netware.de/redirect.php?licenses;w3c
 ----------------------------------------------------------------------------
-$Id: swg_formtags.php,v 1.6 2008/12/20 11:23:19 s4u Exp $
 #echo(sWGbasicVersion)#
 sWG/#echo(__FILEPATH__)#
 ----------------------------------------------------------------------------
@@ -296,6 +295,7 @@ Informing the system about available functions
 		{
 			$f_data = str_replace ((array ("&lt;","&gt;","&quot;")),(array ("<",">",'"')),$f_data);
 
+			if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($f_data,"[#") !== false) { $f_data = preg_replace ("/\[#(.+?)\]/i","[url:anchor:\\1]",$f_data); }
 			if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($f_data,"[b]") !== false) { $f_data = preg_replace ("#\[b\](.+?)\[\/b\]#si","[font:bold]\\1[/font]",$f_data); }
 			if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($f_data,"[code]") !== false) { $f_data = preg_replace ("#\[code\](.+?)\[\/code\]#si","[sourcecode]\\1[/sourcecode]",$f_data); }
 

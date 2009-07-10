@@ -15,7 +15,6 @@ for a particular purpose.
 ----------------------------------------------------------------------------
 http://www.direct-netware.de/redirect.php?licenses;w3c
 ----------------------------------------------------------------------------
-$Id: swg_index.php,v 1.3 2008/12/22 15:03:37 s4u Exp $
 #echo(sWGbasicVersion)#
 sWG/#echo(__FILEPATH__)#
 ----------------------------------------------------------------------------
@@ -56,6 +55,20 @@ if (!defined ("direct_product_iversion")) { exit (); }
 
 if (USE_debug_reporting) { direct_debug (1,"sWG/#echo(__FILEPATH__)# _main_ (#echo(__LINE__)#)"); }
 
+$g_vid = (isset ($direct_settings['dsd']['idata']) ? ($direct_classes['basic_functions']->inputfilter_basic ($direct_settings['dsd']['idata'])) : "");
+$g_source = (isset ($direct_settings['dsd']['source']) ? ($direct_classes['basic_functions']->inputfilter_basic ($direct_settings['dsd']['source'])) : "");
+$g_target = (isset ($direct_settings['dsd']['target']) ? ($direct_classes['basic_functions']->inputfilter_basic ($direct_settings['dsd']['target'])) : "");
+
+if ($g_source) { $g_source_url = base64_decode ($g_source); }
+else { $g_source_url = ""; }
+
+if ($g_target) { $g_target_url = base64_decode ($g_target); }
+else
+{
+	$g_target = $g_source;
+	$g_target_url = $g_source_url;
+}
+
 if ($direct_classes['kernel']->service_init_default ())
 {
 //j// BOA
@@ -63,12 +76,13 @@ $direct_classes['basic_functions']->require_file ($direct_settings['path_system'
 $direct_classes['basic_functions']->require_file ($direct_settings['path_system']."/functions/swg_tmp_storager.php");
 direct_local_integration ("validation");
 
-$direct_cachedata['output_idata'] = $direct_classes['basic_functions']->inputfilter_basic ($direct_settings['dsd']['idata']);
-$direct_cachedata['output_retry_data'] = "m=validation&idata=".$direct_cachedata['output_idata'];
+$direct_cachedata['page_this'] = "m=validation&dsd=idata+".$g_vid;
+$direct_cachedata['page_backlink'] = "";
+$direct_cachedata['page_homelink'] = "";
 
-if (trim ($direct_cachedata['output_idata']))
+if (trim ($g_vid))
 {
-	$g_vid_array = direct_tmp_storage_get ("evars",$direct_cachedata['output_idata'],"a617908b172c473cb8e8cda059e55bf0");
+	$g_vid_array = direct_tmp_storage_get ("evars",$g_vid,"a617908b172c473cb8e8cda059e55bf0");
 	// md5 ("validation")
 
 	if ($g_vid_array)
@@ -80,7 +94,7 @@ if (trim ($direct_cachedata['output_idata']))
 			$direct_cachedata['validation_remove_vid'] = true;
 
 			include_once ($direct_settings['path_system']."/modules/validation/swgi_{$g_vid_array['core_vid_module']}.php");
-			if ($direct_cachedata['validation_remove_vid']) { direct_tmp_storage_write ("",$direct_cachedata['output_idata'],"","","s"); }
+			if ($direct_cachedata['validation_remove_vid']) { direct_tmp_storage_write ("",$g_vid,"","","s"); }
 
 			if (empty ($direct_cachedata['validation_error']))
 			{
@@ -88,8 +102,20 @@ if (trim ($direct_cachedata['output_idata']))
 
 				$direct_cachedata['output_job'] = direct_local_get ("validation_job");
 				$direct_cachedata['output_job_desc'] = direct_local_get ("validation_done_job");
-				$direct_cachedata['output_jsjump'] = 0;
-				$direct_cachedata['output_pagetarget'] = direct_linker ("url0","m=default&s=index&a=index");
+
+				if ($g_target_url)
+				{
+					$g_target_link = str_replace ("[oid]","vid_d+{$g_vid}++",$g_target_url);
+
+					$direct_cachedata['output_jsjump'] = 5000;
+					$direct_cachedata['output_pagetarget'] = str_replace ('"',"",(direct_linker ("url0",$g_target_link)));
+					$direct_cachedata['output_scripttarget'] = str_replace ('"',"",(direct_linker ("url0",$g_target_link,false)));
+				}
+				else
+				{
+					$direct_cachedata['output_jsjump'] = 0;
+					$direct_cachedata['output_pagetarget'] = direct_linker ("url0","a=index");
+				}
 
 				$direct_classes['output']->oset ("default","done");
 				$direct_classes['output']->header (false,true,$direct_settings['p3p_url'],$direct_settings['p3p_cp']);

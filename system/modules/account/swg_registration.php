@@ -15,7 +15,6 @@ for a particular purpose.
 ----------------------------------------------------------------------------
 http://www.direct-netware.de/redirect.php?licenses;w3c
 ----------------------------------------------------------------------------
-$Id: swg_registration.php,v 1.5 2008/12/22 15:03:37 s4u Exp $
 #echo(sWGbasicVersion)#
 sWG/#echo(__FILEPATH__)#
 ----------------------------------------------------------------------------
@@ -126,7 +125,6 @@ case "form-save":
 		if ($g_mode_save)
 		{
 			$direct_classes['basic_functions']->require_file ($direct_settings['path_system']."/classes/swg_sendmailer_formtags.php");
-			$direct_classes['basic_functions']->require_file ($direct_settings['path_system']."/functions/swg_log_storager.php");
 			$direct_classes['basic_functions']->require_file ($direct_settings['path_system']."/functions/swg_tmp_storager.php");
 		}
 

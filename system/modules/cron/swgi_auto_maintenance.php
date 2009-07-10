@@ -15,7 +15,6 @@ for a particular purpose.
 ----------------------------------------------------------------------------
 http://www.direct-netware.de/redirect.php?licenses;w3c
 ----------------------------------------------------------------------------
-$Id: swgi_auto_maintenance.php,v 1.3 2008/12/20 13:40:30 s4u Exp $
 #echo(sWGbasicVersion)#
 sWG/#echo(__FILEPATH__)#
 ----------------------------------------------------------------------------

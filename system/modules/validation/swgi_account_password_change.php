@@ -15,7 +15,6 @@ for a particular purpose.
 ----------------------------------------------------------------------------
 http://www.direct-netware.de/redirect.php?licenses;w3c
 ----------------------------------------------------------------------------
-$Id: swgi_account_password_change.php,v 1.2 2008/12/20 13:42:21 s4u Exp $
 #echo(sWGbasicVersion)#
 sWG/#echo(__FILEPATH__)#
 ----------------------------------------------------------------------------

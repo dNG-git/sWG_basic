@@ -15,7 +15,6 @@ for a particular purpose.
 ----------------------------------------------------------------------------
 http://www.direct-netware.de/redirect.php?licenses;w3c
 ----------------------------------------------------------------------------
-$Id: swg_web_functions.php,v 1.7 2008/12/20 12:14:35 s4u Exp $
 #echo(sWGbasicVersion)#
 sWG/#echo(__FILEPATH__)#
 ----------------------------------------------------------------------------
@@ -942,17 +941,15 @@ The behaviour above might change for images in the future.
 				if (!@feof ($f_socket_pointer))
 				{
 					$f_response = "";
-					$f_stream_check = array ($f_socket_pointer);
-					$f_stream_ignored = NULL;
+					if (function_exists ("socket_select")) { $f_socket_check = array ($f_socket_pointer); }
+					$f_socket_ignored = NULL;
 					$f_timeout_time = ($direct_cachedata['core_time'] + $direct_settings['swg_web_socket_timeout']);
 
 					if ($f_header_only)
 					{
 						while ((!feof ($f_socket_pointer))&&(strstr ($f_response,"\r\n\r\n") < 1)&&($f_timeout_time > (time ())))
 						{
-/*#ifndef(PHP4) */
-							stream_select ($f_stream_check,$f_stream_ignored,$f_stream_ignored,$direct_settings['swg_web_socket_timeout']);
-/* #\n*/
+							if (isset ($f_socket_check)) { socket_select ($f_socket_check,$f_socket_ignored,$f_socket_ignored,$direct_settings['swg_web_socket_timeout']); }
 							$f_response .= fread ($f_socket_pointer,1024);
 						}
 
@@ -972,9 +969,7 @@ The behaviour above might change for images in the future.
 					{
 						while ((!feof ($f_socket_pointer))&&($f_timeout_time > (time ())))
 						{
-/*#ifndef(PHP4) */
-							stream_select ($f_stream_check,$f_stream_ignored,$f_stream_ignored,$direct_settings['swg_web_socket_timeout']);
-/* #\n*/
+							if (isset ($f_socket_check)) { socket_select ($f_socket_check,$f_socket_ignored,$f_socket_ignored,$direct_settings['swg_web_socket_timeout']); }
 							$f_response .= fread ($f_socket_pointer,4096);
 						}
 
@@ -1069,15 +1064,13 @@ The behaviour above might change for images in the future.
 				if (!@feof ($f_socket_pointer))
 				{
 					$f_response = "";
-					$f_stream_check = array ($f_socket_pointer);
-					$f_stream_ignored = NULL;
+					if (function_exists ("socket_select")) { $f_socket_check = array ($f_socket_pointer); }
+					$f_socket_ignored = NULL;
 					$f_timeout_time = ($direct_cachedata['core_time'] + $direct_settings['swg_web_socket_timeout']);
 
 					while ((!feof ($f_socket_pointer))&&($f_timeout_time > (time ())))
 					{
-/*#ifndef(PHP4) */
-						stream_select ($f_stream_check,$f_stream_ignored,$f_stream_ignored,$direct_settings['swg_web_socket_timeout']);
-/* #\n*/
+						if (isset ($f_socket_check)) { socket_select ($f_socket_check,$f_socket_ignored,$f_socket_ignored,$direct_settings['swg_web_socket_timeout']); }
 						$f_response .= fread ($f_socket_pointer,4096);
 					}
 
@@ -1175,15 +1168,13 @@ The behaviour above might change for images in the future.
 					if (!@feof ($f_socket_pointer))
 					{
 						$f_response = "";
-						$f_stream_check = array ($f_socket_pointer);
-						$f_stream_ignored = NULL;
+						if (function_exists ("socket_select")) { $f_socket_check = array ($f_socket_pointer); }
+						$f_socket_ignored = NULL;
 						$f_timeout_time = ($direct_cachedata['core_time'] + $direct_settings['swg_web_socket_timeout']);
 
 						while ((!feof ($f_socket_pointer))&&($f_timeout_time > (time ())))
 						{
-/*#ifndef(PHP4) */
-							stream_select ($f_stream_check,$f_stream_ignored,$f_stream_ignored,$direct_settings['swg_web_socket_timeout']);
-/* #\n*/
+							if (isset ($f_socket_check)) { socket_select ($f_socket_check,$f_socket_ignored,$f_socket_ignored,$direct_settings['swg_web_socket_timeout']); }
 							$f_response .= fread ($f_socket_pointer,4096);
 						}
 

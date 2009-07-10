@@ -15,7 +15,6 @@ for a particular purpose.
 ----------------------------------------------------------------------------
 http://www.direct-netware.de/redirect.php?licenses;w3c
 ----------------------------------------------------------------------------
-$Id: swg_theme.php,v 1.4 2007/07/11 17:43:36 s4u Exp $
 #echo(sWGbasicVersion)#
 sWG/#echo(__FILEPATH__)#
 ----------------------------------------------------------------------------
@@ -262,6 +261,11 @@ djs_swgDOM_replace (\"<span class='designtitlecontent'><span style='font-size:24
 		}
 
 		$this->page .= "<p class='designmenu1content'><span style='white-space:nowrap'>[ ".(direct_block_get ("blockmenu","h",$direct_settings['theme_mainmenu']," ]</span> <span style='white-space:nowrap'>[ "))." ]</span></p>";
+
+		if ((is_array ($direct_cachedata['output_warning']))&&(!empty ($direct_cachedata['output_warning'])))
+		{
+			foreach ($direct_cachedata['output_warning'] as $f_warning_array) { $this->page .= "<p class='pagehighlightborder2'><span class='pageextracontent'><span style='font-weight:bold'>{$f_warning_array['title']}</span><br />\n{$f_warning_array['text']}</span></p>"; }
+		}
 
 		if ($direct_classes['output']->options_check ("servicemenu")) { $this->page .= "\n<p class='pageborder2' style='text-align:left'><span class='pageextracontent'>".($direct_classes['output']->options_generator ("h","servicemenu"))."</span></p>"; }
 		$this->page .= "\n".$direct_classes['output']->page_content;

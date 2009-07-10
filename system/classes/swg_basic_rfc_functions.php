@@ -15,7 +15,6 @@ for a particular purpose.
 ----------------------------------------------------------------------------
 http://www.direct-netware.de/redirect.php?licenses;w3c
 ----------------------------------------------------------------------------
-$Id: swg_basic_rfc_functions.php,v 1.5 2008/12/20 11:23:19 s4u Exp $
 #echo(sWGbasicVersion)#
 sWG/#echo(__FILEPATH__)#
 ----------------------------------------------------------------------------
@@ -190,7 +189,7 @@ Add a variable for the current boundary
 
 		if ((is_string ($f_headers))&&(strlen ($f_headers)))
 		{
-			$f_headers = trim (preg_replace ("#\r\n(\\x09|\\x20)#","\\1",$f_headers));
+			$f_headers = trim (preg_replace ("#\r\n((\\x09)(\\x09)*|(\\x20)(\\x20)*)(\S)#","\\2\\4\\6",$f_headers));
 			$f_return = array ();
 
 			$f_header_array = explode ("\r\n",$f_headers);
@@ -328,12 +327,12 @@ Add a variable for the current boundary
 		return $this->header_align ("Content-Type: $f_header_content_type; boundary=\"".$this->data_boundary."\"");
 	}
 
-	//f// direct_basic_rfc_functions->quoted_printable_encode ($f_data,$f_encode_spaces = false)
+	//f// direct_basic_rfc_functions->quoted_printable_encode ($f_data,$f_rfc2047 = false)
 /**
 	* Formats a given string and returns a valid Quoted Printable one.
 	*
 	* @param  string $f_data Input string
-	* @param  boolean $f_rfc2047 Encode space as well (RFC 2047)
+	* @param  boolean $f_rfc2047 Encode data according to RFC 2047
 	* @uses   direct_debug()
 	* @uses   USE_debug_reporting
 	* @return string Formatted output string; empty on error

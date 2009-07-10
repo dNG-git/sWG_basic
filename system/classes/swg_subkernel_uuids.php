@@ -15,7 +15,6 @@ for a particular purpose.
 ----------------------------------------------------------------------------
 http://www.direct-netware.de/redirect.php?licenses;w3c
 ----------------------------------------------------------------------------
-$Id: swg_subkernel_uuids.php,v 1.5 2008/12/22 14:59:24 s4u Exp $
 #echo(sWGbasicVersion)#
 sWG/#echo(__FILEPATH__)#
 ----------------------------------------------------------------------------
@@ -391,7 +390,11 @@ both the old and new passcode.
 				else { $this->uuid_cookie_mode = false; }
 
 				if ($f_uuid_array['ddbuuids_list_ip'] == $direct_settings['user_ip']) { $direct_settings['user_ipcwarn'] = false; }
-				else { $direct_settings['user_ipcwarn'] = true; }
+				else
+				{
+					direct_output_warning (direct_local_get ("core_user_warning"),(direct_local_get ("core_user_warning_ip")));
+					$direct_settings['user_ipcwarn'] = true;
+				}
 
 				$this->uuid_data = $f_uuid_array['ddbuuids_list_data'];
 
