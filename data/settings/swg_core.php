@@ -77,7 +77,7 @@
  <password><min value="6" /></password>
  <registration><credits><onetime value="200" /></credits></registration>
  <table value="swg_users" />
- <tablecells />
+ <tablecells_extras />
 </users>
 
 <uuids>
