@@ -126,11 +126,7 @@ $f_select_criteria = ("<sqlconditions>
 	if ($f_result)
 	{
 		if ($f_type == "evars") { $f_return = direct_evars_get ($f_result); }
-		else
-		{
-			if ($f_type == "a") { $f_return = explode ("\n",(trim ($f_result))); }
-			else { $f_return = trim ($f_result); }
-		}
+		else { $f_return = (($f_type == "a") ? explode ("\n",(trim ($f_result))) : trim ($f_result)); }
 	}
 
 	return /*#ifdef(DEBUG):direct_debug (7,"sWG/#echo(__FILEPATH__)# -direct_tmp_storage_get ()- (#echo(__LINE__)#)",:#*/$f_return/*#ifdef(DEBUG):,true):#*/;
@@ -179,12 +175,7 @@ function direct_tmp_storage_write ($f_data,$f_id,$f_sid,$f_identifier = "",$f_ty
 		$f_id = $direct_classes['basic_functions']->tmd5 ($f_id);
 
 		if ($f_type == "evars") { $f_data = direct_evars_write ($f_data); }
-		else
-		{
-			if ($f_type == "a") { $f_data = trim (implode ("\n",$f_data)); }
-			else { $f_data = trim ($f_data); }
-		}
-
+		else { $f_data = (($f_type == "a") ? trim (implode ("\n",$f_data)) : trim ($f_data)); }
 
 		if ($f_data)
 		{
@@ -194,21 +185,16 @@ function direct_tmp_storage_write ($f_data,$f_id,$f_sid,$f_identifier = "",$f_ty
 			$direct_classes['db']->define_values_keys ($f_replace_attributes);
 
 			$f_replace_values = "<sqlvalues>".($direct_classes['db']->define_values_encode ($f_id,"string"));
-
-			if ($f_mintime) { $f_replace_values .= $direct_classes['db']->define_values_encode ($f_mintime,"number"); }
-			else { $f_replace_values .= $direct_classes['db']->define_values_encode ($direct_cachedata['core_time'],"number"); }
-
-			if ($f_maxtime) { $f_replace_values .= $direct_classes['db']->define_values_encode ($f_maxtime,"number"); }
-			else { $f_replace_values .= "<element1 value='0' type='number' />"; }
+			$f_replace_values .= ($f_mintime ? $direct_classes['db']->define_values_encode ($f_mintime,"number") : $direct_classes['db']->define_values_encode ($direct_cachedata['core_time'],"number"));
+			$f_replace_values .= ($f_maxtime ? $direct_classes['db']->define_values_encode ($f_maxtime,"number") : "<element1 value='0' type='number' />");
 
 $f_replace_values .= (($direct_classes['db']->define_values_encode ($f_sid,"string"))."
 ".($direct_classes['db']->define_values_encode ($f_identifier,"string"))."
 ".($direct_classes['db']->define_values_encode ($f_data,"string")));
 
-			if ($f_maintained) { $f_replace_values .= "<element2 value='1' type='string' />"; }
-			else { $f_replace_values .= "<element2 value='0' type='string' />"; }
-
+			$f_replace_values .= ($f_maintained ? "<element2 value='1' type='string' />" : "<element2 value='0' type='string' />");
 			$f_replace_values .= "</sqlvalues>";
+
 			$direct_classes['db']->define_values ($f_replace_values);
 
 			$f_return = $direct_classes['db']->query_exec ("co");

@@ -49,8 +49,7 @@ all development packets)
 Testing for required classes
 ------------------------------------------------------------------------- */
 
-$g_continue_check = true;
-if (defined ("CLASS_direct_user")) { $g_continue_check = false; }
+$g_continue_check = ((defined ("CLASS_direct_user")) ? false : true);
 if (!defined ("CLASS_direct_data_handler")) { $g_continue_check = false; }
 
 if ($g_continue_check)
@@ -303,14 +302,11 @@ Set up an additional variables :)
 			if (($this->data['ddbusers_banned'])||($this->data['ddbusers_deleted']))
 			{
 				$f_return[$f_prefix."pageurl"] = "";
-
-				if ($this->data['ddbusers_banned']) { $f_return[$f_prefix."type"] = direct_local_get ("core_usertype_banned"); }
-				else { $f_return[$f_prefix."type"] = direct_local_get ("core_usertype_deleted"); }
+				$f_return[$f_prefix."type"] = (($this->data['ddbusers_banned']) ? direct_local_get ("core_usertype_banned") : direct_local_get ("core_usertype_deleted"));
 			}
 			else
 			{
-				if ($this->data['ddbusers_id']) { $f_return[$f_prefix."pageurl"] = direct_linker ("url0","m=account&s=profile&a=view&dsd=auid+".$this->data['ddbusers_id']); }
-				else { $f_return[$f_prefix."pageurl"] = ""; }
+				$f_return[$f_prefix."pageurl"] = (($this->data['ddbusers_id']) ? direct_linker ("url0","m=account&s=profile&a=view&dsd=auid+".$this->data['ddbusers_id']) : "");
 
 				switch ($this->data['ddbusers_type'])
 				{
@@ -349,9 +345,7 @@ Set up an additional variables :)
 
 			if ($direct_classes['kernel']->v_usertype_get_int ($direct_settings['user']['type']) > 3)
 			{
-				if (isset ($this->data['ddbusers_email'])) { $f_return[$f_prefix."email"] = direct_html_encode_special ($this->data['ddbusers_email']); }
-				else { $f_return[$f_prefix."email"] = NULL; }
-
+				$f_return[$f_prefix."email"] = ((isset ($this->data['ddbusers_email'])) ? direct_html_encode_special ($this->data['ddbusers_email']) : NULL);
 				if ($this->data['ddbusers_id']) { $f_return[$f_prefix."pageurl_email"] = direct_linker ("url0","m=account&s=email&dsd=auid+".$this->data['ddbusers_id']); }
 			}
 			elseif ($this->data['ddbusers_email_public'])
@@ -377,20 +371,14 @@ Set up an additional variables :)
 
 					if ($f_avatar_array)
 					{
-						if ($f_avatar_array['avatar_small']) { $f_return[$f_prefix."avatar_small"] = direct_linker_dynamic ("url1","m=account&s=avatar&a=transfer&dsd=atype+small++aoid+".$f_avatar_array['avatar_small'],true,false); }
-						else { $f_return[$f_prefix."avatar_small"] = ""; }
-
-						if ($f_avatar_array['avatar_large']) { $f_return[$f_prefix."avatar_large"] = direct_linker_dynamic ("url1","m=account&s=avatar&a=transfer&dsd=atype+large++aoid+".$f_avatar_array['avatar_large'],true,false); }
-						else { $f_return[$f_prefix."avatar_large"] = ""; }
+						$f_return[$f_prefix."avatar_small"] = (((isset ($f_avatar_array['avatar_small']))&&($f_avatar_array['avatar_small'])) ? direct_linker_dynamic ("url1","m=account&s=avatar&a=transfer&dsd=atype+small++aoid+".$f_avatar_array['avatar_small'],true,false) : "");
+						$f_return[$f_prefix."avatar_large"] = (((isset ($f_avatar_array['avatar_large']))&&($f_avatar_array['avatar_large'])) ? direct_linker_dynamic ("url1","m=account&s=avatar&a=transfer&dsd=atype+large++aoid+".$f_avatar_array['avatar_large'],true,false) : "");
 					}
 				}
 			}
 
-			if (isset ($this->data['ddbusers_signature'])) { $f_return[$f_prefix."signature"] = $direct_classes['formtags']->decode ($this->data['ddbusers_signature']); }
-			else { $f_return[$f_prefix."signature"] = NULL; }
-
-			if ((isset ($this->data['ddbusers_rating']))&&($this->data['ddbusers_rating'])) { $f_return[$f_prefix."rating"] = $this->data['ddbusers_rating']." / ".$direct_settings['rating_max']; }
-			else { $f_return[$f_prefix."rating"] = direct_local_get ("core_unknown"); }
+			$f_return[$f_prefix."signature"] = ((isset ($this->data['ddbusers_signature'])) ? $direct_classes['formtags']->decode ($this->data['ddbusers_signature']) : NULL);
+			$f_return[$f_prefix."rating"] = (((isset ($this->data['ddbusers_rating']))&&($this->data['ddbusers_rating'])) ? $this->data['ddbusers_rating']." / ".$direct_settings['rating_max'] : direct_local_get ("core_unknown"));
 		}
 
 		return /*#ifdef(DEBUG):direct_debug (7,"sWG/#echo(__FILEPATH__)# -user_handler->parse ()- (#echo(__LINE__)#)",:#*/$f_return/*#ifdef(DEBUG):,true):#*/;
@@ -466,11 +454,7 @@ test for missing values in the "action" sections.
 
 			if ((is_array ($direct_settings['users_tablecells_extras']))&&(!empty ($direct_settings['users_tablecells_extras'])))
 			{
-				foreach ($direct_settings['users_tablecells_extras'] as $f_extra_attribute)
-				{
-					if (isset ($f_data[$f_extra_attribute])) { $this->data[$f_extra_attribute] = $f_data[$f_extra_attribute]; }
-					else { $this->data[$f_extra_attribute] = ""; }
-				}
+				foreach ($direct_settings['users_tablecells_extras'] as $f_extra_attribute) { $this->data[$f_extra_attribute] = ((isset ($f_data[$f_extra_attribute])) ? $f_data[$f_extra_attribute] : ""); }
 			}
 		}
 		else { $f_return = false; }

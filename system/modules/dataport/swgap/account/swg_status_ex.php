@@ -67,9 +67,7 @@ switch ($direct_settings['a'])
 case "login":
 case "login-save":
 {
-	if ($direct_settings['a'] == "login-save") { $g_mode_save = true; }
-	else { $g_mode_save = false; }
-
+	$g_mode_save = (($direct_settings['a'] == "login-save") ? true : false);
 	if (USE_debug_reporting) { direct_debug (1,"sWG/#echo(__FILEPATH__)# _a={$direct_settings['a']}_ (#echo(__LINE__)#)"); }
 
 	$g_aex_form_type = (isset ($GLOBALS['i_aex_type']) ? ($direct_classes['basic_functions']->inputfilter_basic ($GLOBALS['i_aex_type'])) : "");
@@ -77,8 +75,7 @@ case "login-save":
 	$g_source = (isset ($direct_settings['dsd']['source']) ? ($direct_classes['basic_functions']->inputfilter_basic ($direct_settings['dsd']['source'])) : "");
 	$g_target = (isset ($direct_settings['dsd']['target']) ? ($direct_classes['basic_functions']->inputfilter_basic ($direct_settings['dsd']['target'])) : "");
 
-	if ($g_source) { $g_source_url = base64_decode ($g_source); }
-	else { $g_source_url = ""; }
+	$g_source_url = ($g_source ? base64_decode ($g_source) : "");
 
 	if ($g_target) { $g_target_url = base64_decode ($g_target); }
 	else
@@ -138,8 +135,7 @@ case "login-save":
 	if (in_array ($g_ex_type,$direct_settings['account_status_ex_types_supported']))
 	{
 	//j// BOA
-	if ($g_mode_save) { $g_related_page = "account_status_ex_login_form_save"; }
-	else { $g_related_page = "account_status_ex_login_form"; }
+	$g_related_page = ($g_mode_save ? "account_status_ex_login_form_save" : "account_status_ex_login_form");
 
 	if ($g_dtheme_embedded) { direct_output_related_manager ($g_related_page,"pre_module_service_action_embedded"); }
 	elseif ($g_dtheme) { direct_output_related_manager ($g_related_page,"pre_module_service_action"); }
@@ -202,13 +198,11 @@ Call registered mods
 Save data edited
 ------------------------------------------------------------------------- */
 
-		if ((USE_cookies)&&($direct_cachedata['i_acookie'])) { $direct_cachedata['i_acookie'] = true; }
-		else { $direct_cachedata['i_acookie'] = false; }
-
+		$g_cookie = (((USE_cookies)&&($direct_cachedata['i_acookie'])) ? true : false);
 		$g_form_view = false;
 		$g_user_array = $direct_classes['kernel']->v_user_get ("",$direct_cachedata['i_ausername'],true);
 
-		if (direct_mods_include ($direct_settings['account_status_mods_support'],"account_status_ex","test"))
+		if (direct_mods_include (true,"account_status_ex","test"))
 		{
 			$g_login_check = direct_mods_include (true,"account_status_ex","login_process",$g_ex_type,$g_user_array);
 			if ($g_login_check > 0) { $g_user_array = $direct_classes['kernel']->v_user_get ("",$direct_cachedata['i_ausername'],true); }
@@ -227,11 +221,11 @@ $g_uuid_array = array (
 "username" => $g_user_array['ddbusers_name']
 );
 
-				if (direct_mods_include ($direct_settings['account_status_mods_support'],"account_status_ex","test")) { $g_uuid_array = direct_mods_include (true,"account_status_ex","login_save",$g_ex_type,$g_user_array,$g_uuid_array); }
+				if (direct_mods_include (true,"account_status_ex","test")) { $g_uuid_array = direct_mods_include (true,"account_status_ex","login_save",$g_ex_type,$g_user_array,$g_uuid_array); }
 
 				if (isset ($g_uuid_array['userid']))
 				{
-					$direct_classes['kernel']->v_uuid_write ((direct_evars_write ($g_uuid_array)),$direct_cachedata['i_acookie']);
+					$direct_classes['kernel']->v_uuid_write ((direct_evars_write ($g_uuid_array)),$g_cookie);
 
 /* -------------------------------------------------------------------------
 Hardcoding the user type should prevent successful attacks against the log
@@ -332,8 +326,7 @@ case "login-mode":
 	$g_source = (isset ($direct_settings['dsd']['source']) ? ($direct_classes['basic_functions']->inputfilter_basic ($direct_settings['dsd']['source'])) : "");
 	$g_target = (isset ($direct_settings['dsd']['target']) ? ($direct_classes['basic_functions']->inputfilter_basic ($direct_settings['dsd']['target'])) : "");
 
-	if ($g_source) { $g_source_url = base64_decode ($g_source); }
-	else { $g_source_url = ""; }
+	$g_source_url = ($g_source ? base64_decode ($g_source) : "");
 
 	if ($g_target) { $g_target_url = base64_decode ($g_target); }
 	else
@@ -357,8 +350,7 @@ case "login-mode":
 			$g_dtheme_embedded = false;
 		}
 
-		if ($g_source_url) { $g_back_link = str_replace ("[oid]","",$g_source_url); }
-		else { $g_back_link = ""; }
+		$g_back_link = ($g_source_url ? str_replace ("[oid]","",$g_source_url) : "");
 
 		$direct_cachedata['page_this'] = "m=dataport&s=swgap;account;status_ex&a=login-mode&dsd=dtheme+{$g_dtheme_mode}++source+".(urlencode ($g_source))."++target+".(urlencode ($g_target));
 		$direct_cachedata['page_backlink'] = $g_back_link;
@@ -396,8 +388,7 @@ case "login-mode":
 	direct_class_init ("formbuilder");
 	direct_class_init ("output");
 
-	if ((strlen ($direct_settings['account_status_ex_type_preselected']))&&(in_array ($direct_settings['account_status_ex_type_preselected'],$direct_settings['account_status_ex_types_supported']))) { $g_type_preselected = $direct_settings['account_status_ex_type_preselected']; }
-	else { $g_type_preselected = $direct_settings['account_status_ex_types_supported'][0]; }
+	$g_type_preselected = (((strlen ($direct_settings['account_status_ex_type_preselected']))&&(in_array ($direct_settings['account_status_ex_type_preselected'],$direct_settings['account_status_ex_types_supported']))) ? $direct_settings['account_status_ex_type_preselected'] : $direct_settings['account_status_ex_types_supported'][0]);
 
 	if ($direct_settings['user']['type'] == "ex")
 	{
@@ -413,10 +404,7 @@ case "login-mode":
 
 		$direct_cachedata['i_aex_type'] .= "<t$g_type_supported><value value='$g_type_supported' />";
 		if ($g_type_preselected == $g_type_supported) { $direct_cachedata['i_aex_type'] .= "<selected value='1' />"; }
-
-		if ($g_type_name) { $direct_cachedata['i_aex_type'] .= "<text><![CDATA[$g_type_name]]></text>"; }
-		else { $direct_cachedata['i_aex_type'] .= "<text><![CDATA[".(direct_local_get ("core_unknown"))." ($g_type_supported)]]></text>"; }
-
+		$direct_cachedata['i_aex_type'] .= ($g_type_name ? "<text><![CDATA[$g_type_name]]></text>" : "<text><![CDATA[".(direct_local_get ("core_unknown"))." ($g_type_supported)]]></text>");
 		$direct_cachedata['i_aex_type'] .= "</t$g_type_supported>";
 	}
 
@@ -470,8 +458,7 @@ case "status":
 	$g_source = (isset ($direct_settings['dsd']['source']) ? ($direct_classes['basic_functions']->inputfilter_basic ($direct_settings['dsd']['source'])) : "");
 	$g_target = (isset ($direct_settings['dsd']['target']) ? ($direct_classes['basic_functions']->inputfilter_basic ($direct_settings['dsd']['target'])) : "");
 
-	if ($g_source) { $g_source_url = base64_decode ($g_source); }
-	else { $g_source_url = ""; }
+	$g_source_url = ($g_source ? base64_decode ($g_source) : "");
 
 	if ($g_target) { $g_target_url = base64_decode ($g_target); }
 	else
@@ -520,6 +507,7 @@ case "status":
 	}
 
 	if ($g_continue_check) { $g_continue_check = $direct_classes['basic_functions']->settings_get ($direct_settings['path_data']."/settings/swg_account.php"); }
+	if ($g_continue_check) { $g_continue_check = $direct_classes['basic_functions']->include_file ($direct_settings['path_system']."/functions/swg_string_translator.php"); }
 	if ($g_continue_check) { $g_continue_check = $direct_classes['basic_functions']->include_file ($direct_settings['path_system']."/functions/swg_tmp_storager.php"); }
 
 	if ($g_continue_check)
@@ -536,7 +524,13 @@ case "status":
 	direct_class_init ("output");
 	$g_guest_check = false;
 
-	if ($direct_settings['user']['type'] == "gt") { $g_guest_check = true; }
+	if ($direct_settings['user']['type'] == "gt")
+	{
+		$g_guest_check = true;
+		$g_uuid_string = "<evars><userid /></evars>";
+		$direct_classes['kernel']->v_uuid_write ($g_uuid_string);
+		$direct_classes['kernel']->v_uuid_cookie_save ();
+	}
 	else
 	{
 		$direct_cachedata['output_current_user'] = $direct_settings['user']['name_html'];
@@ -553,7 +547,12 @@ case "status":
 		{
 			$g_uuid_storage_array = direct_tmp_storage_get ("evars",$direct_settings['uuid'],"","task_cache");
 
-			if (($g_uuid_storage_array)&&(isset ($g_uuid_storage_array['account_status_ex_type'],$g_uuid_storage_array['account_status_ex_verified']))) { $direct_cachedata['output_current_verification'] = $g_uuid_storage_array['account_status_ex_type']; }
+			if (($g_uuid_storage_array)&&(isset ($g_uuid_storage_array['account_status_ex_type'],$g_uuid_storage_array['account_status_ex_verified'])))
+			{
+				$g_type_name = direct_string_id_translation ("account_status_ex",$g_uuid_storage_array['account_status_ex_type']);
+				$direct_cachedata['output_current_verification'] = ($g_type_name ? $g_type_name : (direct_local_get ("core_unknown"))." ($g_uuid_storage_array[account_status_ex_type])");
+				$direct_cachedata['output_current_verification_status'] = ($g_uuid_storage_array['account_status_ex_verified'] ? direct_local_get ("account_status_ex_login_verified") : direct_local_get ("account_status_ex_login_unverified"));
+			}
 			else
 			{
 				$g_guest_check = true;
@@ -596,11 +595,7 @@ case "status":
 		$direct_cachedata['output_current_verification'] = direct_local_get ("core_unknown");
 	}
 
-	if ((!empty ($direct_settings['account_status_ex_types_supported']))&&(!$g_no_login))
-	{
-		if ($g_dtheme) { $direct_cachedata['output_link_login'] = direct_linker ("url0","m=dataport&s=swgap;account;status_ex&a=login-mode&dsd=dtheme+{$direct_cachedata['output_dtheme_mode']}++source+".(urlencode ($g_source))."++target+".(urlencode ($g_target))); }
-		else { $direct_cachedata['output_link_login'] = direct_linker ("url0","m=dataport&s=swgap;account;status_ex&a=login-mode&dsd=dtheme+1"); }
-	}
+	if ((!empty ($direct_settings['account_status_ex_types_supported']))&&(!$g_no_login)) { $direct_cachedata['output_link_login'] = ($g_dtheme ? direct_linker ("url0","m=dataport&s=swgap;account;status_ex&a=login-mode&dsd=dtheme+{$direct_cachedata['output_dtheme_mode']}++source+".(urlencode ($g_source))."++target+".(urlencode ($g_target))) : direct_linker ("url0","m=dataport&s=swgap;account;status_ex&a=login-mode&dsd=dtheme+1")); }
 
 	if ($g_dtheme)
 	{

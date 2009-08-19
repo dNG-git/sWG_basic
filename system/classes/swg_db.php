@@ -49,8 +49,7 @@ all development packets)
 Testing for required classes
 ------------------------------------------------------------------------- */
 
-$g_continue_check = true;
-if (defined ("CLASS_direct_db")) { $g_continue_check = false; }
+$g_continue_check = ((defined ("CLASS_direct_db")) ? false : true);
 if (!defined ("CLASS_direct_data_handler")) { $g_continue_check = false; }
 
 if ($g_continue_check)
@@ -201,9 +200,7 @@ Informing the system about available functions
 		{
 			$direct_classes['basic_functions']->settings_get ($direct_settings['path_data']."/settings/swg_db.php");
 
-			if (isset ($direct_settings['db_driver'])) { $this->db_driver_name = $direct_settings['db_driver']; }
-			else { $this->db_driver_name = "mysql"; }
-
+			$this->db_driver_name = ((isset ($direct_settings['db_driver'])) ? $direct_settings['db_driver'] : "mysql");
 			if (!isset ($direct_settings['db_dbprefix'])) { $direct_settings['db_dbprefix'] = "swg_"; }
 
 			if ($f_peristent) { $direct_settings['db_peristent'] = true; }
@@ -302,9 +299,7 @@ Set up some variables
 
 		if ($this->query_type == "select")
 		{
-			if (is_array ($f_attribute_list)) { $this->query_attributes = $f_attribute_list; }
-			else { $this->query_attributes = array ("*"); }
-
+			$this->query_attributes = ((is_array ($f_attribute_list)) ? $f_attribute_list : array ("*"));
 			return /*#ifdef(DEBUG):direct_debug (7,"sWG/#echo(__FILEPATH__)# -direct_db->define_attributes ()- (#echo(__LINE__)#)",:#*/true/*#ifdef(DEBUG):,true):#*/;
 		}
 		else { return /*#ifdef(DEBUG):direct_debug (7,"sWG/#echo(__FILEPATH__)# -direct_db->define_attributes ()- (#echo(__LINE__)#)",:#*/false/*#ifdef(DEBUG):,true):#*/; }
@@ -327,9 +322,7 @@ Set up some variables
 
 		if ($this->query_type == "select")
 		{
-			if (is_array ($f_attribute_list)) { $this->query_grouping = $f_attribute_list; }
-			else { $this->query_grouping = array ($f_attribute_list); }
-
+			$this->query_grouping = ((is_array ($f_attribute_list)) ? $f_attribute_list : array ($f_attribute_list));
 			return /*#ifdef(DEBUG):direct_debug (7,"sWG/#echo(__FILEPATH__)# -direct_db->define_grouping ()- (#echo(__LINE__)#)",:#*/true/*#ifdef(DEBUG):,true):#*/;
 		}
 		else { return /*#ifdef(DEBUG):direct_debug (7,"sWG/#echo(__FILEPATH__)# -direct_db->define_grouping ()- (#echo(__LINE__)#)",:#*/false/*#ifdef(DEBUG):,true):#*/; }
@@ -1114,10 +1107,9 @@ $f_xml_node_array = array (
 	/*#ifndef(PHP4) */public /* #*/function v_connect ()
 	{
 		if (USE_debug_reporting) { direct_debug (8,"sWG/#echo(__FILEPATH__)# -db_class->v_connect ()- (#echo(__LINE__)#)"); }
-		$f_call = $this->v_call_get ("v_connect");
 
-		if ($f_call) { return $f_call[0]->{$f_call[1]} (); }
-		else { return false; }
+		$f_call = $this->v_call_get ("v_connect");
+		return ($f_call ? $f_call[0]->{$f_call[1]} () : false);
 	}
 
 	//f// direct_db->v_disconnect ()
@@ -1133,10 +1125,9 @@ $f_xml_node_array = array (
 	/*#ifndef(PHP4) */public /* #*/function v_disconnect ()
 	{
 		if (USE_debug_reporting) { direct_debug (8,"sWG/#echo(__FILEPATH__)# -db_class->v_disconnect ()- (#echo(__LINE__)#)"); }
-		$f_call = $this->v_call_get ("v_disconnect");
 
-		if ($f_call) { return $f_call[0]->{$f_call[1]} (); }
-		else { return false; }
+		$f_call = $this->v_call_get ("v_disconnect");
+		return ($f_call ? $f_call[0]->{$f_call[1]} () : false);
 	}
 
 	//f// direct_db->v_optimize ($f_table)
@@ -1153,10 +1144,9 @@ $f_xml_node_array = array (
 	/*#ifndef(PHP4) */public /* #*/function v_optimize ($f_table)
 	{
 		if (USE_debug_reporting) { direct_debug (8,"sWG/#echo(__FILEPATH__)# -db_class->v_optimize ($f_table)- (#echo(__LINE__)#)"); }
-		$f_call = $this->v_call_get ("v_optimize");
 
-		if ($f_call) { return $f_call[0]->{$f_call[1]} ($f_table); }
-		else { return false; }
+		$f_call = $this->v_call_get ("v_optimize");
+		return ($f_call ? $f_call[0]->{$f_call[1]} ($f_table) : false);
 	}
 
 	//f// direct_db->v_query_build ($f_data)
@@ -1174,10 +1164,9 @@ $f_xml_node_array = array (
 	/*#ifndef(PHP4) */public /* #*/function v_query_build ($f_data)
 	{
 		if (USE_debug_reporting) { direct_debug (8,"sWG/#echo(__FILEPATH__)# -db_class->v_query_build (+f_query)- (#echo(__LINE__)#)"); }
-		$f_call = $this->v_call_get ("v_query_build");
 
-		if ($f_call) { return $f_call[0]->{$f_call[1]} ($f_data); }
-		else { return false; }
+		$f_call = $this->v_call_get ("v_query_build");
+		return ($f_call ? $f_call[0]->{$f_call[1]} ($f_data) : false);
 	}
 
 	//f// direct_db->v_query_exec ($f_answer,$f_query)
@@ -1198,10 +1187,9 @@ $f_xml_node_array = array (
 	/*#ifndef(PHP4) */public /* #*/function v_query_exec ($f_answer,$f_query)
 	{
 		if (USE_debug_reporting) { direct_debug (8,"sWG/#echo(__FILEPATH__)# -db_class->v_query_exec ($f_answer,+f_query)- (#echo(__LINE__)#)"); }
-		$f_call = $this->v_call_get ("v_query_exec");
 
-		if ($f_call) { return $f_call[0]->{$f_call[1]} ($f_answer,$f_query); }
-		else { return false; }
+		$f_call = $this->v_call_get ("v_query_exec");
+		return ($f_call ? $f_call[0]->{$f_call[1]} ($f_answer,$f_query) : false);
 	}
 
 	//f// direct_db_mysql->v_secure (&$f_data)
@@ -1234,10 +1222,9 @@ $f_xml_node_array = array (
 	/*#ifndef(PHP4) */public /* #*/function v_transaction_begin ()
 	{
 		if (USE_debug_reporting) { direct_debug (8,"sWG/#echo(__FILEPATH__)# -db_class->v_transaction_begin ()- (#echo(__LINE__)#)"); }
-		$f_call = $this->v_call_get ("v_transaction_begin");
 
-		if ($f_call) { return $f_call[0]->{$f_call[1]} (); }
-		else { return false; }
+		$f_call = $this->v_call_get ("v_transaction_begin");
+		return ($f_call ? $f_call[0]->{$f_call[1]} () : false);
 	}
 
 	//f// direct_db_mysql->v_transaction_commit ()
@@ -1252,10 +1239,9 @@ $f_xml_node_array = array (
 	/*#ifndef(PHP4) */public /* #*/function v_transaction_commit ()
 	{
 		if (USE_debug_reporting) { direct_debug (8,"sWG/#echo(__FILEPATH__)# -db_class->v_transaction_commit ()- (#echo(__LINE__)#)"); }
-		$f_call = $this->v_call_get ("v_transaction_commit");
 
-		if ($f_call) { return $f_call[0]->{$f_call[1]} (); }
-		else { return false; }
+		$f_call = $this->v_call_get ("v_transaction_commit");
+		return ($f_call ? $f_call[0]->{$f_call[1]} () : false);
 	}
 
 	//f// direct_db_mysql->v_transaction_rollback ()
@@ -1270,10 +1256,9 @@ $f_xml_node_array = array (
 	/*#ifndef(PHP4) */public /* #*/function v_transaction_rollback ()
 	{
 		if (USE_debug_reporting) { direct_debug (8,"sWG/#echo(__FILEPATH__)# -db_class->v_transaction_rollback ()- (#echo(__LINE__)#)"); }
-		$f_call = $this->v_call_get ("v_transaction_rollback");
 
-		if ($f_call) { return $f_call[0]->{$f_call[1]} (); }
-		else { return false; }
+		$f_call = $this->v_call_get ("v_transaction_rollback");
+		return ($f_call ? $f_call[0]->{$f_call[1]} () : false);
 	}
 }
 

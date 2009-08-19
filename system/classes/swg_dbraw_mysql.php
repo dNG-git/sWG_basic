@@ -49,8 +49,7 @@ all development packets)
 Testing for required classes
 ------------------------------------------------------------------------- */
 
-$g_continue_check = true;
-if (defined ("CLASS_direct_dbraw_mysql")) { $g_continue_check = false; }
+$g_continue_check = ((defined ("CLASS_direct_dbraw_mysql")) ? false : true);
 if (!defined ("CLASS_direct_db")) { $g_continue_check = false; }
 
 if ($g_continue_check)
@@ -142,7 +141,7 @@ Set up some variables
 ------------------------------------------------------------------------- */
 
 		$this->query_cache = "";
-		$this->resource = "";
+		$this->resource = NULL;
 	}
 /*#ifdef(PHP4):
 /**
@@ -180,8 +179,7 @@ Set up some variables
 		if (is_resource (($this->resource))) { $f_return = true; }
 		elseif ((function_exists ("mysql_pconnect"))&&(strlen ($direct_settings['db_dbname'])))
 		{
-			if ($direct_settings['db_peristent']) { $this->resource = @mysql_pconnect ($direct_settings['db_dbserver'],$direct_settings['db_username'],$direct_settings['db_password']); }
-			else { $this->resource = @mysql_connect ($direct_settings['db_dbserver'],$direct_settings['db_username'],$direct_settings['db_password']); }
+			$this->resource = ($direct_settings['db_peristent'] ? @mysql_pconnect ($direct_settings['db_dbserver'],$direct_settings['db_username'],$direct_settings['db_password']) : @mysql_connect ($direct_settings['db_dbserver'],$direct_settings['db_username'],$direct_settings['db_password']));
 
 			if (is_resource (($this->resource)))
 			{
@@ -219,13 +217,8 @@ Set up some variables
 		global $direct_settings;
 		if (USE_debug_reporting) { direct_debug (3,"sWG/#echo(__FILEPATH__)# -db_class->disconnect ()- (#echo(__LINE__)#)"); }
 
-		$f_return = false;
-
-		if (is_resource ($this->resource))
-		{
-			if ($direct_settings['db_peristent']) { $f_return = true; }
-			else { $f_return = mysql_close ($this->resource); }
-		}
+		if (is_resource ($this->resource)) { $f_return = ($direct_settings['db_peristent'] ? true : mysql_close ($this->resource)); }
+		else { $f_return = false; }
 
 		return /*#ifdef(DEBUG):direct_debug (7,"sWG/#echo(__FILEPATH__)# -db_class->disconnect ()- (#echo(__LINE__)#)",:#*/$f_return/*#ifdef(DEBUG):,true):#*/;
 	}
@@ -384,12 +377,7 @@ Set up some variables
 						if ($f_data['search_conditions'])
 						{
 							$f_xml_node_array = $direct_classes['xml_bridge']->xml2array ($f_data['search_conditions'],true,false);
-
-							if (isset ($f_xml_node_array['sqlconditions']))
-							{
-								if ($f_where_defined) { $this->query_cache .= " AND (".($this->query_build_search_conditions ($f_xml_node_array['sqlconditions'])).")"; }
-								else { $this->query_cache .= " WHERE ".($this->query_build_search_conditions ($f_xml_node_array['sqlconditions'])); }
-							}
+							if (isset ($f_xml_node_array['sqlconditions'])) { $this->query_cache .= ($f_where_defined ? " AND (".($this->query_build_search_conditions ($f_xml_node_array['sqlconditions'])).")" : " WHERE ".($this->query_build_search_conditions ($f_xml_node_array['sqlconditions']))); }
 						}
 
 						if (!empty ($f_data['grouping'])) { $this->query_cache .= " GROUP BY ".(implode (",",$f_data['grouping'])); }
@@ -429,8 +417,7 @@ Set up some variables
 					if ($f_data['offset']) { $this->query_cache .= " OFFSET ".$f_data['offset']; }
 				}
 
-				if ($f_data['answer'] == "sql") { $f_return = $this->query_cache; }
-				else { $f_return = $this->query_exec ($f_data['answer'],$this->query_cache); }
+				$f_return = (($f_data['answer'] == "sql") ? $this->query_cache : $this->query_exec ($f_data['answer'],$this->query_cache));
 			}
 			else { trigger_error ("sWG/#echo(__FILEPATH__)# -db_class->query_build ()- (#echo(__LINE__)#) reporting: Required definition elements are missing",E_USER_WARNING); }
 		}
@@ -508,9 +495,8 @@ Set up some variables
 			foreach ($f_ordering_list as $f_ordering_array)
 			{
 				if ($f_return) { $f_return .= ", "; }
-
-				if ($f_ordering_array['attributes']['type'] == "desc") { $f_return .= $f_ordering_array['attributes']['attribute']." DESC"; }
-				else { $f_return .= $f_ordering_array['attributes']['attribute']." ASC"; }
+				$f_return .= $f_ordering_array['attributes']['attribute'];
+				$f_return .= (($f_ordering_array['attributes']['type'] == "desc") ? " DESC" : " ASC");
 			}
 		}
 
@@ -544,25 +530,13 @@ Set up some variables
 				{
 					if (isset ($f_requirement_array['xml.item']))
 					{
-						if ($f_return)
-						{
-							if ((isset ($f_requirement_array['xml.item']['attributes']['condition']))&&($f_requirement_array['xml.item']['attributes']['condition'] == "or")) { $f_return .= " OR "; }
-							else { $f_return .= " AND "; }
-						}
-
-						if (count ($f_requirement_array) > 2) { $f_return .= "(".($this->query_build_row_conditions_walker ($f_requirement_array)).")"; }
-						else { $f_return .= $this->query_build_row_conditions_walker ($f_requirement_array); }
+						if ($f_return) { $f_return .= (((isset ($f_requirement_array['xml.item']['attributes']['condition']))&&($f_requirement_array['xml.item']['attributes']['condition'] == "or")) ? " OR " : " AND "); }
+						$f_return .= ((count ($f_requirement_array) > 2) ? "(".($this->query_build_row_conditions_walker ($f_requirement_array)).")" : $this->query_build_row_conditions_walker ($f_requirement_array));
 					}
 					elseif ($f_requirement_array['value'] != "*")
 					{
 						if (!isset ($f_requirement_array['attributes']['type'])) { $f_requirement_array['attributes']['type'] = "string"; }
-
-						if ($f_return)
-						{
-							if ((isset ($f_requirement_array['attributes']['condition']))&&($f_requirement_array['attributes']['condition'] == "or")) { $f_return .= " OR "; }
-							else { $f_return .= " AND "; }
-						}
-
+						if ($f_return) { $f_return .= (((isset ($f_requirement_array['attributes']['condition']))&&($f_requirement_array['attributes']['condition'] == "or")) ? " OR " : " AND "); }
 						if (!isset ($f_requirement_array['attributes']['operator'])) { $f_requirement_array['attributes']['operator'] = ""; }
 
 						switch ($f_requirement_array['attributes']['operator'])
@@ -719,11 +693,7 @@ Don't forget to check the buffer $f_word_buffer
 					{
 						if ($f_search_term) { $f_search_term .= " "; }
 
-						if ($f_and_check)
-						{
-							if ($f_single_check) { $f_search_term .= $f_word_buffer; }
-							else { $f_search_term .= '"'.$f_word_buffer.'"'; }
-						}
+						if ($f_and_check) { $f_search_term .= ($f_single_check ? $f_word_buffer : '"'.$f_word_buffer.'"'); }
 						else { $f_search_term .= $f_word_buffer; }
 					}
 
@@ -734,8 +704,8 @@ Parse other typical words and add our filtered string to the SQL request.
 					$f_search_term = str_replace (" NOT "," -",$f_search_term);
 					$f_search_term = str_replace ("HIGH ",">",$f_search_term);
 					$f_search_term = str_replace ("LOW ","<",$f_search_term);
-
 					$this->secure ($f_search_term);
+
 					$f_return .= "('$f_search_term' IN BOOLEAN MODE)";
 				}
 				else
@@ -850,11 +820,7 @@ Don't forget to check the buffer $f_word_buffer
 
 				if (isset ($f_attribute_array['attributes']['null'])) { $f_return .= "NULL"; }
 				elseif ($f_attribute_array['attributes']['type'] == "string") { $f_return .= "'{$f_attribute_array['value']}'"; }
-				else
-				{
-					if (strlen ($f_attribute_array['value'])) { $f_return .= $f_attribute_array['value']; }
-					else { $f_return .= "NULL"; }
-				}
+				else { $f_return .= ((strlen ($f_attribute_array['value'])) ? $f_attribute_array['value'] : "NULL"); }
 			}
 		}
 
@@ -894,17 +860,11 @@ Don't forget to check the buffer $f_word_buffer
 				else
 				{
 					$f_bracket_check = true;
-
-					if ($f_return) { $f_return .= ","; }
-					else { $f_return .= "("; }
+					$f_return .= ($f_return ? "," : "(");
 
 					if (isset ($f_value_array['attributes']['null'])) { $f_return .= "NULL"; }
 					elseif ($f_value_array['attributes']['type'] == "string") { $f_return .= "'{$f_value_array['value']}'"; }
-					else
-					{
-						if (strlen ($f_value_array['value'])) { $f_return .= $f_value_array['value']; }
-						else { $f_return .= "NULL"; }
-					}
+					else { $f_return .= ((strlen ($f_value_array['value'])) ? $f_value_array['value'] : "NULL"); }
 				}
 			}
 
@@ -968,9 +928,7 @@ Don't forget to check the buffer $f_word_buffer
 			elseif ($f_answer == "ss")
 			{
 				$f_row_array = mysql_fetch_row ($f_result_pointer);
-
-				if (empty ($f_row_array)) { $f_return = ""; }
-				else { $f_return = implode ("\n",$f_row_array); }
+				$f_return = ((empty ($f_row_array)) ? "" : implode ("\n",$f_row_array));
 			}
 			else { $f_return = false; }
 		}
@@ -1046,11 +1004,7 @@ Don't forget to check the buffer $f_word_buffer
 
 			if (($direct_settings['db_transaction_supported'])&&(is_resource ($this->resource)))
 			{
-				if ($this->transactions > 1)
-				{
-					if ($direct_settings['db_nested_transactions_supported']) { $f_return = $this->query_exec ("co","SAVEPOINT ".(1 + $this->transactions)); }
-					else { $f_return = true; }
-				}
+				if ($this->transactions > 1) { $f_return = ($direct_settings['db_nested_transactions_supported'] ? $this->query_exec ("co","SAVEPOINT ".(1 + $this->transactions)) : true); }
 				else { $f_return = $this->query_exec ("co","BEGIN WORK"); }
 
 				if ($f_return) { $this->transactions++; }
@@ -1083,11 +1037,7 @@ Don't forget to check the buffer $f_word_buffer
 
 			if (($this->transactions > 0)&&(is_object ($this->resource)))
 			{
-				if ($this->transactions > 1)
-				{
-					if ($direct_settings['db_nested_transactions_supported']) { $f_return = $this->query_exec ("co","RELEASE SAVEPOINT ".$this->transactions); }
-					else { $f_return = true; }
-				}
+				if ($this->transactions > 1) { $f_return = ($direct_settings['db_nested_transactions_supported'] ? $this->query_exec ("co","RELEASE SAVEPOINT ".$this->transactions) : true); }
 				else { $f_return = $this->query_exec ("co","COMMIT"); }
 
 				if ($f_return) { $this->transactions--; }
@@ -1120,11 +1070,7 @@ Don't forget to check the buffer $f_word_buffer
 
 			if (($this->transactions > 0)&&(is_resource ($this->resource)))
 			{
-				if ($this->transactions > 1)
-				{
-					if ($direct_settings['db_nested_transactions_supported']) { $f_return = $this->query_exec ("co","ROLLBACK TO SAVEPOINT ".$this->transactions); }
-					else { $f_return = true; }
-				}
+				if ($this->transactions > 1) { $f_return = ($direct_settings['db_nested_transactions_supported'] ? $this->query_exec ("co","ROLLBACK TO SAVEPOINT ".$this->transactions) : true); }
 				else { $f_return = $this->query_exec ("co","ROLLBACK"); }
 
 				if ($f_return) { $this->transactions--; }

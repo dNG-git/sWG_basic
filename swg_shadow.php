@@ -81,19 +81,7 @@ Stay compatible with old Shadow URLs (<= v0.1.00 (before 03/02/2006))
 
 	$g_redirect_options_array = explode ("&",$g_redirect_string);
 	unset ($g_redirect_string);
-
-	if (!empty ($g_redirect_options_array))
-	{
-		foreach ($g_redirect_options_array as $g_redirect_option)
-		{
-			$g_redirect_option_array = explode ("=",$g_redirect_option,2);
-
-			if ($g_redirect_option_array[0] == "m") { $i_m = $g_redirect_option_array[1]; }
-			if ($g_redirect_option_array[0] == "s") { $i_s = $g_redirect_option_array[1]; }
-			if ($g_redirect_option_array[0] == "a") { $i_a = $g_redirect_option_array[1]; }
-			if ($g_redirect_option_array[0] == "dsd") { $i_dsd = $g_redirect_option_array[1]; }
-		}
-	}
+	$g_redirect_option_separator = "=";
 }
 else
 {
@@ -102,17 +90,37 @@ else
 
 	$g_redirect_options_array = explode ("/",$g_redirect_string);
 	unset ($g_redirect_string);
+	$g_redirect_option_separator = "-";
+}
 
-	if (!empty ($g_redirect_options_array))
+if (!empty ($g_redirect_options_array))
+{
+	foreach ($g_redirect_options_array as $g_redirect_option)
 	{
-		foreach ($g_redirect_options_array as $g_redirect_option)
-		{
-			$g_redirect_option_array = explode ("-",$g_redirect_option,2);
+		$g_redirect_option_array = explode ($g_redirect_option_separator,$g_redirect_option,2);
 
-			if ($g_redirect_option_array[0] == "m") { $i_m = $g_redirect_option_array[1]; }
-			if ($g_redirect_option_array[0] == "s") { $i_s = $g_redirect_option_array[1]; }
-			if ($g_redirect_option_array[0] == "a") { $i_a = $g_redirect_option_array[1]; }
-			if ($g_redirect_option_array[0] == "dsd") { $i_dsd = $g_redirect_option_array[1]; }
+		switch ($g_redirect_option_array[0])
+		{
+		case "a":
+		{
+			$i_a = $g_redirect_option_array[1];
+			break 1;
+		}
+		case "m":
+		{
+			$i_m = $g_redirect_option_array[1];
+			break 1;
+		}
+		case "s":
+		{
+			$i_s = $g_redirect_option_array[1];
+			break 1;
+		}
+		case "dsd":
+		{
+			$i_dsd = $g_redirect_option_array[1];
+			break 1;
+		}
 		}
 	}
 }

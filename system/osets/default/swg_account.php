@@ -92,8 +92,7 @@ $f_return = ("<table cellspacing='1' summary='' class='pageborder1' style='width
 			$f_return .= direct_account_oset_parse_user_fullh ($f_user_array,"page");
 		}
 
-		if ($f_right_switch) { $f_return .= "</td>\n<td class='pagebg' style='width:50%'><span style='font-size:8px'>&#0160;</span></td>\n</tr></tbody>\n</table>"; }
-		else { $f_return .= "</td>\n</tr></tbody>\n</table>"; }
+		$f_return .= ($f_right_switch ? "</td>\n<td class='pagebg' style='width:50%'><span style='font-size:8px'>&#0160;</span></td>\n</tr></tbody>\n</table>" : "</td>\n</tr></tbody>\n</table>");
 	}
 
 	return $f_return;
@@ -174,9 +173,7 @@ $f_return = ("<table cellspacing='1' summary='' class='pageborder1' style='width
 		$f_return .= "<span class='pagecontent'><span style='font-weight:bold'>$f_position</span><br />\n$f_password</span>";
 	}
 
-	if ($f_right_switch) { $f_return .= "</td>\n<td class='pagebg' style='width:50%'><span style='font-size:8px'>&#0160;</span></td>\n</tr></tbody>\n</table>"; }
-	else { $f_return .= "</td>\n</tr></tbody>\n</table>"; }
-
+	$f_return .= ($f_right_switch ? "</td>\n<td class='pagebg' style='width:50%'><span style='font-size:8px'>&#0160;</span></td>\n</tr></tbody>\n</table>" : "</td>\n</tr></tbody>\n</table>");
 	$f_return .= "\n<p class='pagehighlightborder2' style='text-align:left'><span class='pageextracontent' style='font-weight:bold'>".(direct_local_get ("account_otp_list_not_viewable_again"))."</span></p>";
 
 	return $f_return;
@@ -214,7 +211,7 @@ $f_return .= ("\n<tbody><tr>
 $f_return .= ("\n</table><span id='swg_account_selector_filter_point' style='display:none'><!-- iPoint // --></span><script language='JavaScript1.5' type='text/javascript'><![CDATA[
 if (djs_swgDOM)
 {
-	function djs_account_selector_filter_process () { self.document.location.replace ('".(direct_linker ("url1","m=dataport&s=swgap;default;filter&dsd=dtheme+1++dfid+account_selector++dftext+[f_text]++tid+{$direct_cachedata['output_tid']}++source+{$direct_cachedata['output_filter_source']}",false))."'.replace (/\[f_text\]/g,(encodeURIComponent (self.document.getElementById('swg_account_selector_filter_point_f').value)))); }
+	function djs_account_selector_filter_process () { self.location.replace ('".(direct_linker ("url1","m=dataport&s=swgap;default;filter&dsd=dtheme+1++dfid+account_selector++dftext+[f_text]++tid+{$direct_cachedata['output_tid']}++source+{$direct_cachedata['output_filter_source']}",false))."'.replace (/\[f_text\]/g,(encodeURIComponent (self.document.getElementById('swg_account_selector_filter_point_f').value)))); }
 	djs_swgDOM_replace (\"<div style='font-size:8px'>&#0160;<br />\\n<span id='swg_account_selector_filter_point' style='display:none'><!-- iPoint // --></span></div>\",'swg_account_selector_filter_point');
 
 ".(direct_output_oset_default_filter_table (true,"swg_account_selector_filter_point",(direct_local_get ("core_filter_search","text")),"djs_account_selector_filter_process ()",$direct_cachedata['output_filter_text']))."
@@ -283,11 +280,8 @@ $f_return = ("<p class='pagecontenttitle'>".(direct_local_get ("account_profile_
 	$f_return .= "<div class='pageborder1' style='padding:1px'><div class='pagebg' style='padding:$direct_settings[theme_td_padding]'><p class='pagecontent'><span style='font-weight:bold'>".(direct_local_get ("core_usertype")).":</span> ".$direct_cachedata['output_usertype'];
 	if ($direct_cachedata['output_usertitle']) { $f_return .= "<br />\n".$direct_cachedata['output_usertitle']; }
 
-	if ($direct_cachedata['output_registration_ip']) { $f_registered_ip = " ({$direct_cachedata['output_registration_ip']})"; }
-	else { $f_registered_ip = ""; }
-
-	if ($direct_cachedata['output_lastvisit_ip']) { $f_lastvisit_ip = " ({$direct_cachedata['output_lastvisit_ip']})"; }
-	else { $f_lastvisit_ip = ""; }
+	$f_registered_ip = ($direct_cachedata['output_registration_ip'] ? " ({$direct_cachedata['output_registration_ip']})" : "");
+	$f_lastvisit_ip = ($direct_cachedata['output_lastvisit_ip'] ? " ({$direct_cachedata['output_lastvisit_ip']})" : "");
 
 $f_return .= ("</p>
 <p class='pagecontent' style='font-size:10px'><span style='font-weight:bold'>".(direct_local_get ("account_registered")).":</span> {$direct_cachedata['output_registration_time']}$f_registered_ip<br />
@@ -300,9 +294,7 @@ $f_return .= ("\n<tr>
 <td valign='middle' align='right' class='pageextrabg' style='width:25%;padding:$direct_settings[theme_form_td_padding]'><span class='pageextracontent' style='font-weight:bold'>".(direct_local_get ("account_email")).":</span></td>
 <td valign='middle' align='center' class='pagebg' style='width:75%;padding:$direct_settings[theme_form_td_padding]'><span class='pagecontent'><a href='{$direct_cachedata['output_pageurl_email']}' target='_self'>");
 
-		if ($direct_cachedata['output_email']) { $f_return .= $direct_cachedata['output_email']; }
-		else { $f_return .= direct_local_get ("account_email_user"); }
-
+		$f_return .= ($direct_cachedata['output_email'] ? $direct_cachedata['output_email'] : direct_local_get ("account_email_user"));
 		$f_return .= "</a></span></td>\n</tr>";
 	}
 

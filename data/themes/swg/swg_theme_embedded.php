@@ -161,26 +161,29 @@ img { border:0px }
 table { margin:0px;border:0px }
 td { padding:0px }
 
-.pagebg { background-color:#ECECED }
+.pagebg { background-color:#FFFFFF }
 
-.pageborder1 { background-color:#CCCCCC }
-.pageborder2 { border:1px solid #CCCCCC;background-color:#FFFFFF;padding:5px }
+.pageborder1 { background-color:#193879 }
+.pageborder2 { border:1px solid #193879;background-color:#D9D9DA;padding:4px }
 
-.pagecontent { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;color:#000000 }
+.pagecontent { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;color:#222222 }
 .pagecontent a, .pagecontent a:link, .pagecontent a:active, .pagecontent a:visited, .pagecontent a:hover, .pagecontent a:focus { color:#000000 }
-.pagecontentinputbutton { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;color:#000000;background-color:#FFFFFF }
-.pagecontentinputcheckbox { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;color:#000000;background-color:#EEEEEE }
-.pagecontentinputtextnpassword { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;color:#000000;background-color:#FFFFFF }
-.pagecontentselect { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;color:#000000;background-color:#EEEEEE }
-.pagecontenttextarea { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;color:#000000;background-color:#FFFFFF }
-.pagecontenttitle { border:1px solid #4C6C8F;background-color:#FFFFFF;padding:5px }
-.pagecontenttitle { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;font-weight:bold;color:#000000 }
-.pagecontenttitle a, .pagecontenttitle a:link, .pagecontenttitle a:active, .pagecontenttitle a:visited, .pagecontenttitle a:hover, .pagecontenttitle a:focus { color:#444444 }
+.pagecontentinputbutton { background-color:#F5F5F5;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;color:#000000 }
+.pagecontentinputcheckbox { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;color:#222222;background-color:#FFFFFF }
+.pagecontentinputtextnpassword { border:1px solid #C0C0C0;background-color:#F5F5F5 }
+.pagecontentinputtextnpassword { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;color:#222222 }
+.pagecontentselect { border:1px solid #C0C0C0;background-color:#F5F5F5 }
+.pagecontentselect { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;color:#222222 }
+.pagecontenttextarea { border:1px solid #C0C0C0;background-color:#F5F5F5 }
+.pagecontenttextarea { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;color:#222222 }
+.pagecontenttitle { border:1px solid #193879;background-color:#375A9D;padding:5px }
+.pagecontenttitle { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;font-weight:bold;color:#DDDDDD }
+.pagecontenttitle a, .pagecontenttitle a:link, .pagecontenttitle a:active, .pagecontenttitle a:visited, .pagecontenttitle a:hover, .pagecontenttitle a:focus { color:#FFFFFF }
 
 .pageerrorcontent { font-weight:bold;color:#FF0000 }
 .pageerrorcontent a, .pageerrorcontent a:link, .pageerrorcontent a:active, .pageerrorcontent a:visited, .pageerrorcontent a:hover, .pageerrorcontent a:focus { color:#CC0000 }
 
-.pageextrabg { background-color:#FFFFFF }
+.pageextrabg { background-color:#D9D9DA }
 .pageextracontent { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;color:#222222 }
 .pageextracontent a, .pageextracontent a:link, .pageextracontent a:active, .pageextracontent a:visited, .pageextracontent a:hover, .pageextracontent a:focus { color:#000000 }
 
@@ -188,11 +191,12 @@ td { padding:0px }
 .pagehighlightborder1 { background-color:#FF0000 }
 .pagehighlightborder2 { border:1px solid #FF0000;background-color:#FBF6CD;padding:4px }
 
-.pagehr { height:1px;border-top:1px solid #FFAD65 }
+.pagehr { height:1px;overflow:hidden;border-top:1px solid #193879 }
 
-.pagetitlecellbg { padding:5px;background-color:#FFFFFF }
-.pagetitlecellcontent { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;font-weight:bold;color:#000000 }
-.pagetitlecellcontent a, .pagetitlecellcontent a:link, .pagetitlecellcontent a:active, .pagetitlecellcontent a:visited, .pagetitlecellcontent a:hover, .pagetitlecellcontent a:focus { color:#444444 }
+.pagetitlecellbg { background-color:#375A9D }
+.pagetitlecellcontent { display:block;padding:3px }
+.pagetitlecellcontent { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;font-weight:bold;color:#FFFFFF }
+.pagetitlecellcontent a, .pagetitlecellcontent a:link, .pagetitlecellcontent a:active, .pagetitlecellcontent a:visited, .pagetitlecellcontent a:hover, .pagetitlecellcontent a:focus { color:#FFFFFF }
 ]]></style>
 ".($direct_classes['output']->header_elements ())."
 </head>

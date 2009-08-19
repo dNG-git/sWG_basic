@@ -135,9 +135,7 @@ case "list":
 		direct_class_init ("formtags");
 
 		$direct_cachedata['output_filter_source'] = base64_encode ("m=dataport&s=swgap;account;selector&a=list&dsd=dtheme+{$direct_cachedata['output_dtheme_mode']}++tid+{$direct_cachedata['output_tid']}++page+".$direct_cachedata['output_page']);
-
-		if (isset ($g_task_array['core_filter_account_selector'])) { $direct_cachedata['output_filter_text'] = $direct_classes['formtags']->decode ($g_task_array['core_filter_account_selector']); }
-		else { $direct_cachedata['output_filter_text'] = ""; }
+		$direct_cachedata['output_filter_text'] = ((isset ($g_task_array['core_filter_account_selector'])) ? $direct_classes['formtags']->decode ($g_task_array['core_filter_account_selector']) : "");
 
 		$direct_classes['db']->init_select ($direct_settings['users_table']);
 
@@ -202,27 +200,20 @@ $g_select_criteria = ("<sqlconditions searchtype='simple'>
 				if (in_array ($g_user_array['ddbusers_id'],$g_task_array['account_users_marked']))
 				{
 					$g_user_parsed['marked'] = true;
-
-					if (isset ($g_task_array['account_marker_title_1'])) { $g_user_parsed['marker_title'] = $g_task_array['account_marker_title_1']; }
-					else { $g_user_parsed['marker_title'] = direct_local_get ("account_user_selector_unmark"); }
+					$g_user_parsed['marker_title'] = ((isset ($g_task_array['account_marker_title_1'])) ? $g_task_array['account_marker_title_1'] : direct_local_get ("account_user_selector_unmark"));
 				}
 				else
 				{
 					$g_user_parsed['marked'] = false;
-
-					if (isset ($g_task_array['account_marker_title_0'])) { $g_user_parsed['marker_title'] = $g_task_array['account_marker_title_0']; }
-					else { $g_user_parsed['marker_title'] = direct_local_get ("account_user_selector_mark"); }
+					$g_user_parsed['marker_title'] = ((isset ($g_task_array['account_marker_title_0'])) ? $g_task_array['account_marker_title_0'] : direct_local_get ("account_user_selector_mark"));
 				}
 
-				if ($g_dtheme) { $g_user_parsed['marker_url'] = direct_linker ("url0","m=dataport&s=swgap;account;selector&a=mark_switch&dsd=dtheme+{$direct_cachedata['output_dtheme_mode']}++tid+{$direct_cachedata['output_tid']}++auid+{$g_user_array['ddbusers_id']}++page+".$direct_cachedata['output_page']); }
-				else { $g_user_parsed['marker_url'] = direct_linker ("asis","javascript:djs_dataport_{$direct_cachedata['output_tid']}_call_url0('m=dataport&amp;s=swgap;account;selector&amp;a=mark_switch&amp;dsd=dtheme+0++tid+{$direct_cachedata['output_tid']}++auid+{$g_user_array['ddbusers_id']}++page+{$direct_cachedata['output_page']}')"); }
-
+				$g_user_parsed['marker_url'] = ($g_dtheme ? direct_linker ("url0","m=dataport&s=swgap;account;selector&a=mark_switch&dsd=dtheme+{$direct_cachedata['output_dtheme_mode']}++tid+{$direct_cachedata['output_tid']}++auid+{$g_user_array['ddbusers_id']}++page+".$direct_cachedata['output_page']) : direct_linker ("asis","javascript:djs_dataport_{$direct_cachedata['output_tid']}_call_url0('m=dataport&amp;s=swgap;account;selector&amp;a=mark_switch&amp;dsd=dtheme+0++tid+{$direct_cachedata['output_tid']}++auid+{$g_user_array['ddbusers_id']}++page+{$direct_cachedata['output_page']}')"));
 				$direct_cachedata['output_users_list'][] = $g_user_parsed;
 			}
 		}
 
-		if ((isset ($g_task_array['account_selection_title']))&&($g_task_array['account_selection_title'])) { $direct_cachedata['output_selection_title'] = $g_task_array['account_selection_title']; }
-		else { $direct_cachedata['output_selection_title'] = direct_local_get ("account_user_selector"); }
+		$direct_cachedata['output_selection_title'] = (((isset ($g_task_array['account_selection_title']))&&($g_task_array['account_selection_title'])) ? $g_task_array['account_selection_title'] : direct_local_get ("account_user_selector"));
 
 		if ($g_dtheme)
 		{

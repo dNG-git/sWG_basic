@@ -79,8 +79,7 @@ function direct_output_block_blockmenu ($f_options)
 
 	if (isset ($direct_classes['output']))
 	{
-		if (file_exists ($direct_settings['path_data']."/settings/swg_{$f_menu}.blockmenu.xml")) { $f_blocks_array = $direct_classes['basic_functions']->memcache_get_file_merged_xml ($direct_settings['path_data']."/settings/swg_{$f_menu}.blockmenu.xml"); }
-		else { $f_blocks_array = array (); }
+		$f_blocks_array = ((file_exists ($direct_settings['path_data']."/settings/swg_{$f_menu}.blockmenu.xml")) ? $direct_classes['basic_functions']->memcache_get_file_merged_xml ($direct_settings['path_data']."/settings/swg_{$f_menu}.blockmenu.xml") : array ());
 
 		if ((is_array ($f_blocks_array))&&(!empty ($f_blocks_array)))
 		{
@@ -98,15 +97,12 @@ function direct_output_block_blockmenu ($f_options)
 					if ($f_blocks_array[$f_key."_title"]) { $f_block_array['value'] = $f_blocks_array[$f_key."_title"]['value']; }
 					else { $f_continue_check = false; }
 
-					if (isset ($f_blocks_array[$f_key."_image"])) { $f_block_array['attributes']['image'] = $f_blocks_array[$f_key."_image"]['value']; }
-					else { $f_block_array['attributes']['image'] = ""; }
+					$f_block_array['attributes']['image'] = ((isset ($f_blocks_array[$f_key."_image"])) ? $f_blocks_array[$f_key."_image"]['value'] : "");
 
 					if ($f_blocks_array[$f_key."_link"])
 					{
 						$f_block_array['attributes']['link'] = $f_blocks_array[$f_key."_link"];
-
-						if (isset ($f_block_array['attributes']['link']['attributes']['type'])) { $f_block_array['attributes']['link']['type'] = $f_block_array['attributes']['link']['attributes']['type']; }
-						else { $f_block_array['attributes']['link']['type'] = ""; }
+						$f_block_array['attributes']['link']['type'] = ((isset ($f_block_array['attributes']['link']['attributes']['type'])) ? $f_block_array['attributes']['link']['attributes']['type'] : "");
 					}
 					else { $f_continue_check = false; }
 

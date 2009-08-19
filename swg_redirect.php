@@ -71,14 +71,10 @@ if (trim ($_SERVER['QUERY_STRING']))
 	{
 	case 4:
 	{
-		if ($g_query[0] == "-") { $g_query[0] = ""; }
-		if ($g_query[1] == "-") { $g_query[1] = ""; }
-		if ($g_query[2] == "-") { $g_query[2] = ""; }
+		$i_m = (($g_query[0] == "-") ? "" : $g_query[0]);
+		$i_s = (($g_query[1] == "-") ? "" : $g_query[1]);
+		$i_a = (($g_query[2] == "-") ? "" : $g_query[2]);
 		if ($g_query[3] == "-") { $g_query[3] = ""; }
-
-		$i_m = $g_query[0];
-		$i_s = $g_query[1];
-		$i_a = $g_query[2];
 
 		if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($g_query[3],"++") === false) { $i_dsd = "idata+".(preg_replace ("#\&(.*?)$#","",$g_query[3])); }
 		else { $i_dsd = preg_replace ("#\&(.*?)$#","",$g_query[3]); }
@@ -87,12 +83,9 @@ if (trim ($_SERVER['QUERY_STRING']))
 	}
 	case 3:
 	{
-		if ($g_query[0] == "-") { $g_query[0] = ""; }
-		if ($g_query[1] == "-") { $g_query[1] = ""; }
+		$i_m = (($g_query[0] == "-") ? "" : $g_query[0]);
+		$i_s = (($g_query[1] == "-") ? "" : $g_query[1]);
 		if ($g_query[2] == "-") { $g_query[2] = ""; }
-
-		$i_m = $g_query[0];
-		$i_s = $g_query[1];
 
 		if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($g_query[2],"++") === false) { $i_dsd = "idata+".(preg_replace ("#\&(.*?)$#","",$g_query[2])); }
 		else { $i_dsd = preg_replace ("#\&(.*?)$#","",$g_query[2]); }
@@ -101,10 +94,8 @@ if (trim ($_SERVER['QUERY_STRING']))
 	}
 	case 2:
 	{
-		if ($g_query[0] == "-") { $g_query[0] = ""; }
+		$i_m = (($g_query[0] == "-") ? "" : $g_query[0]);
 		if ($g_query[1] == "-") { $g_query[1] = ""; }
-
-		$i_m = $g_query[0];
 
 		if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($g_query[1],"++") === false) { $i_dsd = "idata+".(preg_replace ("#\&(.*?)$#","",$g_query[1])); }
 		else { $i_dsd = preg_replace ("#\&(.*?)$#","",$g_query[1]); }

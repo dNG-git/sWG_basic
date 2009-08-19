@@ -71,7 +71,7 @@ case "filter":
 	$g_source = (isset ($direct_settings['dsd']['source']) ? ($direct_classes['basic_functions']->inputfilter_basic ($direct_settings['dsd']['source'])) : "");
 	$g_target = (isset ($direct_settings['dsd']['target']) ? ($direct_classes['basic_functions']->inputfilter_basic ($direct_settings['dsd']['target'])) : "");
 
-	if ($g_source) { $g_source_url = base64_decode ($g_source); }
+	$g_source_url = ($g_source ? base64_decode ($g_source) : "");
 
 	if ($g_target) { $g_target_url = base64_decode ($g_target); }
 	else
@@ -83,9 +83,7 @@ case "filter":
 	if ((isset ($direct_settings['dsd']['dtheme']))&&($direct_settings['dsd']['dtheme']))
 	{
 		$g_dtheme = true;
-
-		if ($direct_settings['dsd']['dtheme'] == 2) { $g_dtheme_embedded = true; }
-		else { $g_dtheme_embedded = false; }
+		$g_dtheme_embedded = (($direct_settings['dsd']['dtheme'] == 2) ? true : false);
 
 		$direct_cachedata['page_this'] = "";
 		$direct_cachedata['page_backlink'] = "";
@@ -120,8 +118,7 @@ case "filter":
 	}
 	else { $g_continue_check = false; }
 
-	if (isset ($g_task_array['core_sid'])) { $g_task_sid = $g_task_array['core_sid']; }
-	else { $g_task_sid = "c21f969b5f03d33d43e04f8f136e7682"; }
+	$g_task_sid = ((isset ($g_task_array['core_sid'])) ? $g_task_array['core_sid'] : "c21f969b5f03d33d43e04f8f136e7682");
 	// md5 ("default")
 
 	if ((isset ($g_task_array['uuid']))&&($g_task_array['uuid'] != $direct_settings['uuid'])) { $g_continue_check = false; }

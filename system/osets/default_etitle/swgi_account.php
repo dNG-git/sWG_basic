@@ -66,6 +66,14 @@ $f_return = ("<tr>
 <td valign='middle' align='center' class='pagebg' style='width:75%;padding:$direct_settings[theme_form_td_padding]'><span class='pagecontent'>{$direct_cachedata['output_current_verification']}</span></td>
 </tr>");
 
+	if (isset ($direct_cachedata['output_current_verification_status']))
+	{
+$f_return .= ("<tr>
+<td valign='top' align='right' class='pageextrabg' style='width:25%;padding:$direct_settings[theme_form_td_padding]'><span class='pageextracontent' style='font-weight:bold'>".(direct_local_get ("account_status_ex_verification_status")).":</span></td>
+<td valign='middle' align='center' class='pagebg' style='width:75%;padding:$direct_settings[theme_form_td_padding]'><span class='pagecontent'>{$direct_cachedata['output_current_verification_status']}</span></td>
+</tr>");
+	}
+
 	if (isset ($direct_cachedata['output_link_login']))
 	{
 		if ($direct_cachedata['output_dtheme_mode']) { $f_url_target = "_self"; }

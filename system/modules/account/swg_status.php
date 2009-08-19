@@ -67,16 +67,13 @@ switch ($direct_settings['a'])
 case "login":
 case "login-save":
 {
-	if ($direct_settings['a'] == "login-save") { $g_mode_save = true; }
-	else { $g_mode_save = false; }
-
+	$g_mode_save = (($direct_settings['a'] == "login-save") ? true : false);
 	if (USE_debug_reporting) { direct_debug (1,"sWG/#echo(__FILEPATH__)# _a={$direct_settings['a']}_ (#echo(__LINE__)#)"); }
 
 	$g_source = (isset ($direct_settings['dsd']['source']) ? ($direct_classes['basic_functions']->inputfilter_basic ($direct_settings['dsd']['source'])) : "");
 	$g_target = (isset ($direct_settings['dsd']['target']) ? ($direct_classes['basic_functions']->inputfilter_basic ($direct_settings['dsd']['target'])) : "");
 
-	if ($g_source) { $g_source_url = base64_decode ($g_source); }
-	else { $g_source_url = "m=account&a=services[lang][theme]"; }
+	$g_source_url = ($g_source ? base64_decode ($g_source) : "m=account&a=services[lang][theme]");
 
 	if ($g_target) { $g_target_url = base64_decode ($g_target); }
 	else
@@ -170,9 +167,7 @@ Call registered mods
 Save data edited
 ------------------------------------------------------------------------- */
 
-		if ((USE_cookies)&&($direct_cachedata['i_acookie'])) { $direct_cachedata['i_acookie'] = true; }
-		else { $direct_cachedata['i_acookie'] = false; }
-
+		$g_cookie = (((USE_cookies)&&($direct_cachedata['i_acookie'])) ? true : false);
 		$g_form_view = false;
 		$g_user_array = $direct_classes['kernel']->v_user_get ("",$direct_cachedata['i_ausername'],true);
 
@@ -201,7 +196,7 @@ $g_uuid_array = array (
 
 				if (isset ($g_uuid_array['userid']))
 				{
-					$direct_classes['kernel']->v_uuid_write ((direct_evars_write ($g_uuid_array)),$direct_cachedata['i_acookie']);
+					$direct_classes['kernel']->v_uuid_write ((direct_evars_write ($g_uuid_array)),$g_cookie);
 
 					$direct_settings['user'] = array ("id" => $g_user_array['ddbusers_id'],"name" => $g_user_array['ddbusers_name'],"name_html" => (direct_html_encode_special ($g_user_array['ddbusers_name'])),"type" => $g_user_array['ddbusers_type'],"timezone" => $g_user_array['ddbusers_timezone']);
 					$g_user_array['ddbusers_lastvisit_ip'] = $direct_settings['user_ip'];
@@ -291,8 +286,7 @@ case "lvreset":
 	$g_source = (isset ($direct_settings['dsd']['source']) ? ($direct_classes['basic_functions']->inputfilter_basic ($direct_settings['dsd']['source'])) : "");
 	$g_target = (isset ($direct_settings['dsd']['target']) ? ($direct_classes['basic_functions']->inputfilter_basic ($direct_settings['dsd']['target'])) : "");
 
-	if ($g_source) { $g_source_url = base64_decode ($g_source); }
-	else { $g_source_url = "m=account&a=services"; }
+	$g_source_url = ($g_source ? base64_decode ($g_source) : "m=account&a=services");
 
 	if ($g_target) { $g_target_url = base64_decode ($g_target); }
 	else
@@ -360,11 +354,8 @@ case "logout":
 	$g_source = (isset ($direct_settings['dsd']['source']) ? ($direct_classes['basic_functions']->inputfilter_basic ($direct_settings['dsd']['source'])) : "");
 	$g_target = (isset ($direct_settings['dsd']['target']) ? ($direct_classes['basic_functions']->inputfilter_basic ($direct_settings['dsd']['target'])) : "");
 
-	if ($g_source) { $g_source_url = base64_decode ($g_source); }
-	else { $g_source_url = "m=account&a=services"; }
-
-	if ($g_target) { $g_target_url = base64_decode ($g_target); }
-	else { $g_target_url = "m=default&s=index&a=index"; }
+	$g_source_url = ($g_source ? base64_decode ($g_source) : "m=account&a=services");
+	$g_target_url = ($g_target ? base64_decode ($g_target) : "m=default&s=index&a=index");
 
 	$direct_cachedata['page_this'] = "";
 	$direct_cachedata['page_backlink'] = str_replace ("[oid]","",$g_source_url);

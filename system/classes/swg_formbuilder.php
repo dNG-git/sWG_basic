@@ -50,8 +50,7 @@ all development packets)
 Testing for required classes
 ------------------------------------------------------------------------- */
 
-$g_continue_check = true;
-if (defined ("CLASS_direct_formbuilder")) { $g_continue_check = false; }
+$g_continue_check = ((defined ("CLASS_direct_formbuilder")) ? false : true);
 if (!defined ("CLASS_direct_virtual_class")) { $g_continue_check = false; }
 
 if ($g_continue_check)
@@ -172,7 +171,7 @@ Set up some variables
 	*         Click here to get a list of available form fields
 	* @since  v0.1.00
 */
-	/*#ifndef(PHP4) */public /* #*/function entry_add ($f_type,$f_name = "",$f_title = "",$f_required = false,$f_helper_text = "",$f_helper_url = "",$f_helper_closing = true)
+	/*#ifndef(PHP4) */public /* #*/function entry_add ($f_type,$f_name = "",$f_title = NULL,$f_required = false,$f_helper_text = "",$f_helper_url = "",$f_helper_closing = true)
 	{
 		global $direct_cachedata;
 		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formbuilder_class->entry_add ($f_type,$f_name,$f_title,+f_required,+f_helper_text,+f_helper_url,+f_helper_closing)- (#echo(__LINE__)#)"); }
@@ -195,8 +194,7 @@ $this->form_cache[$f_form_id] = array (
 "helper_closing" => $f_helper_closing
 );
 
-				if (isset ($direct_cachedata["i_".$f_name])) { $this->form_cache[$f_form_id]['content'] = $direct_cachedata["i_".$f_name]; }
-				else { $this->form_cache[$f_form_id]['content'] = ""; }
+				$this->form_cache[$f_form_id]['content'] = ((isset ($direct_cachedata["i_".$f_name])) ? $direct_cachedata["i_".$f_name] : "");
 			}
 			else
 			{
@@ -278,6 +276,8 @@ $this->form_cache[$f_form_id] = array (
 	* @param  boolean $f_required True if the field is required to continue
 	* @param  string $f_field_size Size of the form field ("s", "m" or "l")
 	* @param  string $f_url URL for the embedded resource
+	* @param  boolean $f_iframe_only True if we should not try AJAX to embed the
+	*         given URL
 	* @param  string $f_helper_text Contains a text that will be displayed to
 	*         aid the user in filling out the field
 	* @param  string $f_helper_url Links the whole help box to a given URL
@@ -288,10 +288,10 @@ $this->form_cache[$f_form_id] = array (
 	* @return boolean Currently always true
 	* @since  v0.1.00
 */
-	/*#ifndef(PHP4) */public /* #*/function entry_add_embed ($f_name,$f_title,$f_required = false,$f_url = "",$f_field_size = "m",$f_helper_text = "",$f_helper_url = "",$f_helper_closing = true)
+	/*#ifndef(PHP4) */public /* #*/function entry_add_embed ($f_name,$f_title = NULL,$f_required = false,$f_url = "",$f_iframe_only = false,$f_field_size = "m",$f_helper_text = "",$f_helper_url = "",$f_helper_closing = true)
 	{
 		global $direct_cachedata;
-		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formbuilder_class->entry_add_embed ($f_name,$f_title,+f_required,$f_field_size,*f_helper_text,+f_helper_url,+f_helper_closing)- (#echo(__LINE__)#)"); }
+		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formbuilder_class->entry_add_embed ($f_name,$f_title,+f_required,$f_url,+f_iframe_only,$f_field_size,+f_helper_text,+f_helper_url,+f_helper_closing)- (#echo(__LINE__)#)"); }
 
 		$f_form_id = md5 ("i_".$f_name);
 
@@ -313,6 +313,7 @@ $this->form_cache[$f_form_id] = array (
 "helper_url" => $f_helper_url,
 "helper_closing" => $f_helper_closing,
 "content" => $f_url,
+"iframe_only" => $f_iframe_only,
 "id" => $f_embed_id
 );
 
@@ -526,8 +527,7 @@ $this->form_cache[$f_form_id] = array (
 			}
 		}
 
-		if (($f_required)&&(empty ($direct_cachedata["i_".$f_name]))) { $f_error = "required_element"; }
-		else { $f_error = ""; }
+		$f_error = ((($f_required)&&(empty ($direct_cachedata["i_".$f_name]))) ? "required_element" : "");
 
 $this->form_cache[$f_form_id] = array (
 "type" => "multiselect",
@@ -722,8 +722,7 @@ djs_formbuilder_tabindex ('$f_label_id');
 			}
 		}
 
-		if (($f_required)&&(!strlen ($direct_cachedata["i_".$f_name]))) { $f_error = "required_element"; }
-		else { $f_error = ""; }
+		$f_error = ((($f_required)&&(!strlen ($direct_cachedata["i_".$f_name]))) ? "required_element" : "");
 
 $this->form_cache[$f_form_id] = array (
 "type" => "radio",
@@ -790,8 +789,7 @@ $this->form_cache[$f_form_id] = array (
 			}
 		}
 
-		if (($f_required)&&(!strlen ($direct_cachedata["i_".$f_name]))) { $f_error = "required_element"; }
-		else { $f_error = ""; }
+		$f_error = ((($f_required)&&(!strlen ($direct_cachedata["i_".$f_name]))) ? "required_element" : "");
 
 $this->form_cache[$f_form_id] = array (
 "type" => "select",
@@ -1103,9 +1101,7 @@ $this->form_cache[$f_form_id] = array (
 
 					if (isset ($f_xml_node_array['value']/*#ifndef(PHP4) */,/* #*//*#ifdef(PHP4):) && isset (:#*/$f_xml_node_array['attributes']['type']))
 					{
-						if (isset ($f_xml_node_array['attributes']['value_translation'])) { $f_xml_node_array['value'] = direct_local_get_xml_translation ($f_xml_translation_array,"title",true,$direct_settings['lang']); }
-						else { $f_xml_node_array['value'] = $f_xml_node_array['value']; }
-
+						$f_xml_node_array['value'] = ((isset ($f_xml_node_array['attributes']['value_translation'])) ? direct_local_get_xml_translation ($f_xml_translation_array,"title",true,$direct_settings['lang']) : $f_xml_node_array['value']);
 						if (!isset ($f_xml_node_array['attributes']['required'])) { $f_xml_node_array['attributes']['required'] = false; }
 						if (!isset ($f_xml_node_array['attributes']['field_size'])) { $f_xml_node_array['attributes']['field_size'] = "m"; }
 						if (!isset ($f_xml_node_array['attributes']['min'])) { $f_xml_node_array['attributes']['min'] = 0; }
@@ -1116,9 +1112,7 @@ $this->form_cache[$f_form_id] = array (
 						else { $f_xml_node_array['attributes']['helper_text'] = ""; }
 
 						if (!isset ($f_xml_node_array['attributes']['helper_url'])) { $f_xml_node_array['attributes']['helper_url'] = ""; }
-
-						if ((!isset ($f_xml_node_array['attributes']['helper_closing']))||($f_xml_node_array['attributes']['helper_closing'])) { $f_xml_node_array['attributes']['helper_closing'] = true; }
-						else { $f_xml_node_array['attributes']['helper_closing'] = false; }
+						$f_xml_node_array['attributes']['helper_closing'] = (((!isset ($f_xml_node_array['attributes']['helper_closing']))||($f_xml_node_array['attributes']['helper_closing'])) ? true : false);
 
 						$f_return = $this->xml_form_entry ($f_xml_node_array,$f_xml_translation_array);
 					}
@@ -1410,28 +1404,12 @@ Informing the system about available functions
 
 		$f_return = "";
 
-		if (!$f_data['title'])
-		{
-			if ($f_data['helper_text']) { $f_js_helper = "<br />\n<span style='font-size:8px'>&#0160;</span><br />\n".($direct_classes['output']->js_helper ($f_data['helper_text'],$f_data['helper_url'],$f_data['helper_closing'])); }
-			else { $f_js_helper = ""; }
-
-$f_return .= ("<tr>
-<td colspan='2' align='center' class='pagebg' style='padding:$direct_settings[theme_form_td_padding]'>
-<table cellspacing='0' summary=''>
-<tbody><tr>
-<td align='left'><div class='pagecontent'>$f_data[content]</div></td>
-</tr></tbody>
-</table>$f_js_helper</td>
-</tr>");
-		}
-		else
+		if (isset ($f_data['title']))
 		{
 			if (strlen ($f_data['content']))
 			{
-				if ($f_data['helper_text']) { $f_js_helper = "<span style='font-size:8px'>&#0160;</span><br />\n".($direct_classes['output']->js_helper ($f_data['helper_text'],$f_data['helper_url'],$f_data['helper_closing'])); }
-				else { $f_js_helper = ""; }
-
-				$f_return .= "<tr>";
+				$f_js_helper = ($f_data['helper_text'] ? "<span style='font-size:8px'>&#0160;</span><br />\n".($direct_classes['output']->js_helper ($f_data['helper_text'],$f_data['helper_url'],$f_data['helper_closing'])) : "");
+				$f_return = "<tr>";
 
 				if ($f_data['title'] == "-") { $f_return .= "\n<td valign='top' align='right' class='pageextrabg' style='width:25%'><span style='font-size:8px'>&#0160;</span></td>"; }
 				else
@@ -1449,6 +1427,19 @@ $f_return .= ("\n<td valign='middle' align='center' class='pagebg' style='width:
 </table>$f_js_helper</td>
 </tr>");
 			}
+		}
+		else
+		{
+			$f_js_helper = ($f_data['helper_text'] ? "<br />\n<span style='font-size:8px'>&#0160;</span><br />\n".($direct_classes['output']->js_helper ($f_data['helper_text'],$f_data['helper_url'],$f_data['helper_closing'])) : "");
+
+$f_return = ("<tr>
+<td colspan='2' align='center' class='pagebg' style='padding:$direct_settings[theme_form_td_padding]'>
+<table cellspacing='0' summary=''>
+<tbody><tr>
+<td align='left'><div class='pagecontent'>$f_data[content]</div></td>
+</tr></tbody>
+</table>$f_js_helper</td>
+</tr>");
 		}
 
 		return $f_return;
@@ -1472,8 +1463,12 @@ $f_return .= ("\n<td valign='middle' align='center' class='pagebg' style='width:
 		global $direct_classes,$direct_settings;
 		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -output_formbuilder_class->entry_add_embed (+f_data)- (#echo(__LINE__)#)"); }
 
-		$f_embed_url_ajax = direct_linker ("url0",$f_data['content']."tid+{$f_data['id']}++dtheme+0",false);
-		$f_embed_url_ajax_url0 = addslashes (direct_linker ("url0","[f_url]",false));
+		if (!$f_data['iframe_only'])
+		{
+			$f_embed_url_ajax = direct_linker ("url0",$f_data['content']."tid+{$f_data['id']}++dtheme+0",false);
+			$f_embed_url_ajax_url0 = addslashes (direct_linker ("url0","[f_url]",false));
+		}
+
 		$f_embed_url_iframe = direct_linker ("url0",$f_data['content']."tid+{$f_data['id']}++dtheme+2");
 		$f_embed_url_error = direct_linker ("url0",$f_data['content']."tid+{$f_data['id']}++dtheme+1");
 
@@ -1482,32 +1477,38 @@ $f_return .= ("\n<td valign='middle' align='center' class='pagebg' style='width:
 		else { $f_height = 400; }
 
 		$f_css_values = ";height:{$f_height}px;overflow:auto";
+		$f_js_helper = ($f_data['helper_text'] ? "<p class='pagecontent' style='font-size:8px'>".($direct_classes['output']->js_helper ($f_data['helper_text'],$f_data['helper_url'],$f_data['helper_closing']))."</p>" : "");
 
-		if ($f_data['helper_text']) { $f_js_helper = "<p class='pagecontent' style='font-size:8px'>".($direct_classes['output']->js_helper ($f_data['helper_text'],$f_data['helper_url'],$f_data['helper_closing']))."</p>"; }
-		else { $f_js_helper = ""; }
+		if (isset ($f_data['title']))
+		{
+			$f_return = "<tr>\n<td valign='top' align='right' class='pageextrabg' style='width:25%;padding:$direct_settings[theme_form_td_padding]'><span class='pageextracontent' style='font-weight:bold'>";
+			if ($f_data['required']) { $f_return .= $direct_settings['swg_required_marker']." "; }
+			$f_return .= $f_data['title'].":</span></td>\n<td valign='middle' align='center' class='pagebg' style='width:75%;padding:$direct_settings[theme_form_td_padding]'>";
+		}
+		else { $f_return = "<tr>\n<td colspan='2' align='center' class='pagebg' style='padding:$direct_settings[theme_form_td_padding]'>"; }
 
-		$f_return = "<tr>\n<td valign='top' align='right' class='pageextrabg' style='width:25%;padding:$direct_settings[theme_form_td_padding]'><span class='pageextracontent' style='font-weight:bold'>";
-		if ($f_data['required']) { $f_return .= $direct_settings['swg_required_marker']." "; }
+$f_return .= ("<div id='swgAJAX_formbuilder_embed_{$f_data['id']}_point'><span id='swg_formbuilder_{$f_data['id']}_point' style='display:none'><!-- iPoint // --></span><script language='JavaScript1.5' type='text/javascript'><![CDATA[
+djs_swgDOM_replace (\"<span class='pagecontent' style='font-size:10px'>[ <a href=\\\"javascript:djs_formbuilder_iframe_change_height('swg_formbuilder_$f_data[id]','-');\\\">-</a> ] [ <a href=\\\"javascript:djs_formbuilder_iframe_change_height('swg_formbuilder_$f_data[id]','230');\\\">230</a> ] [ <a href=\\\"javascript:djs_formbuilder_iframe_change_height('swg_formbuilder_$f_data[id]','315');\\\">315</a> ] [ <a href=\\\"javascript:djs_formbuilder_iframe_change_height('swg_formbuilder_$f_data[id]','400');\\\">400</a> ] [ <a href=\\\"javascript:djs_formbuilder_iframe_change_height('swg_formbuilder_$f_data[id]','+');\\\">+</a> ]<br />\\n</span>\",'swg_formbuilder_{$f_data['id']}_point');
+]]></script><iframe src='$f_embed_url_iframe' id='swg_formbuilder_$f_data[id]' width='100%' height='$f_height' frameborder='0' scrolling='auto'><span class='pagecontent' style='font-weight:bold'>".(direct_local_get ("formbuilder_embed_unsupported_1"))."<a href='$f_embed_url_error' target='_blank'>".(direct_local_get ("formbuilder_embed_unsupported_2"))."</a>".(direct_local_get ("formbuilder_embed_unsupported_3"))."</span></iframe></div><input type='hidden' name='$f_data[name]' value='$f_data[id]' /><script language='JavaScript1.5' type='text/javascript'><![CDATA[\n");
 
-$f_return .= ($f_data['title'].":</span></td>
-<td valign='middle' align='center' class='pagebg' style='width:75%;padding:$direct_settings[theme_form_td_padding]'><div id='swgAJAX_formbuilder_embed_{$f_data['id']}_point'><span id='swg_formbuilder_{$f_data['id']}_point1' style='display:none'><!-- iPoint // --></span><script language='JavaScript1.5' type='text/javascript'><![CDATA[
-if (!djs_swgAJAX) { djs_swgDOM_replace (\"<span class='pagecontent' style='font-size:10px'>[ <a href=\\\"javascript:djs_formbuilder_iframe_change_height('swg_formbuilder_$f_data[id]','-');\\\">-</a> ] [ <a href=\\\"javascript:djs_formbuilder_iframe_change_height('swg_formbuilder_$f_data[id]','230');\\\">230</a> ] [ <a href=\\\"javascript:djs_formbuilder_iframe_change_height('swg_formbuilder_$f_data[id]','315');\\\">315</a> ] [ <a href=\\\"javascript:djs_formbuilder_iframe_change_height('swg_formbuilder_$f_data[id]','400');\\\">400</a> ] [ <a href=\\\"javascript:djs_formbuilder_iframe_change_height('swg_formbuilder_$f_data[id]','+');\\\">+</a> ]<br />\\n</span>\",'swg_formbuilder_{$f_data['id']}_point'); }
-]]></script><iframe src='$f_embed_url_iframe' id='swg_formbuilder_$f_data[id]' width='100%' height='$f_height' frameborder='0' scrolling='auto'><span class='pagecontent' style='font-weight:bold'>".(direct_local_get ("formbuilder_embed_unsupported_1"))."<a href='$f_embed_url_error' target='_blank'>".(direct_local_get ("formbuilder_embed_unsupported_2"))."</a>".(direct_local_get ("formbuilder_embed_unsupported_3"))."</span></iframe></div><input type='hidden' name='$f_data[name]' value='$f_data[id]' /><script language='JavaScript1.5' type='text/javascript'><![CDATA[
-if ((djs_swgAJAX)&&(djs_swgDOM))
+		if ($f_data['iframe_only']) { $f_return .= "djs_load_functions ('swg_formbuilder.php.js','djs_formbuilder_iframe_change_height');"; }
+		else
+		{
+$f_return .= ("if (djs_swgAJAX)
 {
 	function djs_dataport_{$f_data['id']}_call_url0 (f_url) { djs_swgAJAX_call ('formbuilder_embed_{$f_data['id']}_point',djs_formbuilder_embed_{$f_data['id']}_response,'GET',('$f_embed_url_ajax_url0'.replace (/\[f_url\]/g,f_url)),5000); }
 	function djs_formbuilder_embed_{$f_data['id']}_call () { djs_swgAJAX_call ('formbuilder_embed_{$f_data['id']}_point',djs_formbuilder_embed_{$f_data['id']}_response,'GET','$f_embed_url_ajax',5000); }
 	function djs_formbuilder_embed_{$f_data['id']}_response () { djs_swgAJAX_response_ripoint ('formbuilder_embed_{$f_data['id']}_point','swgAJAX_formbuilder_embed_{$f_data['id']}_point2',''); }\n\n");
 
-	if ($f_data['size'] == "l") { $f_return .= "	djs_swgDOM_replace (\"<p id='swgAJAX_formbuilder_embed_{$f_data['id']}_point2' class='pagecontent'>".(direct_local_get ("core_loading","text"))."</p>\",'swgAJAX_formbuilder_embed_{$f_data['id']}_point');"; }
-	else { $f_return .= "	djs_swgDOM_replace (\"<div><p class='pagecontent' style='font-size:10px'>[ <a href=\\\"javascript:djs_swgDOM_css_change_px('swgAJAX_formbuilder_embed_{$f_data['id']}_point1','height','-');\\\">-</a> ] [ <a href=\\\"javascript:djs_swgDOM_css_change_px('swgAJAX_formbuilder_embed_{$f_data['id']}_point1','height','230');\\\">230</a> ] [ <a href=\\\"javascript:djs_swgDOM_css_change_px('swgAJAX_formbuilder_embed_{$f_data['id']}_point1','height','315');\\\">315</a> ] [ <a href=\\\"javascript:djs_swgDOM_css_change_px('swgAJAX_formbuilder_embed_{$f_data['id']}_point1','height','400');\\\">400</a> ] [ <a href=\\\"javascript:djs_swgDOM_css_change_px('swgAJAX_formbuilder_embed_{$f_data['id']}_point1','height','+');\\\">+</a> ]</p><div id='swgAJAX_formbuilder_embed_{$f_data['id']}_point1' class='pagecontent' style='margin:auto;padding:1px 5px$f_css_values'><p id='swgAJAX_formbuilder_embed_{$f_data['id']}_point2' class='pagecontent'>".(direct_local_get ("core_loading","text"))."</p></div></div>\",'swgAJAX_formbuilder_embed_{$f_data['id']}_point');"; }
+			$f_return .= (($f_data['size'] == "l") ? "	djs_swgDOM_replace (\"<p id='swgAJAX_formbuilder_embed_{$f_data['id']}_point2' class='pagecontent'>".(direct_local_get ("core_loading","text"))."</p>\",'swgAJAX_formbuilder_embed_{$f_data['id']}_point');" : "	djs_swgDOM_replace (\"<div><p class='pagecontent' style='font-size:10px'>[ <a href=\\\"javascript:djs_swgDOM_css_change_px('swgAJAX_formbuilder_embed_{$f_data['id']}_point1','height','-');\\\">-</a> ] [ <a href=\\\"javascript:djs_swgDOM_css_change_px('swgAJAX_formbuilder_embed_{$f_data['id']}_point1','height','230');\\\">230</a> ] [ <a href=\\\"javascript:djs_swgDOM_css_change_px('swgAJAX_formbuilder_embed_{$f_data['id']}_point1','height','315');\\\">315</a> ] [ <a href=\\\"javascript:djs_swgDOM_css_change_px('swgAJAX_formbuilder_embed_{$f_data['id']}_point1','height','400');\\\">400</a> ] [ <a href=\\\"javascript:djs_swgDOM_css_change_px('swgAJAX_formbuilder_embed_{$f_data['id']}_point1','height','+');\\\">+</a> ]</p><div id='swgAJAX_formbuilder_embed_{$f_data['id']}_point1' class='pagecontent' style='margin:auto;padding:1px 5px$f_css_values'><p id='swgAJAX_formbuilder_embed_{$f_data['id']}_point2' class='pagecontent'>".(direct_local_get ("core_loading","text"))."</p></div></div>\",'swgAJAX_formbuilder_embed_{$f_data['id']}_point');");
 
-$f_return .= ("\n	djs_var['core_run_onload'].push ('djs_formbuilder_embed_{$f_data['id']}_call ()');
+$f_return .= ("\n	djs_load_functions ('swg_DOM.php.js','djs_swgDOM_css_change_px');
+	djs_var['core_run_onload'].push ('djs_formbuilder_embed_{$f_data['id']}_call ()');
 }
-]]></script>$f_js_helper</td>
-</tr>");
+else { djs_load_functions ('swg_formbuilder.php.js','djs_formbuilder_iframe_change_height'); }");
+		}
 
-		return $f_return;
+		return $f_return."\n]]></script>$f_js_helper</td>\n</tr>";
 	}
 
 	//f// direct_output_formbuilder->entry_add_file_ftg ($f_data)
@@ -1584,8 +1585,7 @@ $f_return = ("<tr>
 
 		if (!$f_data['title'])
 		{
-			if ($f_data['helper_text']) { $f_js_helper = "<br />\n<span style='font-size:8px'>&#0160;</span><br />\n".($direct_classes['output']->js_helper ($f_data['helper_text'],$f_data['helper_url'],$f_data['helper_closing'])); }
-			else { $f_js_helper = ""; }
+			$f_js_helper = ($f_data['helper_text'] ? "<br />\n<span style='font-size:8px'>&#0160;</span><br />\n".($direct_classes['output']->js_helper ($f_data['helper_text'],$f_data['helper_url'],$f_data['helper_closing'])) : "");
 
 $f_return .= ("<tr>
 <td colspan='2' align='center' class='pagebg' style='padding:$direct_settings[theme_form_td_padding]'><table cellspacing='0' summary=''>
@@ -1595,22 +1595,18 @@ $f_return .= ("<tr>
 </table>$f_js_helper</td>
 </tr>");
 		}
-		else
+		elseif (strlen ($f_data['content']))
 		{
-			if (strlen ($f_data['content']))
+			$f_js_helper = ($f_data['helper_text'] ? "<span style='font-size:8px'>&#0160;</span><br />\n".($direct_classes['output']->js_helper ($f_data['helper_text'],$f_data['helper_url'],$f_data['helper_closing'])) : "");
+			$f_return .= "<tr>";
+
+			if ($f_data['title'] == "-") { $f_return .= "\n<td valign='top' align='right' class='pageextrabg' style='width:25%'><span style='font-size:8px'>&#0160;</span></td>"; }
+			else
 			{
-				if ($f_data['helper_text']) { $f_js_helper = "<span style='font-size:8px'>&#0160;</span><br />\n".($direct_classes['output']->js_helper ($f_data['helper_text'],$f_data['helper_url'],$f_data['helper_closing'])); }
-				else { $f_js_helper = ""; }
-
-				$f_return .= "<tr>";
-
-				if ($f_data['title'] == "-") { $f_return .= "\n<td valign='top' align='right' class='pageextrabg' style='width:25%'><span style='font-size:8px'>&#0160;</span></td>"; }
-				else
-				{
-					$f_return .= "\n<td valign='top' align='right' class='pageextrabg' style='width:25%;padding:$direct_settings[theme_form_td_padding]'><span class='pageextracontent' style='font-weight:bold'>";
-					if ($f_data['required']) { $f_return .= $direct_settings['swg_required_marker']." "; }
-					$f_return .= $f_data['title'].":</span></td>";
-				}
+				$f_return .= "\n<td valign='top' align='right' class='pageextrabg' style='width:25%;padding:$direct_settings[theme_form_td_padding]'><span class='pageextracontent' style='font-weight:bold'>";
+				if ($f_data['required']) { $f_return .= $direct_settings['swg_required_marker']." "; }
+				$f_return .= $f_data['title'].":</span></td>";
+			}
 
 $f_return .= ("\n<td valign='middle' align='center' class='pagebg' style='width:75%;padding:$direct_settings[theme_form_td_padding]'>
 <table cellspacing='0' summary=''>
@@ -1619,7 +1615,6 @@ $f_return .= ("\n<td valign='middle' align='center' class='pagebg' style='width:
 </tr></tbody>
 </table>$f_js_helper</td>
 </tr>");
-			}
 		}
 
 		return $f_return;
@@ -1644,8 +1639,7 @@ $f_return .= ("\n<td valign='middle' align='center' class='pagebg' style='width:
 		$f_js_id = "swg_formbuilder_".$direct_cachedata['formbuilder_element_counter'];
 		$direct_cachedata['formbuilder_element_counter']++;
 
-		if ($f_data['helper_text']) { $f_js_helper = "<br />\n".($direct_classes['output']->js_helper ($f_data['helper_text'],$f_data['helper_url'],$f_data['helper_closing'])); }
-		else { $f_js_helper = ""; }
+		$f_js_helper = ($f_data['helper_text'] ? "<br />\n".($direct_classes['output']->js_helper ($f_data['helper_text'],$f_data['helper_url'],$f_data['helper_closing'])) : "");
 
 		if ($f_data['size'] == "s")
 		{
@@ -1695,8 +1689,7 @@ djs_formbuilder_tabindex ('$f_js_id');
 		$f_js_id = "swg_formbuilder_".$direct_cachedata['formbuilder_element_counter'];
 		$direct_cachedata['formbuilder_element_counter']++;
 
-		if ($f_data['helper_text']) { $f_js_helper = "<br />\n".($direct_classes['output']->js_helper ($f_data['helper_text'],$f_data['helper_url'],$f_data['helper_closing'])); }
-		else { $f_js_helper = ""; }
+		$f_js_helper = ($f_data['helper_text'] ? "<br />\n".($direct_classes['output']->js_helper ($f_data['helper_text'],$f_data['helper_url'],$f_data['helper_closing'])) : "");
 
 		if ($f_data['size'] == "s") { $f_rows = 5; }
 		elseif ($f_data['size'] == "m") { $f_rows = 10; }
@@ -1711,6 +1704,7 @@ djs_swgDOM_replace (\"<span class='pagecontent' style='font-size:10px'>[ <a href
 ]]></script><textarea name='$f_data[name]' id='$f_js_id' cols='26' rows='$f_rows' class='pagecontenttextarea' style='width:80%' onfocus=\"djs_formbuilder_focused('$f_js_id');\">$f_data[content]</textarea><span id='{$f_js_id}_point2' style='display:none'><!-- iPoint // --></span><script language='JavaScript1.5' type='text/javascript'><![CDATA[
 if (djs_formbuilder_jfield_setup_textarea ('$f_js_id','$f_rows')) { djs_swgDOM_replace (\"<span class='pagecontent' style='font-size:10px'><br />\\n<a href=\\\"javascript:djs_formbuilder_jfield_activate('$f_js_id');\\\">".(direct_local_get ("formbuilder_jfield_activate","text"))."</a></span>\",'{$f_js_id}_point2'); }
 djs_formbuilder_tabindex ('$f_js_id');
+djs_load_functions ('swg_formbuilder.php.js','djs_formbuilder_textarea_change_rows');
 ]]></script></div>$f_js_helper</td>
 </tr>");
 
@@ -1736,8 +1730,7 @@ djs_formbuilder_tabindex ('$f_js_id');
 		$f_js_id = "swg_formbuilder_".$direct_cachedata['formbuilder_element_counter'];
 		$direct_cachedata['formbuilder_element_counter']++;
 
-		if ($f_data['helper_text']) { $f_js_helper = "<br />\n<span style='font-size:8px'>&#0160;</span><br />\n".($direct_classes['output']->js_helper ($f_data['helper_text'],$f_data['helper_url'],$f_data['helper_closing'])); }
-		else { $f_js_helper = ""; }
+		$f_js_helper = ($f_data['helper_text'] ? "<br />\n<span style='font-size:8px'>&#0160;</span><br />\n".($direct_classes['output']->js_helper ($f_data['helper_text'],$f_data['helper_url'],$f_data['helper_closing'])) : "");
 
 		if ($f_data['size'] == "s") { $f_rows = 2; }
 		elseif ($f_data['size'] == "m") { $f_rows = 5; }
@@ -1751,6 +1744,7 @@ $f_return .= ($f_data['title'].":</span></td>
 djs_swgDOM_replace (\"<span class='pagecontent' style='font-size:10px'>[ <a href=\\\"javascript:djs_formbuilder_select_change_size('{$f_data['name']}[]','-');\\\">-</a> ] [ <a href=\\\"javascript:djs_formbuilder_select_change_size('{$f_data['name']}[]','2');\\\">2</a> ] [ <a href=\\\"javascript:djs_formbuilder_select_change_size('{$f_data['name']}[]','5');\\\">5</a> ] [ <a href=\\\"javascript:djs_formbuilder_select_change_size('{$f_data['name']}[]','10');\\\">10</a> ] [ <a href=\\\"javascript:djs_formbuilder_select_change_size('{$f_data['name']}[]','+');\\\">+</a> ]<br />\\n</span>\",'{$f_js_id}_point');
 ]]></script><select name='{$f_data['name']}[]' id='$f_js_id' size='$f_rows' multiple='multiple' class='pagecontentselect' onfocus=\"djs_formbuilder_focused('$f_js_id');\">$f_data[content]</select><script language='JavaScript1.5' type='text/javascript'><![CDATA[
 djs_formbuilder_tabindex ('$f_js_id');
+djs_load_functions ('swg_formbuilder.php.js','djs_formbuilder_select_change_size');
 ]]></script>$f_js_helper</td>
 </tr>");
 
@@ -1776,8 +1770,7 @@ djs_formbuilder_tabindex ('$f_js_id');
 		$f_js_id = "swg_formbuilder_".$direct_cachedata['formbuilder_element_counter'];
 		$direct_cachedata['formbuilder_element_counter']++;
 
-		if ($f_data['helper_text']) { $f_js_helper = "<br />\n<span style='font-size:8px'>&#0160;</span><br />\n".($direct_classes['output']->js_helper ($f_data['helper_text'],$f_data['helper_url'],$f_data['helper_closing'])); }
-		else { $f_js_helper = ""; }
+		$f_js_helper = ($f_data['helper_text'] ? "<br />\n<span style='font-size:8px'>&#0160;</span><br />\n".($direct_classes['output']->js_helper ($f_data['helper_text'],$f_data['helper_url'],$f_data['helper_closing'])) : "");
 
 		if ($f_data['size'] == "s")
 		{
@@ -1827,8 +1820,7 @@ djs_formbuilder_tabindex ('$f_js_id');
 		$f_js_id = "swg_formbuilder_".$direct_cachedata['formbuilder_element_counter'];
 		$direct_cachedata['formbuilder_element_counter']++;
 
-		if ($f_data['helper_text']) { $f_js_helper = $direct_classes['output']->js_helper ($f_data['helper_text'],$f_data['helper_url'],$f_data['helper_closing']); }
-		else { $f_js_helper = ""; }
+		$f_js_helper = ($f_data['helper_text'] ? $direct_classes['output']->js_helper ($f_data['helper_text'],$f_data['helper_url'],$f_data['helper_closing']) : "");
 
 		if ($f_data['size'] == "s")
 		{
@@ -1877,8 +1869,7 @@ djs_formbuilder_tabindex ('{$f_js_id}r');
 		global $direct_classes,$direct_settings;
 		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -output_formbuilder_class->entry_add_radio (+f_data)- (#echo(__LINE__)#)"); }
 
-		if ($f_data['helper_text']) { $f_js_helper = "<span style='font-size:8px'>&nbsp;</span><br />\n".($direct_classes['output']->js_helper ($f_data['helper_text'],$f_data['helper_url'],$f_data['helper_closing'])); }
-		else { $f_js_helper = ""; }
+		$f_js_helper = ($f_data['helper_text'] ? "<span style='font-size:8px'>&nbsp;</span><br />\n".($direct_classes['output']->js_helper ($f_data['helper_text'],$f_data['helper_url'],$f_data['helper_closing'])) : "");
 
 		$f_return = "<tr>\n<td valign='top' align='right' class='pageextrabg' style='width:25%;padding:$direct_settings[theme_form_td_padding]'><span class='pageextracontent' style='font-weight:bold'>";
 		if ($f_data['required']) { $f_return .= $direct_settings['swg_required_marker']." "; }
@@ -1914,8 +1905,7 @@ $f_return .= ($f_data['title'].":</span></td>
 		$f_js_id = "swg_formbuilder_".$direct_cachedata['formbuilder_element_counter'];
 		$direct_cachedata['formbuilder_element_counter']++;
 
-		if ($f_data['helper_text']) { $f_js_helper = "<br />\n<span style='font-size:8px'>&#0160;</span><br />\n".($direct_classes['output']->js_helper ($f_data['helper_text'],$f_data['helper_url'],$f_data['helper_closing'])); }
-		else { $f_js_helper = ""; }
+		$f_js_helper = ($f_data['helper_text'] ? "<br />\n<span style='font-size:8px'>&#0160;</span><br />\n".($direct_classes['output']->js_helper ($f_data['helper_text'],$f_data['helper_url'],$f_data['helper_closing'])) : "");
 
 		if ($f_data['size'] == "s") { $f_rows = 1; }
 		elseif ($f_data['size'] == "m") { $f_rows = 4; }
@@ -1935,6 +1925,7 @@ djs_swgDOM_replace (\"<span class='pagecontent' style='font-size:10px'>[ <a href
 
 $f_return .= ("<select name='$f_data[name]' id='$f_js_id' size='$f_rows' class='pagecontentselect' onfocus=\"djs_formbuilder_focused('$f_js_id');\">$f_data[content]</select><script language='JavaScript1.5' type='text/javascript'><![CDATA[
 djs_formbuilder_tabindex ('$f_js_id');
+djs_load_functions ('swg_formbuilder.php.js','djs_formbuilder_select_change_size');
 ]]></script>$f_js_helper</td>
 </tr>");
 
@@ -1994,8 +1985,7 @@ djs_formbuilder_tabindex ('$f_js_id');
 		$f_js_id = "swg_formbuilder_".$direct_cachedata['formbuilder_element_counter'];
 		$direct_cachedata['formbuilder_element_counter']++;
 
-		if ($f_data['helper_text']) { $f_js_helper = "<br />\n<span style='font-size:8px'>&#0160;</span><br />\n".($direct_classes['output']->js_helper ($f_data['helper_text'],$f_data['helper_url'],$f_data['helper_closing'])); }
-		else { $f_js_helper = ""; }
+		$f_js_helper = ($f_data['helper_text'] ? "<br />\n<span style='font-size:8px'>&#0160;</span><br />\n".($direct_classes['output']->js_helper ($f_data['helper_text'],$f_data['helper_url'],$f_data['helper_closing'])) : "");
 
 		if ($f_data['size'] == "s")
 		{
@@ -2044,8 +2034,7 @@ djs_formbuilder_tabindex ('$f_js_id');
 		$f_js_id = "swg_formbuilder_".$direct_cachedata['formbuilder_element_counter'];
 		$direct_cachedata['formbuilder_element_counter']++;
 
-		if ($f_data['helper_text']) { $f_js_helper = "<br />\n<span style='font-size:8px'>&#0160;</span><br />\n".($direct_classes['output']->js_helper ($f_data['helper_text'],$f_data['helper_url'],$f_data['helper_closing'])); }
-		else { $f_js_helper = ""; }
+		$f_js_helper = ($f_data['helper_text'] ? "<br />\n<span style='font-size:8px'>&#0160;</span><br />\n".($direct_classes['output']->js_helper ($f_data['helper_text'],$f_data['helper_url'],$f_data['helper_closing'])) : "");
 
 		if ($f_data['size'] == "s") { $f_rows = 5; }
 		elseif ($f_data['size'] == "m") { $f_rows = 10; }
@@ -2059,6 +2048,7 @@ $f_return .= ($f_data['title'].":</span></td>
 djs_swgDOM_replace (\"<span class='pagecontent' style='font-size:10px'>[ <a href=\\\"javascript:djs_formbuilder_textarea_change_rows('$f_data[name]','-');\\\">-</a> ] [ <a href=\\\"javascript:djs_formbuilder_textarea_change_rows('$f_data[name]','5');\\\">5</a> ] [ <a href=\\\"javascript:djs_formbuilder_textarea_change_rows('$f_data[name]','10');\\\">10</a> ] [ <a href=\\\"javascript:djs_formbuilder_textarea_change_rows('$f_data[name]','20');\\\">20</a> ] [ <a href=\\\"javascript:djs_formbuilder_textarea_change_rows('$f_data[name]','+');\\\">+</a> ]<br />\\n</span>\",'{$f_js_id}_point');
 ]]></script><textarea name='$f_data[name]' id='$f_js_id' cols='26' rows='$f_rows' class='pagecontenttextarea' style='width:80%' onfocus=\"djs_formbuilder_focused('$f_js_id');\">$f_data[content]</textarea><script language='JavaScript1.5' type='text/javascript'><![CDATA[
 djs_formbuilder_tabindex ('$f_js_id');
+djs_load_functions ('swg_formbuilder.php.js','djs_formbuilder_textarea_change_rows');
 ]]></script>$f_js_helper</td>
 </tr>");
 
@@ -2086,13 +2076,8 @@ djs_formbuilder_tabindex ('$f_js_id');
 Add additional HTML headers
 ------------------------------------------------------------------------- */
 
-		$direct_classes['output']->header_elements ("<script language='JavaScript' src='".(direct_linker_dynamic ("url0","s=cache&dsd=dfile+$direct_settings[path_mmedia]/swg_formbuilder.js++dbid+".$direct_settings['product_buildid'],true,false))."' type='text/javascript'><!-- // FormBuilder javascript functions // --></script>");
-
-		if ($direct_settings['formbuilder_jfield_supported'])
-		{
-			$direct_classes['output']->header_elements ("<link rel='stylesheet' type='text/css' href='".(direct_linker_dynamic ("url0","s=cache&dsd=dfile+data/mmedia/swg_formbuilder_jfield.css",true,false))."' />");
-			$direct_classes['output']->header_elements ("<script language='JavaScript1.5' src='".(direct_linker_dynamic ("url0","s=cache&dsd=dfile+$direct_settings[path_mmedia]/swg_formbuilder_jfield.php.js++dbid+".$direct_settings['product_buildid'],true,false))."' type='text/javascript'><!-- // FormBuilder sWG JField specific javascript functions // --></script>");
-		}
+		$direct_classes['output']->header_elements ("<script language='JavaScript' src='".(direct_linker_dynamic ("url0","s=cache&dsd=dfile+$direct_settings[path_mmedia]/swg_formbuilder.php.js++dbid+".$direct_settings['product_buildid'],true,false))."' type='text/javascript'><!-- // FormBuilder javascript functions // --></script>");
+		if ($direct_settings['formbuilder_jfield_supported']) { $direct_classes['output']->header_elements ("<link rel='stylesheet' type='text/css' href='".(direct_linker_dynamic ("url0","s=cache&dsd=dfile+data/mmedia/swg_formbuilder_jfield.css",true,false))."' />"); }
 
 		$f_return = "";
 

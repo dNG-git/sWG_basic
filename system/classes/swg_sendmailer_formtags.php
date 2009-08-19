@@ -49,8 +49,7 @@ all development packets)
 Testing for required classes
 ------------------------------------------------------------------------- */
 
-$g_continue_check = true;
-if (defined ("CLASS_direct_sendmailer_formtags")) { $g_continue_check = false; }
+$g_continue_check = ((defined ("CLASS_direct_sendmailer_formtags")) ? false : true);
 if (!defined ("CLASS_direct_formtags")) { $direct_classes['basic_functions']->include_file ($direct_settings['path_system']."/classes/swg_formtags.php"); }
 if (!defined ("CLASS_direct_formtags")) { $g_continue_check = false; }
 if (!defined ("CLASS_direct_sendmailer")) { $direct_classes['basic_functions']->include_file ($direct_settings['path_system']."/classes/swg_sendmailer.php"); }

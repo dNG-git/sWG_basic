@@ -59,14 +59,13 @@ $g_vid = (isset ($direct_settings['dsd']['idata']) ? ($direct_classes['basic_fun
 $g_source = (isset ($direct_settings['dsd']['source']) ? ($direct_classes['basic_functions']->inputfilter_basic ($direct_settings['dsd']['source'])) : "");
 $g_target = (isset ($direct_settings['dsd']['target']) ? ($direct_classes['basic_functions']->inputfilter_basic ($direct_settings['dsd']['target'])) : "");
 
-if ($g_source) { $g_source_url = base64_decode ($g_source); }
-else { $g_source_url = ""; }
+$g_source_url = ($g_source ? base64_decode ($g_source) : "");
 
 if ($g_target) { $g_target_url = base64_decode ($g_target); }
 else
 {
 	$g_target = $g_source;
-	$g_target_url = $g_source_url;
+	$g_target_url = ($g_source ? $g_source_url : "");
 }
 
 if ($direct_classes['kernel']->service_init_default ())
@@ -77,8 +76,8 @@ $direct_classes['basic_functions']->require_file ($direct_settings['path_system'
 direct_local_integration ("validation");
 
 $direct_cachedata['page_this'] = "m=validation&dsd=idata+".$g_vid;
-$direct_cachedata['page_backlink'] = "";
-$direct_cachedata['page_homelink'] = "";
+$direct_cachedata['page_backlink'] = str_replace ("[oid]","",$g_source_url);
+$direct_cachedata['page_homelink'] = $direct_cachedata['page_backlink'];
 
 if (trim ($g_vid))
 {
@@ -114,20 +113,17 @@ if (trim ($g_vid))
 				else
 				{
 					$direct_cachedata['output_jsjump'] = 0;
-					$direct_cachedata['output_pagetarget'] = direct_linker ("url0","a=index");
+					$direct_cachedata['output_pagetarget'] = direct_linker ("url0","m=default&s=index&a=index");
 				}
 
 				$direct_classes['output']->oset ("default","done");
 				$direct_classes['output']->header (false,true,$direct_settings['p3p_url'],$direct_settings['p3p_cp']);
 				$direct_classes['output']->page_show ($direct_cachedata['output_job']);
 			}
-			else
-			{
-				if (is_array ($direct_cachedata['validation_error'])) { $direct_classes['error_functions']->error_page ("standard",$direct_cachedata['validation_error'][0],$direct_cachedata['validation_error'][1]); }
-				else { $direct_classes['error_functions']->error_page ("standard","validation_unknown_type","FATAL ERROR:<br />The specified vID requires the error reporting module &quot;{$g_vid_array['vid_module']}&quot;<br />sWG/#echo(__FILEPATH__)# _main_ (#echo(__LINE__)#)"); }
-			}
+			elseif (is_array ($direct_cachedata['validation_error'])) { $direct_classes['error_functions']->error_page ("standard",$direct_cachedata['validation_error'][0],$direct_cachedata['validation_error'][1]); }
+			else { $direct_classes['error_functions']->error_page ("standard","validation_unknown_type","FATAL ERROR:<br />The specified vID requires the error reporting module &quot;{$g_vid_array['core_vid_module']}&quot;<br />sWG/#echo(__FILEPATH__)# _main_ (#echo(__LINE__)#)"); }
 		}
-		else { $direct_classes['error_functions']->error_page ("standard","validation_unknown_type","FATAL ERROR:<br />The specified vID requires the unknown module &quot;{$g_vid_array['vid_module']}&quot;<br />sWG/#echo(__FILEPATH__)# _main_ (#echo(__LINE__)#)"); }
+		else { $direct_classes['error_functions']->error_page ("standard","validation_unknown_type","FATAL ERROR:<br />The specified vID requires the unknown module &quot;{$g_vid_array['core_vid_module']}&quot;<br />sWG/#echo(__FILEPATH__)# _main_ (#echo(__LINE__)#)"); }
 	}
 	else { $direct_classes['error_functions']->error_page ("standard","validation_vid_invalid","sWG/#echo(__FILEPATH__)# _main_ (#echo(__LINE__)#)"); }
 }

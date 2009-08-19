@@ -73,17 +73,14 @@ switch ($direct_settings['a'])
 case "edit":
 case "edit-save":
 {
-	if ($direct_settings['a'] == "edit-save") { $g_mode_save = true; }
-	else { $g_mode_save = false; }
-
+	$g_mode_save = (($direct_settings['a'] == "edit-save") ? true : false);
 	if (USE_debug_reporting) { direct_debug (1,"sWG/#echo(__FILEPATH__)# _a={$direct_settings['a']}_ (#echo(__LINE__)#)"); }
 
 	$g_uid = (isset ($direct_settings['dsd']['auid']) ? ($direct_classes['basic_functions']->inputfilter_basic ($direct_settings['dsd']['auid'])) : "");
 	$g_source = (isset ($direct_settings['dsd']['source']) ? ($direct_classes['basic_functions']->inputfilter_basic ($direct_settings['dsd']['source'])) : "");
 	$g_target = (isset ($direct_settings['dsd']['target']) ? ($direct_classes['basic_functions']->inputfilter_basic ($direct_settings['dsd']['target'])) : "");
 
-	if ($g_source) { $g_source_url = base64_decode ($g_source); }
-	else { $g_source_url = "m=account&a=services"; }
+	$g_source_url = ($g_source ? base64_decode ($g_source) : "m=account&a=services");
 
 	if ($g_target) { $g_target_url = base64_decode ($g_target); }
 	else
@@ -266,20 +263,17 @@ Call registered mods
 Save data edited
 ------------------------------------------------------------------------- */
 
-		if ($direct_cachedata['i_aemail_public']) { $direct_cachedata['i_aemail_public'] = 1; }
-		else { $direct_cachedata['i_aemail_public'] = 0; }
-
-		$g_continue_check = false;
+		$direct_cachedata['i_aemail_public'] = ($direct_cachedata['i_aemail_public'] ? 1 : 0);
+		$g_continue_check = true;
 		$g_username_invalid_chars = preg_replace ("#[0-9a-zA-Z\!\$\%\&\/\(\)\{\[\]\}\?\@\*\~\#,\.\-\;_ ]#i","",$direct_cachedata['i_ausername']);
 
 		if ($direct_settings['account_profile_username_change'])
 		{
-			if (($g_user_array['ddbusers_name'] != $direct_cachedata['i_ausername'])&&($direct_classes['kernel']->v_user_check ("",$direct_cachedata['i_ausername'],true))) { $g_continue_check = true; }
+			if (($g_user_array['ddbusers_name'] != $direct_cachedata['i_ausername'])&&($direct_classes['kernel']->v_user_check ("",$direct_cachedata['i_ausername'],true))) { $g_continue_check = false; }
 		}
 
-		if ($g_continue_check) { $direct_classes['error_functions']->error_page ("standard","account_username_exists","SERVICE ERROR:<br />&quot;$direct_cachedata[i_ausername]&quot; has already been registered<br />sWG/#echo(__FILEPATH__)# _a=edit-save_ (#echo(__LINE__)#)"); }
-		elseif ($g_username_invalid_chars) { $direct_classes['error_functions']->error_page ("standard","account_username_invalid","SERVICE ERROR:<br />Allowed characters are: 0-9, a-z, A-Z as well as !$%&/(){}[]?@*~#,.-;_ and space<br />sWG/#echo(__FILEPATH__)# _a=edit-save_ (#echo(__LINE__)#)"); }
-		else
+		if ($g_username_invalid_chars) { $direct_classes['error_functions']->error_page ("standard","account_username_invalid","SERVICE ERROR:<br />Allowed characters are: 0-9, a-z, A-Z as well as !$%&/(){}[]?@*~#,.-;_ and space<br />sWG/#echo(__FILEPATH__)# _a=edit-save_ (#echo(__LINE__)#)"); }
+		elseif ($g_continue_check)
 		{
 			if (($direct_settings['account_profile_username_change'])&&($g_user_array['ddbusers_name'] != $direct_cachedata['i_ausername']))
 			{
@@ -373,6 +367,7 @@ $g_uuid_array = array (
 			}
 			else { $direct_classes['error_functions']->error_page ("fatal","core_unknown_error","sWG/#echo(__FILEPATH__)# _a=edit-save_ (#echo(__LINE__)#)"); }
 		}
+		else { $direct_classes['error_functions']->error_page ("standard","account_username_exists","SERVICE ERROR:<br />&quot;$direct_cachedata[i_ausername]&quot; has already been registered<br />sWG/#echo(__FILEPATH__)# _a=edit-save_ (#echo(__LINE__)#)"); }
 	}
 	else
 	{
@@ -433,11 +428,8 @@ case "select":
 	$g_source = (isset ($direct_settings['dsd']['source']) ? ($direct_classes['basic_functions']->inputfilter_basic ($direct_settings['dsd']['source'])) : "");
 	$g_target = (isset ($direct_settings['dsd']['target']) ? ($direct_classes['basic_functions']->inputfilter_basic ($direct_settings['dsd']['target'])) : "");
 
-	if ($g_source) { $g_source_url = base64_decode ($g_source); }
-	else { $g_source_url = "m=account&a=services"; }
-
-	if ($g_target) { $g_target_url = base64_decode ($g_target); }
-	else { $g_target_url = "m=account&s=profile&a=view&dsd=[oid]"; }
+	$g_source_url = ($g_source ? base64_decode ($g_source) : "m=account&a=services");
+	$g_target_url = ($g_target ? base64_decode ($g_target) : "m=account&s=profile&a=view&dsd=[oid]");
 
 	$direct_cachedata['page_this'] = "m=account&s=profile&a=select&dsd=source+".(urlencode ($g_source))."++target+".(urlencode ($g_target));
 	$direct_cachedata['page_backlink'] = str_replace ("[oid]","",$g_source_url);
@@ -583,35 +575,19 @@ case "view":
 
 		$direct_cachedata['output_email'] = $g_user_parsed_array['email'];
 		$direct_cachedata['output_pageurl_email'] = $g_user_parsed_array['pageurl_email'];
-
-		if ($g_user_parsed_array['avatar_large']) { $direct_cachedata['output_useravatar_large'] = $g_user_parsed_array['avatar_large']; }
-		else { $direct_cachedata['output_useravatar_large'] = ""; }
-
-		if ($g_user_parsed_array['avatar_small']) { $direct_cachedata['output_useravatar_small'] = $g_user_parsed_array['avatar_small']; }
-		else { $direct_cachedata['output_useravatar_small'] = ""; }
-
+		$direct_cachedata['output_useravatar_large'] = ($g_user_parsed_array['avatar_large'] ? $g_user_parsed_array['avatar_large'] : "");
+		$direct_cachedata['output_useravatar_small'] = ($g_user_parsed_array['avatar_small'] ? $g_user_parsed_array['avatar_small'] : "");
 		$direct_cachedata['output_signature'] = $g_user_parsed_array['signature'];
 
-		if ($direct_classes['kernel']->v_usertype_get_int ($direct_settings['user']['type']) > 3)
-		{
-			if (($g_user_array['ddbusers_registration_ip'])&&($g_user_array['ddbusers_registration_ip'] != "unknown")) { $direct_cachedata['output_registration_ip'] = direct_html_encode_special ($g_user_array['ddbusers_registration_ip']); }
-			else { $direct_cachedata['output_registration_ip'] = direct_local_get ("core_unknown"); }
-		}
+		if ($direct_classes['kernel']->v_usertype_get_int ($direct_settings['user']['type']) > 3) { $direct_cachedata['output_registration_ip'] = ((($g_user_array['ddbusers_registration_ip'])&&($g_user_array['ddbusers_registration_ip'] != "unknown")) ? direct_html_encode_special ($g_user_array['ddbusers_registration_ip']) : direct_local_get ("core_unknown")); }
 		else { $direct_cachedata['output_registration_ip'] = ""; }
 
-		if ($g_user_array['ddbusers_registration_time']) { $direct_cachedata['output_registration_time'] = $direct_classes['basic_functions']->datetime ("longdate&time",$g_user_array['ddbusers_registration_time'],$direct_settings['user']['timezone'],(direct_local_get ("datetime_dtconnect"))); }
-		else { $direct_cachedata['output_registration_time'] = direct_local_get ("core_unknown"); }
+		$direct_cachedata['output_registration_time'] = ($g_user_array['ddbusers_registration_time'] ? $direct_classes['basic_functions']->datetime ("longdate&time",$g_user_array['ddbusers_registration_time'],$direct_settings['user']['timezone'],(direct_local_get ("datetime_dtconnect"))) : direct_local_get ("core_unknown"));
 
-		if ($direct_classes['kernel']->v_usertype_get_int ($direct_settings['user']['type']) > 3)
-		{
-			if (($g_user_array['ddbusers_lastvisit_ip'])&&($g_user_array['ddbusers_lastvisit_ip'] != "unknown")) { $direct_cachedata['output_lastvisit_ip'] = direct_html_encode_special ($g_user_array['ddbusers_lastvisit_ip']); }
-			else { $direct_cachedata['output_lastvisit_ip'] = direct_local_get ("core_unknown"); }
-		}
+		if ($direct_classes['kernel']->v_usertype_get_int ($direct_settings['user']['type']) > 3) { $direct_cachedata['output_lastvisit_ip'] = ((($g_user_array['ddbusers_lastvisit_ip'])&&($g_user_array['ddbusers_lastvisit_ip'] != "unknown")) ? direct_html_encode_special ($g_user_array['ddbusers_lastvisit_ip']) : direct_local_get ("core_unknown")); }
 		else { $direct_cachedata['output_lastvisit_ip'] = ""; }
 
-		if ($g_user_array['ddbusers_lastvisit_time']) { $direct_cachedata['output_lastvisit_time'] = $direct_classes['basic_functions']->datetime ("longdate&time",$g_user_array['ddbusers_lastvisit_time'],$direct_settings['user']['timezone'],(direct_local_get ("datetime_dtconnect"))); }
-		else { $direct_cachedata['output_lastvisit_time'] = direct_local_get ("account_profile_never_online"); }
-
+		$direct_cachedata['output_lastvisit_time'] = ($g_user_array['ddbusers_lastvisit_time'] ? $direct_classes['basic_functions']->datetime ("longdate&time",$g_user_array['ddbusers_lastvisit_time'],$direct_settings['user']['timezone'],(direct_local_get ("datetime_dtconnect"))) : direct_local_get ("account_profile_never_online"));
 		$direct_cachedata['output_rating'] = $g_user_parsed_array['rating'];
 
 		$direct_cachedata['output_modstoview'] = direct_mods_include ($direct_settings['account_profile_mods_support'],"account_profile","view",$g_user_array);

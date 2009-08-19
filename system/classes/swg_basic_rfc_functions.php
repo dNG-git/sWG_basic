@@ -48,8 +48,7 @@ all development packets)
 Testing for required classes
 ------------------------------------------------------------------------- */
 
-$g_continue_check = true;
-if (defined ("CLASS_direct_basic_rfc_functions")) { $g_continue_check = false; }
+$g_continue_check = ((defined ("CLASS_direct_basic_rfc_functions")) ? false : true);
 if (!defined ("CLASS_direct_data_handler")) { $g_continue_check = false; }
 
 if ($g_continue_check)
@@ -159,11 +158,7 @@ Add a variable for the current boundary
 					$f_return .= $this->linesep." ".$f_word;
 					$f_length = (strlen ($f_word) + 1);
 				}
-				else
-				{
-					if ($f_return) { $f_return .= " "; }
-					$f_return .= $f_word;
-				}
+				else { $f_return .= ($f_return ? " " : $f_word); }
 			}
 		}
 		else { $f_return = $f_header; }
@@ -203,11 +198,7 @@ Add a variable for the current boundary
 					$f_header_name = strtolower ($f_header_array[0]);
 					$f_header_array[1] = trim ($f_header_array[1]);
 
-					if (isset ($f_return[$f_header_name]))
-					{
-						if (is_array ($f_return[$f_header_name])) { $f_return[$f_header_name][] = $f_header_array[1]; }
-						else { $f_return[$f_header_name] = array ($f_return[$f_header_name],$f_header_array[1]); }
-					}
+					if (isset ($f_return[$f_header_name])) { $f_return[$f_header_name][] = ((is_array ($f_return[$f_header_name])) ? $f_header_array[1] : array ($f_return[$f_header_name],$f_header_array[1])); }
 					else { $f_return[$f_header_name] = $f_header_array[1]; }
 				}
 				elseif (strlen ($f_header_array[0]))
@@ -238,24 +229,16 @@ Add a variable for the current boundary
 	{
 		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -basic_rfc_functions->multipart_body ($f_name,+f_data,$f_alternative_id)- (#echo(__LINE__)#)"); }
 
-		if ($f_alternative_id) { $f_return = "--".$this->data_boundary."_".$f_alternative_id.$this->linesep; }
-		else { $f_return = "--".$this->data_boundary.$this->linesep; }
+		$f_return = ($f_alternative_id ? "--".$this->data_boundary."_".$f_alternative_id.$this->linesep : "--".$this->data_boundary.$this->linesep);
 
 		if (strpos ($f_name,"@") === false)
 		{
 			$f_name = preg_replace ("#[;\/\\\?:@\=\"\&\']#","_",$f_name);
 
-			if ($f_data['encoding']) { $f_return .= (($this->header_align ("Content-Type: ".$f_data['mimetype']."; name=\"$f_name\"; charset=".$f_data['encoding'])).$this->linesep); }
-			else { $f_return .= (($this->header_align ("Content-Type: ".$f_data['mimetype']."; name=\"$f_name\"")).$this->linesep); }
-		
-			if (isset ($f_data['disposition'])) { $f_disposition = $f_data['disposition']; }
-			else { $f_disposition = "attachment"; }
+			$f_return .= ($f_data['encoding'] ? (($this->header_align ("Content-Type: ".$f_data['mimetype']."; name=\"$f_name\"; charset=".$f_data['encoding'])).$this->linesep) : (($this->header_align ("Content-Type: ".$f_data['mimetype']."; name=\"$f_name\"")).$this->linesep));
+			$f_disposition = ((isset ($f_data['disposition'])) ? $f_data['disposition'] : "attachment");
 
-			if (strlen ($f_name))
-			{
-				if ($f_disposition == "attachment") { $f_disposition_fields = "; filename=\"$f_name\""; }
-				else { $f_disposition_fields = "; name=\"$f_name\""; }
-			}
+			if (strlen ($f_name)) { $f_disposition_fields = (($f_disposition == "attachment") ? "; filename=\"$f_name\"" : "; name=\"$f_name\""); }
 			else { $f_disposition_fields = ""; }
 
 			if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($f_data['mimetype'],"text/") === false)
@@ -524,8 +507,7 @@ Add a variable for the current boundary
 				}
 			}
 
-			if ($f_rfc2047) { $f_return = preg_replace ("#(=20)*\?=({$this->linesep} =\?".(preg_quote ($direct_local['lang_charset']))."\?Q\?(=20)+\?=)*$#s","?=",$f_return."?="); }
-			else { $f_return = rtrim ($f_return); }
+			$f_return = ($f_rfc2047 ? preg_replace ("#(=20)*\?=({$this->linesep} =\?".(preg_quote ($direct_local['lang_charset']))."\?Q\?(=20)+\?=)*$#s","?=",$f_return."?=") : rtrim ($f_return));
 		}
 
 		return /*#ifdef(DEBUG):direct_debug (7,"sWG/#echo(__FILEPATH__)# -basic_rfc_functions->quoted_printable_encode ()- (#echo(__LINE__)#)",:#*/$f_return/*#ifdef(DEBUG):,true):#*/;

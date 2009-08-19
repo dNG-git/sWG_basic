@@ -64,9 +64,7 @@ switch ($direct_settings['a'])
 case "form":
 case "form-save":
 {
-	if ($direct_settings['a'] == "form-save") { $g_mode_save = true; }
-	else { $g_mode_save = false; }
-
+	$g_mode_save = (($direct_settings['a'] == "form-save") ? true : false);
 	if (USE_debug_reporting) { direct_debug (1,"sWG/#echo(__FILEPATH__)# _a={$direct_settings['a']}_ (#echo(__LINE__)#)"); }
 
 	if ($g_mode_save)
@@ -153,9 +151,7 @@ case "form-save":
 
 		$g_file_content = direct_file_get ("s",$direct_settings['path_lang']."/swg_$g_tfile.xml");
 		$t_translation_elements_array = $direct_classes['xml_bridge']->xml2array ($g_file_content,false);
-
-		if (empty ($t_translation_elements_array)) { $g_continue_check = false; }
-		else { $g_continue_check = true; }
+		$g_continue_check = ((empty ($t_translation_elements_array)) ? false : true);
 	}
 	else { $g_continue_check = false; }
 
@@ -235,11 +231,7 @@ We should have input in save mode
 							elseif (isset ($t_translations_array[$g_language_id]["swg_lang_file_v1_{$g_element_id}_text"])) { $direct_cachedata["i_t{$g_element_id}_".$g_language_id] = $t_translations_array[$g_language_id]["swg_lang_file_v1_{$g_element_id}_text"]['value']; }
 							else { $direct_cachedata["i_t{$g_element_id}_".$g_language_id] = ""; }
 						}
-						else
-						{
-							if (isset ($t_translations_array[$g_language_id]["swg_lang_file_v1_".$g_element_id])) { $direct_cachedata["i_t{$g_element_id}_".$g_language_id] = $t_translations_array[$g_language_id]["swg_lang_file_v1_".$g_element_id]['value']; }
-							else { $direct_cachedata["i_t{$g_element_id}_".$g_language_id] = ""; }
-						}
+						else { $direct_cachedata["i_t{$g_element_id}_".$g_language_id] = ((isset ($t_translations_array[$g_language_id]["swg_lang_file_v1_".$g_element_id])) ? $t_translations_array[$g_language_id]["swg_lang_file_v1_".$g_element_id]['value'] : ""); }
 
 						if ($g_element_node_array['attributes']['input'] == "number") { $direct_classes['formbuilder']->entry_add_number ("t{$g_element_id}_".$g_language_id,$g_language,false,"s"); }
 						else { $direct_classes['formbuilder']->entry_add_text ("t{$g_element_id}_".$g_language_id,$g_language,false,"l"); }
@@ -360,9 +352,7 @@ case "select":
 
 			foreach ($g_languages_installed_array as $g_language_id)
 			{
-				if ($g_language_id == $direct_settings['lang']) { $direct_cachedata['i_tlang'] .= "<l$g_language_id><value value='$g_language_id' /><selected value='1' />"; }
-				else { $direct_cachedata['i_tlang'] .= "<l$g_language_id><value value='$g_language_id' />"; }
-
+				$direct_cachedata['i_tlang'] .= (($g_language_id == $direct_settings['lang']) ? "<l$g_language_id><value value='$g_language_id' /><selected value='1' />" : "<l$g_language_id><value value='$g_language_id' />");
 				if (isset ($g_languages_translated_array[$g_language_id])) { $direct_cachedata['i_tlang'] .= "<text><![CDATA[".(direct_html_encode_special ($g_languages_translated_array[$g_language_id]['national']))." (".(direct_html_encode_special ($g_languages_translated_array[$g_language_id]['international'])).")]]></text>"; }
 				$direct_cachedata['i_tlang'] .= "</l$g_language_id>";
 			}

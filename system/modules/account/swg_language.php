@@ -56,16 +56,13 @@ switch ($direct_settings['a'])
 case "select":
 case "select-save":
 {
-	if ($direct_settings['a'] == "select-save") { $g_mode_save = true; }
-	else { $g_mode_save = false; }
-
+	$g_mode_save = (($direct_settings['a'] == "select-save") ? true : false);
 	if (USE_debug_reporting) { direct_debug (1,"sWG/#echo(__FILEPATH__)# _a={$direct_settings['a']}_ (#echo(__LINE__)#)"); }
 
 	$g_source = (isset ($direct_settings['dsd']['source']) ? ($direct_classes['basic_functions']->inputfilter_basic ($direct_settings['dsd']['source'])) : "");
 	$g_target = (isset ($direct_settings['dsd']['target']) ? ($direct_classes['basic_functions']->inputfilter_basic ($direct_settings['dsd']['target'])) : "");
 
-	if ($g_source) { $g_source_url = base64_decode ($g_source); }
-	else { $g_source_url = "m=account&a=services[lang]"; }
+	$g_source_url = ($g_source ? base64_decode ($g_source) : "m=account&a=services[lang]");
 
 	if ($g_target) { $g_target_url = base64_decode ($g_target); }
 	else
@@ -128,9 +125,7 @@ case "select-save":
 
 			foreach ($g_languages_installed_array as $g_language)
 			{
-				if ($g_language == $direct_settings['lang']) { $direct_cachedata['i_alang'] .= "<$g_language><value value='$g_language' /><selected value='1' />"; }
-				else { $direct_cachedata['i_alang'] .= "<$g_language><value value='$g_language' />"; }
-
+				$direct_cachedata['i_alang'] .= (($g_language == $direct_settings['lang']) ? "<$g_language><value value='$g_language' /><selected value='1' />" : "<$g_language><value value='$g_language' />");
 				if (isset ($g_languages_array[$g_language])) { $direct_cachedata['i_alang'] .= "<text><![CDATA[".(direct_html_encode_special ($g_languages_array[$g_language]['national']))."]]></text>"; }
 				$direct_cachedata['i_alang'] .= "</$g_language>";
 			}

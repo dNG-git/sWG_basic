@@ -78,9 +78,7 @@ function direct_service_list ($f_module,$f_page = 1)
 	$f_module = preg_replace ("#[\/\\\?:@\=\&\. \+]#i","",$f_module);
 	$f_module_file_name = str_replace (";","_",$f_module);
 	$f_return = array ();
-
-	if (file_exists ($direct_settings['path_data']."/settings/swg_{$f_module_file_name}.services.xml")) { $f_xml_array = $direct_classes['basic_functions']->memcache_get_file_merged_xml ($direct_settings['path_data']."/settings/swg_{$f_module_file_name}.services.xml"); }
-	else { $f_xml_array = array (); }
+	$f_xml_array = ((file_exists ($direct_settings['path_data']."/settings/swg_{$f_module_file_name}.services.xml")) ? $direct_classes['basic_functions']->memcache_get_file_merged_xml ($direct_settings['path_data']."/settings/swg_{$f_module_file_name}.services.xml") : array ());
 
 	if ((is_array ($f_xml_array))&&(!empty ($f_xml_array)))
 	{
@@ -211,11 +209,7 @@ function direct_service_list_parse ($f_module,$f_list,$f_page)
 
 			$f_list[$f_i]['attributes']['link']['value'] = direct_linker ($f_link_type,$f_list[$f_i]['attributes']['link']['value']);
 
-			if ($f_list[$f_i]['attributes']['image'])
-			{
-				if (file_exists ($direct_settings['path_themes']."/$direct_settings[theme]/".$f_list[$f_i]['attributes']['image'])) { $f_list[$f_i]['attributes']['image'] = direct_linker_dynamic ("url0","m=default&s=cache&dsd=dfile+$direct_settings[path_themes]/$direct_settings[theme]/".$f_list[$f_i]['attributes']['image'],true,false); }
-				else { $f_list[$f_i]['attributes']['image'] = ""; }
-			}
+			if ($f_list[$f_i]['attributes']['image']) { $f_list[$f_i]['attributes']['image'] = ((file_exists ($direct_settings['path_themes']."/$direct_settings[theme]/".$f_list[$f_i]['attributes']['image'])) ? direct_linker_dynamic ("url0","m=default&s=cache&dsd=dfile+$direct_settings[path_themes]/$direct_settings[theme]/".$f_list[$f_i]['attributes']['image'],true,false) : ""); }
 			else { $f_list[$f_i]['attributes']['image'] = ""; }
 
 			$f_services_array = array ($f_list[$f_i]['attributes']['image'],$f_list[$f_i]['value'],$f_list[$f_i]['attributes']['link']['value'],$f_list[$f_i]['attributes']['description']);
@@ -255,9 +249,7 @@ function direct_service_list_search ($f_module,$f_sstring,$f_smode = "title_preg
 	$f_module_file_name = str_replace (";","_",$f_module);
 	$f_return = array ();
 	if (($f_smode == "title_preg")||($f_smode == "title-desc_preg")) { $f_sstring = str_replace ("\*","(.+?)",("#".(preg_quote ($f_sstring,"#"))."#si")); }
-
-	if (file_exists ($direct_settings['path_data']."/settings/swg_{$f_module_file_name}.services.xml")) { $f_xml_array = $direct_classes['basic_functions']->memcache_get_file_merged_xml ($direct_settings['path_data']."/settings/swg_{$f_module_file_name}.services.xml"); }
-	else { $f_xml_array = array (); }
+	$f_xml_array = ((file_exists ($direct_settings['path_data']."/settings/swg_{$f_module_file_name}.services.xml")) ? $direct_classes['basic_functions']->memcache_get_file_merged_xml ($direct_settings['path_data']."/settings/swg_{$f_module_file_name}.services.xml") : array ());
 
 	if ((is_array ($f_xml_array))&&(!empty ($f_xml_array)))
 	{

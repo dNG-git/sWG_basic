@@ -66,19 +66,14 @@ switch ($direct_settings['a'])
 case "form":
 case "form-save":
 {
-	if ($direct_settings['a'] == "form-save") { $g_mode_save = true; }
-	else { $g_mode_save = false; }
-
+	$g_mode_save = (($direct_settings['a'] == "form-save") ? true : false);
 	if (USE_debug_reporting) { direct_debug (1,"sWG/#echo(__FILEPATH__)# _a={$direct_settings['a']}_ (#echo(__LINE__)#)"); }
 
 	$g_source = (isset ($direct_settings['dsd']['source']) ? ($direct_classes['basic_functions']->inputfilter_basic ($direct_settings['dsd']['source'])) : "");
 	$g_target = (isset ($direct_settings['dsd']['target']) ? ($direct_classes['basic_functions']->inputfilter_basic ($direct_settings['dsd']['target'])) : "");
 
-	if ($g_source) { $g_source_url = base64_decode ($g_source); }
-	else { $g_source_url = "m=account&a=services"; }
-
-	if ($g_target) { $g_target_url = base64_decode ($g_target); }
-	else { $g_target_url = "m=account&s=profile&a=view&dsd=[oid]"; }
+	$g_source_url = ($g_source ? base64_decode ($g_source) : "m=account&a=services");
+	$g_target_url = ($g_target ? base64_decode ($g_target) : "m=account&s=profile&a=view&dsd=[oid]");
 
 	if ($g_mode_save)
 	{
@@ -168,9 +163,7 @@ $g_vid_array = array (
 
 			if ($g_continue_check)
 			{
-				if (isset ($direct_settings['swg_redirect_url'])) { $g_redirect_url = $direct_settings['swg_redirect_url']; }
-				else { $g_redirect_url = $direct_settings['home_url']."/swg_redirect.php"; }
-
+				$g_redirect_url = ((isset ($direct_settings['swg_redirect_url'])) ? $direct_settings['swg_redirect_url'] : $direct_settings['home_url']."/swg_redirect.php");
 				$g_sendmailer_object = new direct_sendmailer_formtags ();
 				$g_sendmailer_object->recipients_define (array ($g_user_array['ddbusers_email'] => $g_user_array['ddbusers_name']));
 

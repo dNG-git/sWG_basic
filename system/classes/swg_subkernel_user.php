@@ -299,8 +299,7 @@ Set up the user initialisation code
 
 			$direct_cachedata['kernel_lastvisit'] = 0;
 
-			if (direct_class_function_check ($direct_classes['kernel'],"v_uuid_get")) { $f_uuid_data = $direct_classes['kernel']->v_uuid_get ("s"); }
-			else { $f_uuid_data = ""; }
+			$f_uuid_data = ((direct_class_function_check ($direct_classes['kernel'],"v_uuid_get")) ? $direct_classes['kernel']->v_uuid_get ("s") : "");
 
 			if ($f_uuid_data)
 			{
@@ -609,8 +608,7 @@ Reloading language file (if required)
 		{
 			$direct_classes['db']->init_update ($direct_settings['users_table']);
 
-			if ($direct_settings['swg_ip_save2db']) { $f_user_ip = $direct_settings['user_ip']; }
-			else { $f_user_ip = "unknown"; }
+			$f_user_ip = ($direct_settings['swg_ip_save2db'] ? $direct_settings['user_ip'] : "unknown");
 
 $f_data = ("<sqlvalues>
 ".($direct_classes['db']->define_set_attributes_encode ($direct_settings['users_table'].".ddbusers_lang",$direct_settings['lang'],"string"))."

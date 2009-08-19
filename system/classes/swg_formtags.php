@@ -48,8 +48,7 @@ all development packets)
 Testing for required classes
 ------------------------------------------------------------------------- */
 
-$g_continue_check = true;
-if (defined ("CLASS_direct_formtags")) { $g_continue_check = false; }
+$g_continue_check = ((defined ("CLASS_direct_formtags")) ? false : true);
 if (!defined ("CLASS_direct_virtual_class")) { $g_continue_check = false; }
 
 if ($g_continue_check)
@@ -245,8 +244,7 @@ Informing the system about available functions
 			foreach ($f_result_array as $f_url_array) { $f_data = str_replace ($f_url_array[0],($f_url_array[1]."<a href=\"{$f_url_array[2]}://{$f_url_array[3]}\" target='_blank' rel='nofollow'>".(direct_linker ("optical",$f_url_array[2]."://".$f_url_array[3]))."</a>".$f_url_array[4]),$f_data); }
 		}
 
-		$f_data = str_replace ("&lt;","<",$f_data);
-		$f_data = str_replace ("&gt;",">",$f_data);
+		$f_data = str_replace (array ("&lt;","&gt;"),(array ("<",">")),$f_data);
 		$f_data = preg_replace ("#\&amp;(\w{2,4});#i","&\\1;",$f_data);
 
 		if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($f_data,"[-") !== false)
@@ -344,11 +342,7 @@ Informing the system about available functions
 			{
 				foreach ($f_result_array as $f_img_array)
 				{
-					if (preg_match ("#src=(\"|\')(.+?)(\"|\')#i",$f_img_array[1],$f_url_array))
-					{
-						if (preg_match ("#(alt|title)=(\"|\')(.+?)(\"|\')#i",$f_img_array[1],$f_title_result_array)) { $f_data = str_replace ($f_img_array[0],("[img][img:title]{$f_title_result_array[2]}[/img:title]{$f_url_array[2]}[/img]"),$f_data); }
-						else { $f_data = str_replace ($f_img_array[0],("[img]{$f_url_array[2]}[/img]"),$f_data); }
-					}
+					if (preg_match ("#src=(\"|\')(.+?)(\"|\')#i",$f_img_array[1],$f_url_array)) { $f_data = ((preg_match ("#(alt|title)=(\"|\')(.+?)(\"|\')#i",$f_img_array[1],$f_title_result_array)) ? str_replace ($f_img_array[0],("[img][img:title]{$f_title_result_array[2]}[/img:title]{$f_url_array[2]}[/img]"),$f_data) : str_replace ($f_img_array[0],("[img]{$f_url_array[2]}[/img]"),$f_data)); }
 				}
 			}
 
@@ -366,7 +360,7 @@ Informing the system about available functions
 			if (!$f_withhtml)
 			{
 				$f_data = str_replace ((array ("<",">")),(array ("&lt;","&gt;")),$f_data);
-				$f_data = str_replace ((array ("[-&lt;]","[-&lt;&lt;]","[-&gt;]","[-&gt;&gt;]")),(array ("[-<]","[-<<]","[->]","[->>]")),$f_data);
+				$f_data = str_replace ((array ("[-&lt;]","[-&lt;&lt;]","[-&gt;]","[-&gt;&gt;]","[/-&lt;]","[/-&lt;&lt;]","[/-&gt;]","[/-&gt;&gt;]")),(array ("[-<]","[-<<]","[->]","[->>]","[/-<]","[/-<<]","[/->]","[/->>]")),$f_data);
 			}
 		}
 
@@ -393,9 +387,7 @@ Informing the system about available functions
 
 		$f_return =& $f_data;
 
-		if ($f_brmode) { $f_newline = "<br />\n"; }
-		else { $f_newline = "\n"; }
-
+		$f_newline = ($f_brmode ? "<br />\n" : "\n");
 		$f_data = str_replace ("[newline]",$f_newline,$f_data);
 		$f_data = trim ($f_data);
 
@@ -713,9 +705,8 @@ Informing the system about available functions
 						if ($f_result_array[($f_i - 1)])
 						{
 							$f_quote_result_array = explode (":",$f_result_array[($f_i - 1)],3);
-
-							if ($f_quote_result_array[2]) { $f_data_array[($f_i - 1)] .= "\n* ".(direct_local_get ("formtags_quote_2_1","text")).$f_quote_result_array[2]." ({$f_quote_result_array[1]})".(direct_local_get ("formtags_quote_2_2","text")).": ".(direct_local_get ("formtags_quote_2_3","text"))."\n$f_tag_content\n*\n".$f_data_closed; }
-							else { $f_data_array[($f_i - 1)] .= "\n* ".(direct_local_get ("formtags_quote_2_1","text"))."".$f_quote_result_array[1]."".(direct_local_get ("formtags_quote_2_2","text")).":\n$f_tag_content\n*\n".$f_data_closed; }
+							$f_data_array[($f_i - 1)] .= "\n* ".(direct_local_get ("formtags_quote_2_1","text"));
+							$f_data_array[($f_i - 1)] .= ($f_quote_result_array[2] ? $f_quote_result_array[2]." ({$f_quote_result_array[1]})".(direct_local_get ("formtags_quote_2_2","text")).": ".(direct_local_get ("formtags_quote_2_3","text"))."\n$f_tag_content\n*\n".$f_data_closed : $f_quote_result_array[1].(direct_local_get ("formtags_quote_2_2","text")).":\n$f_tag_content\n*\n".$f_data_closed);
 						}
 						else { $f_data_array[($f_i - 1)] .= "\n* ".(direct_local_get ("formtags_quote_1","text")).":\n$f_tag_content\n*\n".$f_data_closed; }
 
@@ -730,16 +721,10 @@ Informing the system about available functions
 							{
 								$f_result_array[($f_i - 1)] = substr ($f_result_array[($f_i - 1)],1);
 								if ($direct_settings['swg_url_sbcheck']) { $f_result_array[($f_i - 1)] = direct_url_sbcheck ($f_result_array[($f_i - 1)],"text"); }
-
-								if ($f_result_array[($f_i - 1)] == $f_tag_content) { $f_data_array[($f_i - 1)] .= $f_result_array[($f_i - 1)].$f_data_closed; }
-								else { $f_data_array[($f_i - 1)] .= $f_result_array[($f_i - 1)]." (".$f_result_array[($f_i - 1)].")".$f_data_closed; }
+								$f_data_array[($f_i - 1)] .= (($f_result_array[($f_i - 1)] == $f_tag_content) ? $f_result_array[($f_i - 1)].$f_data_closed : $f_result_array[($f_i - 1)]." (".$f_result_array[($f_i - 1)].")".$f_data_closed);
 							}
 						}
-						else
-						{
-							if ($direct_settings['swg_url_sbcheck']) { $f_data_array[($f_i - 1)] .= (direct_url_sbcheck ($f_tag_content,"text")).$f_data_closed; }
-							else { $f_data_array[($f_i - 1)] .= $f_tag_content.$f_data_closed; }
-						}
+						else { $f_data_array[($f_i - 1)] .= ($direct_settings['swg_url_sbcheck'] ? (direct_url_sbcheck ($f_tag_content,"text")).$f_data_closed : $f_tag_content.$f_data_closed); }
 
 						break 1;
 					}
@@ -747,11 +732,7 @@ Informing the system about available functions
 					{
 						$f_box_result_array = explode (":",$f_result_array[($f_i - 1)]);
 
-						if (preg_match ("#^(\d{1,3})$#i",$f_box_result_array[1],$f_percentage_array))
-						{
-							if (($f_percentage_array[1] > 0)&&($f_percentage_array[1] < 101)) { $f_box_result_array[1] = ";width:{$f_box_result_array[1]}%"; }
-							else { $f_box_result_array[1] = ""; }
-						}
+						if (preg_match ("#^(\d{1,3})$#i",$f_box_result_array[1],$f_percentage_array)) { $f_box_result_array[1] = ((($f_percentage_array[1] > 0)&&($f_percentage_array[1] < 101)) ? ";width:{$f_box_result_array[1]}%" : ""); }
 						else { $f_box_result_array[1] = ""; }
 
 						if (isset ($f_box_result_array[2]))
@@ -765,19 +746,13 @@ Informing the system about available functions
 
 						if ($f_box_result_array[0] == "left") { $f_data_array[($f_i - 1)] .= "<span style='display:block;float:left{$f_box_result_array[1]}{$f_box_result_array[2]}'>$f_tag_content</span>".$f_data_closed; }
 						elseif ($f_box_result_array[0] == "right") { $f_data_array[($f_i - 1)] .= "<span style='display:block;float:right{$f_box_result_array[1]}{$f_box_result_array[2]}'>$f_tag_content</span>".$f_data_closed; }
-						else
-						{
-							if ($f_box_result_array[0] == "br") { $f_data_array[($f_i - 1)] .= "<span style='display:block;clear:both'>$f_tag_content</span>".$f_data_closed; }
-							else { $f_data_array[($f_i - 1)] .= "<span style='display:block{$f_box_result_array[1]}{$f_box_result_array[2]}'>$f_tag_content</span>".$f_data_closed; }
-						}
+						else { $f_data_array[($f_i - 1)] .= (($f_box_result_array[0] == "br") ? "<span style='display:block;clear:both'>$f_tag_content</span>".$f_data_closed : "<span style='display:block{$f_box_result_array[1]}{$f_box_result_array[2]}'>$f_tag_content</span>".$f_data_closed); }
 
 						break 1;
 					}
 					case "decode:contentform:colorbox":
 					{
-						if (preg_match ("#^\:(\w{6})$#i",$f_result_array[($f_i - 1)],$f_color_result_array)) { $f_data_array[($f_i - 1)] .= "<span style=\"display:block;padding:2px;background-color:#{$f_color_result_array[1]}\">$f_tag_content</span>".$f_data_closed; }
-						else { $f_data_array[($f_i - 1)] .= "<span class='pageborder2' style=\"display:block;margin:5px\"><span class='pageextracontent'>$f_tag_content</span></span>".$f_data_closed; }
-
+						$f_data_array[($f_i - 1)] .= ((preg_match ("#^\:(\w{6})$#i",$f_result_array[($f_i - 1)],$f_color_result_array)) ? "<span style=\"display:block;padding:2px;background-color:#{$f_color_result_array[1]}\">$f_tag_content</span>".$f_data_closed : "<span class='pageborder2' style=\"display:block;margin:5px\"><span class='pageextracontent'>$f_tag_content</span></span>".$f_data_closed);
 						break 1;
 					}
 					case "decode:contentform:hidden":
@@ -804,21 +779,14 @@ djs_swgDOM_replace (\"<span class='pageextracontent'><span style='font-weight:bo
 
 						if ((isset ($f_box_result_array[1]))&&(preg_match ("#^(\d+)$#",$f_box_result_array[1])))
 						{
-							if (preg_match ("#^(\d+)$#",$f_box_result_array[0]))
-							{
-								if ($f_box_result_array[0] < 1) { $f_box_result_array[0] = "margin:1px;"; }
-								else { $f_box_result_array[0] = "margin:{$f_box_result_array[0]}px;"; }
-							}
+							if (preg_match ("#^(\d+)$#",$f_box_result_array[0])) { $f_box_result_array[0] = (($f_box_result_array[0] < 1) ? "margin:1px;" : "margin:{$f_box_result_array[0]}px;"); }
 							else { $f_box_result_array[0] = ""; }
 
-							if ($f_box_result_array[1] < 0) { $f_box_result_array[1] = "padding:0px"; }
-							else { $f_box_result_array[1] = "padding:{$f_box_result_array[1]}px"; }
+							$f_box_result_array[1] = (($f_box_result_array[1] < 0) ? "padding:0px" : "padding:{$f_box_result_array[1]}px");
 						}
 						elseif (preg_match ("#^(\d+)$#",$f_box_result_array[0]))
 						{
-							if ($f_box_result_array[0] < 1) { $f_box_result_array[0] = "padding:1px;"; }
-							else { $f_box_result_array[0] = "padding:{$f_box_result_array[0]}px;"; }
-
+							$f_box_result_array[0] = (($f_box_result_array[0] < 1) ? "padding:1px;" : "padding:{$f_box_result_array[0]}px;");
 							$f_box_result_array[1] = "";
 						}
 						else { $f_box_result_array = array ("",""); }
@@ -867,10 +835,10 @@ djs_swgDOM_replace (\"<span class='pageextracontent'><span style='font-weight:bo
 						elseif ($f_result_array[($f_i - 1)])
 						{
 							if ($f_result_array[($f_i - 1)] == ":right:nobox") { $f_result_array[($f_i - 1)] = "<span style='overflow:auto;float:right;clear:right'>"; }
-							elseif ($f_result_array[($f_i - 1)] == ":right") { $f_result_array[($f_i - 1)] = "<span class='pageborder2' style='overflow:auto;margin:5px;float:right;clear:right'>"; }
+							elseif ($f_result_array[($f_i - 1)] == ":right") { $f_result_array[($f_i - 1)] = "<span class='pageborder2' style='overflow:auto;margin:5px;line-height:0px;float:right;clear:right'>"; }
 							elseif ($f_result_array[($f_i - 1)] == ":left:nobox") { $f_result_array[($f_i - 1)] = "<span style='overflow:auto;float:left;clear:left'>"; }
-							elseif ($f_result_array[($f_i - 1)] == ":left") { $f_result_array[($f_i - 1)] = "<span class='pageborder2' style='overflow:auto;margin:5px;float:left;clear:left'>"; }
-							else { $f_result_array[($f_i - 1)] = "<span class='pageborder2' style='display:block;overflow:auto;margin:5px;text-align:center'>"; }
+							elseif ($f_result_array[($f_i - 1)] == ":left") { $f_result_array[($f_i - 1)] = "<span class='pageborder2' style='overflow:auto;margin:5px;line-height:0px;float:left;clear:left'>"; }
+							else { $f_result_array[($f_i - 1)] = "<span class='pageborder2' style='display:block;overflow:auto;margin:5px;line-height:0px;text-align:center'>"; }
 
 							$f_data_array[($f_i - 1)] .= $f_result_array[($f_i - 1)]."<img src=\"$f_tag_content\" alt='' title='' /></span>".$f_data_closed;
 						}
@@ -884,8 +852,9 @@ djs_swgDOM_replace (\"<span class='pageextracontent'><span style='font-weight:bo
 						{
 							$f_quote_result_array = explode (":",$f_result_array[($f_i - 1)],3);
 
-							if ($f_quote_result_array[2]) { $f_data_array[($f_i - 1)] .= "<span style='display:block;margin:0px 20px;text-align:left'><span class='pagecontent' style='$direct_settings[formtags_quote_style]'>".(direct_local_get ("formtags_quote_2_1","text"))."<a href='".(direct_linker ("url0","m=account&s=profile&a=view&dsd=auid+".$f_quote_result_array[1]))."' target='_blank'>{$f_quote_result_array[2]}</a>".(direct_local_get ("formtags_quote_2_2","text")).": </span><span class='pagecontent' style='$direct_settings[formtags_quote_notice_style]'>".(direct_local_get ("formtags_quote_2_3","text"))."</span></span><span class='pageborder2' style='display:block;margin:0px 20px;text-align:left'><span class='pageextracontent'>$f_tag_content</span></span>".$f_data_closed; }
-							else { $f_data_array[($f_i - 1)] .= "<span style='display:block;margin:0px 20px;text-align:left'><span class='pagecontent' style='$direct_settings[formtags_quote_style]'>".(direct_local_get ("formtags_quote_2_1","text")).$f_quote_result_array[1].(direct_local_get ("formtags_quote_2_2","text")).":</span></span><span class='pageborder2' style='display:block;margin:0px 20px;text-align:left'><span class='pageextracontent'>$f_tag_content</span></span>".$f_data_closed; }
+							$f_data_array[($f_i - 1)] .= "<span style='display:block;margin:0px 20px;text-align:left'><span class='pagecontent' style='$direct_settings[formtags_quote_style]'>".(direct_local_get ("formtags_quote_2_1","text"));
+							$f_data_array[($f_i - 1)] .= ($f_quote_result_array[2] ? "<a href='".(direct_linker ("url0","m=account&s=profile&a=view&dsd=auid+".$f_quote_result_array[1]))."' target='_blank'>{$f_quote_result_array[2]}</a>".(direct_local_get ("formtags_quote_2_2","text")).": </span><span class='pagecontent' style='$direct_settings[formtags_quote_notice_style]'>".(direct_local_get ("formtags_quote_2_3","text"))."</span></span>" : $f_quote_result_array[1].(direct_local_get ("formtags_quote_2_2","text")).":</span></span>");
+							$f_data_array[($f_i - 1)] .= "<span class='pageborder2' style='display:block;margin:0px 20px;text-align:left'><span class='pageextracontent'>$f_tag_content</span></span>".$f_data_closed;
 						}
 						else { $f_data_array[($f_i - 1)] .= "<span style='display:block;margin:0px 20px;text-align:left;$direct_settings[formtags_quote_style]'><span class='pagecontent'>".(direct_local_get ("formtags_quote_1","text")).":</span></span><span class='pageborder2' style='display:block;margin:0px 20px;text-align:left'><span class='pageextracontent'>$f_tag_content</span></span>".$f_data_closed; }
 
@@ -902,11 +871,7 @@ djs_swgDOM_replace (\"<span class='pageextracontent'><span style='font-weight:bo
 							elseif (!preg_match ("#^\[#",$f_result_array[($f_i - 1)])) { $f_data_array[($f_i - 1)] .= "<a href=\"".$f_result_array[($f_i - 1)]."\">$f_tag_content</a>".$f_data_closed; }
 							else { $f_data_array[($f_i - 1)] .= "[url:".$f_result_array[($f_i - 1)]."]{$f_tag_content}[/url]".$f_data_closed; }
 						}
-						else
-						{
-							if ($direct_settings['swg_url_sbcheck']) { $f_data_array[($f_i - 1)] .= "<a href=\"".(direct_url_sbcheck ($f_tag_content))."\">$f_tag_content</a>".$f_data_closed; }
-							else { $f_data_array[($f_i - 1)] .= "<a href=\"$f_tag_content\">$f_tag_content</a>".$f_data_closed; }
-						}
+						else { $f_data_array[($f_i - 1)] .= ($direct_settings['swg_url_sbcheck'] ? "<a href=\"".(direct_url_sbcheck ($f_tag_content))."\">$f_tag_content</a>".$f_data_closed : "<a href=\"$f_tag_content\">$f_tag_content</a>".$f_data_closed); }
 
 						break 1;
 					}

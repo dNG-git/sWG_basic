@@ -49,8 +49,7 @@ all development packets)
 Testing for required classes
 ------------------------------------------------------------------------- */
 
-$g_continue_check = true;
-if (defined ("CLASS_direct_web_functions")) { $g_continue_check = false; }
+$g_continue_check = ((defined ("CLASS_direct_web_functions")) ? false : true);
 if (!defined ("CLASS_direct_basic_rfc_functions")) { $direct_classes['basic_functions']->include_file ($direct_settings['path_system']."/classes/swg_basic_rfc_functions.php"); }
 if (!defined ("CLASS_direct_basic_rfc_functions")) { $g_continue_check = false; }
 
@@ -755,11 +754,7 @@ The behaviour above might change for images in the future.
 				}
 				else
 				{
-					if (is_array ($f_value))
-					{
-						if ((isset ($f_value['value']))&&((isset ($f_value['type']))&&($f_value['type'] != "file"))||(!isset ($f_value['type']))) { $f_value = $f_value['value']; }
-						else { $f_value = implode ("\n",$f_value); }
-					}
+					if (is_array ($f_value)) { $f_value = (((isset ($f_value['value']))&&((isset ($f_value['type']))&&($f_value['type'] != "file"))||(!isset ($f_value['type']))) ? $f_value['value'] : implode ("\n",$f_value)); }
 
 					if ((trim ($f_key))&&(trim ($f_value)))
 					{
@@ -870,11 +865,7 @@ The behaviour above might change for images in the future.
 			}
 			else { $this->data = $f_response_array[1]; }
 
-			if ($f_validation_check)
-			{
-				if (preg_match ("#^HTTP/(\d).(\d) (\d{1,3})(.*?)$#im",$this->data_http_headers['@untagged'],$f_result_array)) { $this->data_http_result_code = $f_result_array[3]; }
-				else { $this->data_http_result_code = "error::malformed response"; }
-			}
+			if ($f_validation_check) { $this->data_http_result_code = ((preg_match ("#^HTTP/(\d).(\d) (\d{1,3})(.*?)$#im",$this->data_http_headers['@untagged'],$f_result_array)) ? $f_result_array[3] : "error::malformed response"); }
 			else
 			{
 				$this->data = "";

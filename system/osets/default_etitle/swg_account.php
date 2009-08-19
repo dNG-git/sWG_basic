@@ -226,7 +226,7 @@ $f_return = ("<table cellspacing='1' summary='' class='pageborder1' style='width
 $f_return .= ("<span id='swg_account_selector_filter_point' style='display:none'><!-- iPoint // --></span><script language='JavaScript1.5' type='text/javascript'><![CDATA[
 if (djs_swgDOM)
 {
-	function djs_account_selector_filter_process () { self.document.location.replace ('".(direct_linker ("url1","m=dataport&s=swgap;default;filter&dsd=dtheme+1++dfid+account_selector++dftext+[f_text]++tid+{$direct_cachedata['output_tid']}++source+{$direct_cachedata['output_filter_source']}",false))."'.replace (/\[f_text\]/g,(encodeURIComponent (self.document.getElementById('swg_account_selector_filter_point_f').value)))); }
+	function djs_account_selector_filter_process () { self.location.replace ('".(direct_linker ("url1","m=dataport&s=swgap;default;filter&dsd=dtheme+1++dfid+account_selector++dftext+[f_text]++tid+{$direct_cachedata['output_tid']}++source+{$direct_cachedata['output_filter_source']}",false))."'.replace (/\[f_text\]/g,(encodeURIComponent (self.document.getElementById('swg_account_selector_filter_point_f').value)))); }
 	djs_swgDOM_replace (\"<div style='font-size:8px'>&#0160;<br />\\n<span id='swg_account_selector_filter_point' style='display:none'><!-- iPoint // --></span></div>\",'swg_account_selector_filter_point');
 
 ".(direct_output_oset_default_filter_table (true,"swg_account_selector_filter_point",(direct_local_get ("core_filter_search","text")),"djs_account_selector_filter_process ()",$direct_cachedata['output_filter_text']))."

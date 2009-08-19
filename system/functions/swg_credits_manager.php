@@ -100,20 +100,12 @@ function direct_credits_payment_check ($f_return_information = false,$f_credits_
 
 		if ($f_return_information)
 		{
-			if ($f_credits_change)
-			{
-				if ($f_result) { $f_return = (direct_local_get ("credits_manager_check_payment_1_1"))."<span style='font-weight:bold'>{$f_user_array['ddbusers_credits']}</span>".(direct_local_get ("credits_manager_check_payment_1_2"))."<span style='font-weight:bold'>".($f_user_array['ddbusers_credits'] + $f_credits_change)."</span>".(direct_local_get ("credits_manager_check_payment_1_3")); }
-				else { $f_return = (direct_local_get ("credits_manager_check_payment_0_1"))."<span style='font-weight:bold'>{$f_user_array['ddbusers_credits']}</span>".(direct_local_get ("credits_manager_check_payment_0_2"))."<span style='font-weight:bold'>".($f_credits_change * -1)."</span>".(direct_local_get ("credits_manager_check_payment_0_3")); }
-			}
+			if ($f_credits_change) { $f_return = ($f_result ? (direct_local_get ("credits_manager_check_payment_1_1"))."<span style='font-weight:bold'>{$f_user_array['ddbusers_credits']}</span>".(direct_local_get ("credits_manager_check_payment_1_2"))."<span style='font-weight:bold'>".($f_user_array['ddbusers_credits'] + $f_credits_change)."</span>".(direct_local_get ("credits_manager_check_payment_1_3")) : (direct_local_get ("credits_manager_check_payment_0_1"))."<span style='font-weight:bold'>{$f_user_array['ddbusers_credits']}</span>".(direct_local_get ("credits_manager_check_payment_0_2"))."<span style='font-weight:bold'>".($f_credits_change * -1)."</span>".(direct_local_get ("credits_manager_check_payment_0_3"))); }
 			else { $f_return = ""; }
 		}
 		else { $f_return = $f_result; }
 	}
-	else
-	{
-		if ($f_return_information) { $f_return = ""; }
-		else { $f_return = true; }
-	}
+	else { $f_return = ($f_return_information ? "" : true); }
 
 	return /*#ifdef(DEBUG):direct_debug (7,"sWG/#echo(__FILEPATH__)# -direct_credits_payment_check ()- (#echo(__LINE__)#)",:#*/$f_return/*#ifdef(DEBUG):,true):#*/;
 }
@@ -158,9 +150,7 @@ function direct_credits_payment_exec ($f_controller,$f_identifier,$f_id,$f_useri
 		$f_credits_onetime = ceil ($f_credits_onetime);
 		$f_credits_periodically = ceil ($f_credits_periodically);
 		$f_return = false;
-
-		if ($f_userid) { $f_user_array = $direct_classes['kernel']->v_user_get ($f_userid); }
-		else { $f_user_array = $direct_classes['kernel']->v_user_get ($direct_settings['user']['id']); }
+		$f_user_array = ($f_userid ? $direct_classes['kernel']->v_user_get ($f_userid) : $direct_classes['kernel']->v_user_get ($direct_settings['user']['id']));
 
 		if ($f_user_array)
 		{

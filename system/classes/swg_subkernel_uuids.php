@@ -397,9 +397,7 @@ both the old and new passcode.
 				}
 
 				$this->uuid_data = $f_uuid_array['ddbuuids_list_data'];
-
-				if ($f_type == "a") { $f_return = explode ("\n",(trim ($this->uuid_data))); }
-				else { $f_return = trim ($this->uuid_data); }
+				$f_return = (($f_type == "a") ? explode ("\n",(trim ($this->uuid_data))) : trim ($this->uuid_data));
 			}
 			else { $this->uuid_status = "invalid"; }
 		}
@@ -548,8 +546,7 @@ Set the uuID for this session and activate other uuIDs specific functions.
 		if ($this->uuid_status != "verified") { $direct_classes['kernel']->v_uuid_get ("s",$f_cookie_mode); }
 		else
 		{
-			if (is_array ($f_data)) { $f_uuid_data = trim (implode ("\n",$f_data)); }
-			else { $f_uuid_data = trim ($f_data); }
+			$f_uuid_data = ((is_array ($f_data)) ? trim (implode ("\n",$f_data)) : trim ($f_data));
 
 			if ($f_uuid_data)
 			{

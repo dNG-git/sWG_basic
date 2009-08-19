@@ -50,8 +50,7 @@ all development packets)
 Testing for required classes
 ------------------------------------------------------------------------- */
 
-$g_continue_check = true;
-if (defined ("CLASS_direct_sendmailer")) { $g_continue_check = false; }
+$g_continue_check = ((defined ("CLASS_direct_sendmailer")) ? false : true);
 if (!defined ("CLASS_direct_basic_rfc_functions")) { $direct_classes['basic_functions']->include_file ($direct_settings['path_system']."/classes/swg_basic_rfc_functions.php"); }
 if (!defined ("CLASS_direct_basic_rfc_functions")) { $g_continue_check = false; }
 
@@ -396,9 +395,7 @@ Set up some variables
 
 			if ((count ($this->data)) == 1)
 			{
-				if (isset ($this->data['@text'])) { $f_email_content = "@text"; }
-				else { $f_email_content = "@mhtml"; }
-
+				$f_email_content = ((isset ($this->data['@text'])) ? "@text" : "@mhtml");
 				$f_email_headers .= (($this->header_align ("Content-Type: ".$this->data[$f_email_content]['mimetype']."; charset=".$this->data[$f_email_content]['encoding']))."\n");
 				$f_email_headers .= $this->header_align ("Content-Transfer-Encoding: quoted-printable");
 				if ($direct_settings['swg_sendmailer_unixheader']) { $f_email_headers = str_replace ("\r\n","\n",$f_email_headers); }
@@ -413,18 +410,12 @@ Set up some variables
 				if ($direct_settings['swg_sendmailer_unixheader']) { $f_email_headers = str_replace ("\r\n","\n",$f_email_headers); }
 				$f_email_content = "";
 
-				if (isset ($this->data['@text']))
-				{
-					if (isset ($this->data['@mhtml'])) { $f_email_content .= (($this->multipart_body_alternative_header (1))."\n\n".($this->multipart_body ("@text",$this->data['@text'],1))); }
-					else { $f_email_content .= $this->multipart_body ("@text",$this->data['@text']); }
-				}
+				if (isset ($this->data['@text'])) { $f_email_content .= ((isset ($this->data['@mhtml'])) ? (($this->multipart_body_alternative_header (1))."\n\n".($this->multipart_body ("@text",$this->data['@text'],1))) : $this->multipart_body ("@text",$this->data['@text'])); }
 
 				if (isset ($this->data['@mhtml']))
 				{
 					if ($f_email_content) { $f_email_content .= "\n"; }
-
-					if (isset ($this->data['@text'])) { $f_email_content .= (($this->multipart_body ("@mhtml",$this->data['@mhtml'],1))."\n".($this->multipart_body_alternative_footer (1))); }
-					else { $f_email_content .= $this->multipart_body ("@mhtml",$this->data['@mhtml']); }
+					$f_email_content .= ((isset ($this->data['@text'])) ? (($this->multipart_body ("@mhtml",$this->data['@mhtml'],1))."\n".($this->multipart_body_alternative_footer (1))) : $this->multipart_body ("@mhtml",$this->data['@mhtml']));
 				}
 
 				foreach ($this->data as $f_email_content_type => $f_email_content_array)
@@ -439,8 +430,7 @@ Set up some variables
 				if ($f_email_content) { $f_email_content .= "\n"; }
 				$f_email_content .= $this->multipart_footer ();
 
-				if ((PHP_VERSION > "4.0.4")&&($direct_settings['swg_sendmailer_senderrewrite'])) { $f_return = mail ($f_recipients,($this->quoted_printable_encode ($f_subject,true)),$f_email_content,$f_email_headers,"-f".$f_sender_address); }
-				else { $f_return = mail ($f_recipients,($this->quoted_printable_encode ($f_subject,true)),$f_email_content,$f_email_headers); }
+				$f_return = (((PHP_VERSION > "4.0.4")&&($direct_settings['swg_sendmailer_senderrewrite'])) ? mail ($f_recipients,($this->quoted_printable_encode ($f_subject,true)),$f_email_content,$f_email_headers,"-f".$f_sender_address) : mail ($f_recipients,($this->quoted_printable_encode ($f_subject,true)),$f_email_content,$f_email_headers));
 			}
 		}
 		else { trigger_error ("sWG/#echo(__FILEPATH__)# -sendmailer_class->send ()- (#echo(__LINE__)#) reporting: Error while preparing e-mail delivery",E_USER_WARNING); }

@@ -212,9 +212,7 @@ $f_data = array (
 		$direct_classes['db']->define_values_keys ($f_replace_attributes);
 
 		$f_replace_values = "<sqlvalues>".($direct_classes['db']->define_values_encode ($f_log_id,"string"));
-
-		if ($f_data['time']) { $f_replace_values .= $direct_classes['db']->define_values_encode ($f_data['time'],"number"); }
-		else { $f_replace_values .= $direct_classes['db']->define_values_encode ($direct_cachedata['core_time'],"number"); }
+		$f_replace_values .= ($f_data['time'] ? $direct_classes['db']->define_values_encode ($f_data['time'],"number") : $direct_classes['db']->define_values_encode ($direct_cachedata['core_time'],"number"));
 
 		if ((isset ($f_data['source_user_id']))&&($f_data['source_user_id']))
 		{
@@ -235,10 +233,7 @@ $f_replace_values .= (($direct_classes['db']->define_values_encode ($f_data['tar
 		else { $f_replace_values .= "<element1 value='' type='string' /><element2 value='' type='string' />"; }
 
 		$f_replace_values .= (($direct_classes['db']->define_values_encode ($f_data['sid'],"string")).($direct_classes['db']->define_values_encode ($f_data['identifier'],"string")));
-
-		if (is_array ($f_data['data'])) { $f_replace_values .= $direct_classes['db']->define_values_encode ((direct_evars_write ($f_data['data'])),"string"); }
-		else { $f_replace_values .= $direct_classes['db']->define_values_encode ($f_data['data'],"string"); }
-
+		$f_replace_values .= ((is_array ($f_data['data'])) ? $direct_classes['db']->define_values_encode ((direct_evars_write ($f_data['data'])),"string") : $direct_classes['db']->define_values_encode ($f_data['data'],"string"));
 		$f_replace_values .= ($direct_classes['db']->define_values_encode ($f_customdata_id,"string"))."</sqlvalues>";
 
 		$direct_classes['db']->define_values ($f_replace_values);

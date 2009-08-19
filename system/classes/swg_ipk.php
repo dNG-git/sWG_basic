@@ -77,8 +77,7 @@ all development packets)
 Testing for required classes
 ------------------------------------------------------------------------- */
 
-$g_continue_check = true;
-if (defined ("CLASS_direct_ipk")) { $g_continue_check = false; }
+$g_continue_check = ((defined ("CLASS_direct_ipk")) ? false : true);
 if (!defined ("CLASS_direct_file_functions")) { $g_continue_check = false; }
 
 if ($g_continue_check)
@@ -218,11 +217,7 @@ Set default iPK data
 	* @return mixed config on success, false on error
 	* @since  v0.1.00
 */
-	/*#ifndef(PHP4) */public /* #*/function config_read ()
-	{
-		if (is_object ($this->data)) { return $this->data->config_read (); }
-		else { return false; }
-	}
+	/*#ifndef(PHP4) */public /* #*/function config_read () { return ((is_object ($this->data)) ? $this->data->config_read () : false); }
 
 	//f// direct_ipk->config_write ($f_data = "")
 /**
@@ -233,11 +228,7 @@ Set default iPK data
 	* @return boolean True on success
 	* @since  v0.1.00
 */
-	/*#ifndef(PHP4) */public /* #*/function config_write ($f_data = "")
-	{
-		if ((!$this->readonly)&&(is_object ($this->data))) { return $this->data->config_write ($f_data); }
-		else { return false; }
-	}
+	/*#ifndef(PHP4) */public /* #*/function config_write ($f_data = "") { return (((!$this->readonly)&&(is_object ($this->data))) ? $this->data->config_write ($f_data) : false); }
 
 	//f// direct_ipk->entry_delete ($f_file_path,$f_update = false)
 /**
@@ -249,11 +240,7 @@ Set default iPK data
 	* @return boolean True on success
 	* @since  v0.1.00
 */
-	/*#ifndef(PHP4) */public /* #*/function entry_delete ($f_file_path,$f_update = false)
-	{
-		if ((!$this->readonly)&&(is_object ($this->data))) { return $this->data->entry_delete ($f_file_path,$f_update); }
-		else { return false; }
-	}
+	/*#ifndef(PHP4) */public /* #*/function entry_delete ($f_file_path,$f_update = false) { return (((!$this->readonly)&&(is_object ($this->data))) ? $this->data->entry_delete ($f_file_path,$f_update) : false); }
 
 	//f// direct_ipk->entry_exists ($f_file_path)
 /**
@@ -264,11 +251,7 @@ Set default iPK data
 	* @return boolean True on success
 	* @since  v0.1.00
 */
-	/*#ifndef(PHP4) */public /* #*/function entry_exists ($f_file_path)
-	{
-		if (is_object ($this->data)) { return $this->data->entry_exists ($f_file_path); }
-		else { return false; }
-	}
+	/*#ifndef(PHP4) */public /* #*/function entry_exists ($f_file_path) { return ((is_object ($this->data)) ? $this->data->entry_exists ($f_file_path) : false); }
 
 	//f// direct_ipk->entry_read ($f_file_path)
 /**
@@ -280,11 +263,7 @@ Set default iPK data
 	*         errors occured.
 	* @since  v0.1.00
 */
-	/*#ifndef(PHP4) */public /* #*/function entry_read ($f_file_path)
-	{
-		if (is_object ($this->data)) { return $this->data->entry_read ($f_file_path); }
-		else { return false; }
-	}
+	/*#ifndef(PHP4) */public /* #*/function entry_read ($f_file_path) { return ((is_object ($this->data)) ? $this->data->entry_read ($f_file_path) : false); }
 
 	//f// direct_ipk->entry_rename ($f_file_path_old,$f_file_path_new,$f_update = false)
 /**
@@ -297,11 +276,7 @@ Set default iPK data
 	* @return boolean True on success
 	* @since  v0.1.00
 */
-	/*#ifndef(PHP4) */public /* #*/function entry_rename ($f_file_path_old,$f_file_path_new,$f_update = false)
-	{
-		if ((!$this->readonly)&&(is_object ($this->data))) { return $this->data->entry_rename ($f_file_path_old,$f_file_path_new,$f_update); }
-		else { return false; }
-	}
+	/*#ifndef(PHP4) */public /* #*/function entry_rename ($f_file_path_old,$f_file_path_new,$f_update = false) { return (((!$this->readonly)&&(is_object ($this->data))) ? $this->data->entry_rename ($f_file_path_old,$f_file_path_new,$f_update) : false); }
 
 	//f// direct_ipk->entry_write ($f_file_path,$f_data,$f_update = false,$f_compress = false,$f_comment = "")
 /**
@@ -316,11 +291,7 @@ Set default iPK data
 	* @return boolean True on success
 	* @since  v0.1.00
 */
-	/*#ifndef(PHP4) */public /* #*/function entry_write ($f_file_path,$f_data,$f_update = false,$f_compress = false,$f_comment = "")
-	{
-		if ((!$this->readonly)&&(is_object ($this->data))) { return $this->data->entry_write ($f_file_path,$f_data,$f_update,$f_compress,$f_comment); }
-		else { return false; }
-	}
+	/*#ifndef(PHP4) */public /* #*/function entry_write ($f_file_path,$f_data,$f_update = false,$f_compress = false,$f_comment = "") { return (((!$this->readonly)&&(is_object ($this->data))) ? $this->data->entry_write ($f_file_path,$f_data,$f_update,$f_compress,$f_comment) : false); }
 
 	//f// direct_ipk->fileindex_read ($f_file_path = "")
 /**
@@ -331,11 +302,7 @@ Set default iPK data
 	* @return mixed File index on success, false on error
 	* @since  v0.1.00
 */
-	/*#ifndef(PHP4) */public /* #*/function fileindex_read ($f_file_path = "")
-	{
-		if (is_object ($this->data)) { return $this->data->fileindex_read ($f_file_path); }
-		else { return false; }
-	}
+	/*#ifndef(PHP4) */public /* #*/function fileindex_read ($f_file_path = "") { return ((is_object ($this->data)) ? $this->data->fileindex_read ($f_file_path) : false); }
 
 	//f// direct_ipk->fileindex_write ()
 /**
@@ -345,11 +312,7 @@ Set default iPK data
 	* @return boolean True on success
 	* @since  v0.1.00
 */
-	/*#ifndef(PHP4) */public /* #*/function fileindex_write ()
-	{
-		if ((!$this->readonly)&&(is_object ($this->data))) { return $this->data->fileindex_write (); }
-		else { return false; }
-	}
+	/*#ifndef(PHP4) */public /* #*/function fileindex_write () { return (((!$this->readonly)&&(is_object ($this->data))) ? $this->data->fileindex_write () : false); }
 
 	//f// direct_ipk->lock ($f_mode)
 /**
@@ -399,9 +362,7 @@ Set default iPK data
 
 			if (file_exists ($f_file_path))
 			{
- 				if (($this->readonly)||(!is_writable ($f_file_path))) { $f_file_mode = "rb"; }
-				else { $f_file_mode = "r+b"; }
-
+ 				$f_file_mode = ((($this->readonly)||(!is_writable ($f_file_path))) ? "rb" : "r+b");
 				$f_created_check = false; 
 				$this->filesize = @filesize ($f_file_path);
 			}
@@ -431,8 +392,7 @@ Set default iPK data
 
 			if (is_object ($this->resource))
 			{
-				if ($this->filesize > 2) { $f_file_id = $this->resource->read (3); }
-				else { $f_file_id = ""; }
+				$f_file_id = (($this->filesize > 2) ? $this->resource->read (3) : "");
 
 				if ($f_file_id == "iPS")
 				{
@@ -496,11 +456,7 @@ Set default iPK data
 	* @return boolean True if the triple MD5s are identical 
 	* @since  v0.1.00
 */
-	/*#ifndef(PHP4) */public /* #*/function tmd5_compare ($f_tmd5)
-	{
-		if (is_object ($this->data)) { return $this->data->tmd5_compare ($f_tmd5); }
-		else { return false; }
-	}
+	/*#ifndef(PHP4) */public /* #*/function tmd5_compare ($f_tmd5) { return ((is_object ($this->data)) ? $this->data->tmd5_compare ($f_tmd5) : false); }
 }
 
 /* -------------------------------------------------------------------------
