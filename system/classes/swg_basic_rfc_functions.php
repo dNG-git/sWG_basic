@@ -158,7 +158,11 @@ Add a variable for the current boundary
 					$f_return .= $this->linesep." ".$f_word;
 					$f_length = (strlen ($f_word) + 1);
 				}
-				else { $f_return .= ($f_return ? " " : $f_word); }
+				else
+				{
+					if ($f_return) { $f_return .= " "; }
+					$f_return .= $f_word;
+				}
 			}
 		}
 		else { $f_return = $f_header; }
