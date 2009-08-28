@@ -107,19 +107,8 @@ function direct_output_block_blockmenu ($f_options)
 					else { $f_continue_check = false; }
 
 					$f_right_check = false;
-
-					if ($f_blocks_array[$f_key."_guests"])
-					{
-						if (($f_blocks_array[$f_key."_guests"]['value'])&&(($direct_settings['user']['type'] == "ex")||($direct_settings['user']['type'] == "gt"))) { $f_right_check = true; }
-					}
-
-					if ($f_blocks_array[$f_key."_members"])
-					{
-						if (($f_blocks_array[$f_key."_members"]['value'])&&(direct_class_function_check ($direct_classes['kernel'],"v_usertype_get_int")))
-						{
-							if ($direct_classes['kernel']->v_usertype_get_int ($direct_settings['user']['type'])) { $f_right_check = true; }
-						}
-					}
+					if (($f_blocks_array[$f_key."_guests"])&&($f_blocks_array[$f_key."_guests"]['value'])&&(($direct_settings['user']['type'] == "ex")||($direct_settings['user']['type'] == "gt"))) { $f_right_check = true; }
+					if (($f_blocks_array[$f_key."_members"])&&($f_blocks_array[$f_key."_members"]['value'])&&(direct_class_function_check ($direct_classes['kernel'],"v_usertype_get_int"))&&($direct_classes['kernel']->v_usertype_get_int ($direct_settings['user']['type']))) { $f_right_check = true; }
 
 /*i// LICENSE_WARNING
 ----------------------------------------------------------------------------
@@ -127,25 +116,22 @@ The sWG Group Class has been published under the General Public License.
 ----------------------------------------------------------------------------
 LICENSE_WARNING_END //i*/
 
-					if ((!$f_right_check)&&($f_blocks_array[$f_key."_group_right"]))
+					if ((!$f_right_check)&&($f_blocks_array[$f_key."_group_right"])&&(direct_class_function_check ($direct_classes['kernel'],"v_group_user_check_right")))
 					{
-						if (direct_class_function_check ($direct_classes['kernel'],"v_group_user_check_right"))
+						if (isset ($f_blocks_array[$f_key."_group_right"]['value']))
 						{
-							if (isset ($f_blocks_array[$f_key."_group_right"]['value']))
-							{
-								if ($f_blocks_array[$f_key."_group_right"]['value']) { $f_right_check = $direct_classes['kernel']->v_group_user_check_right ($f_blocks_array[$f_key."_group_right"]['value']); }
-							}
-							elseif (is_array ($f_blocks_array[$f_key."_group_right"]))
-							{
-								$f_group_rights_array = array ();
+							if ($f_blocks_array[$f_key."_group_right"]['value']) { $f_right_check = $direct_classes['kernel']->v_group_user_check_right ($f_blocks_array[$f_key."_group_right"]['value']); }
+						}
+						elseif (is_array ($f_blocks_array[$f_key."_group_right"]))
+						{
+							$f_group_rights_array = array ();
 
-								foreach ($f_blocks_array[$f_key."_group_right"] as $f_group_right_array)
-								{
-									if (strlen ($f_group_right_array['value'])) { $f_group_rights_array[] = $f_group_right_array['value']; }
-								}
-
-								$f_right_check = $direct_classes['kernel']->v_group_user_check_right ($f_group_rights_array);
+							foreach ($f_blocks_array[$f_key."_group_right"] as $f_group_right_array)
+							{
+								if (strlen ($f_group_right_array['value'])) { $f_group_rights_array[] = $f_group_right_array['value']; }
 							}
+
+							$f_right_check = $direct_classes['kernel']->v_group_user_check_right ($f_group_rights_array);
 						}
 					}
 

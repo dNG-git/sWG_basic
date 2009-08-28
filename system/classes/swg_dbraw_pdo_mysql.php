@@ -323,64 +323,54 @@ $this->pdo = array (
 
 			if ($f_continue_check)
 			{
-				if ($f_data['type'] == "select")
-				{
-					if (!empty ($f_data['attributes'])) { $this->query_cache .= ($this->query_build_attributes ($f_data['attributes']))." FROM "; }
-				}
-
+				if (($f_data['type'] == "select")&&(!empty ($f_data['attributes']))) { $this->query_cache .= ($this->query_build_attributes ($f_data['attributes']))." FROM "; }
 				$this->query_cache .= $f_data['table'];
 
-				if ($f_data['type'] == "select")
+				if (($f_data['type'] == "select")&&(!empty ($f_data['joins'])))
 				{
-					if (!empty ($f_data['joins']))
+					foreach ($f_data['joins'] as $f_join_array)
 					{
-						foreach ($f_data['joins'] as $f_join_array)
+						switch ($f_join_array['type'])
 						{
-							switch ($f_join_array['type'])
-							{
-							case "cross-join":
-							{
-								$this->query_cache .= " CROSS JOIN ".$f_join_array['table'];
-								break 1;
-							}
-							case "inner-join":
-							{
-								$this->query_cache .= " INNER JOIN {$f_join_array['table']} ON ";
-								break 1;
-							}
-							case "left-outer-join":
-							{
-								$this->query_cache .= " LEFT OUTER JOIN {$f_join_array['table']} ON ";
-								break 1;
-							}
-							case "natural-join":
-							{
-								$this->query_cache .= " NATURAL JOIN ".$f_join_array['table'];
-								break 1;
-							}
-							case "right-outer-join":
-							{
-								$this->query_cache .= " RIGHT OUTER JOIN {$f_join_array['table']} ON ";
-								break 1;
-							}
-							}
+						case "cross-join":
+						{
+							$this->query_cache .= " CROSS JOIN ".$f_join_array['table'];
+							break 1;
+						}
+						case "inner-join":
+						{
+							$this->query_cache .= " INNER JOIN {$f_join_array['table']} ON ";
+							break 1;
+						}
+						case "left-outer-join":
+						{
+							$this->query_cache .= " LEFT OUTER JOIN {$f_join_array['table']} ON ";
+							break 1;
+						}
+						case "natural-join":
+						{
+							$this->query_cache .= " NATURAL JOIN ".$f_join_array['table'];
+							break 1;
+						}
+						case "right-outer-join":
+						{
+							$this->query_cache .= " RIGHT OUTER JOIN {$f_join_array['table']} ON ";
+							break 1;
+						}
+						}
 
-							if (!empty ($f_join_array['requirements']))
-							{
-								$f_xml_node_array = $direct_classes['xml_bridge']->xml2array ($f_join_array['requirements'],true,false);
-								if (isset ($f_xml_node_array['sqlconditions'])) { $this->query_cache .= $this->query_build_row_conditions_walker ($f_xml_node_array['sqlconditions']); }
-							}
+						if (!empty ($f_join_array['requirements']))
+						{
+							$f_xml_node_array = $direct_classes['xml_bridge']->xml2array ($f_join_array['requirements'],true,false);
+							if (isset ($f_xml_node_array['sqlconditions'])) { $this->query_cache .= $this->query_build_row_conditions_walker ($f_xml_node_array['sqlconditions']); }
 						}
 					}
 				}
 
-				if (($f_data['type'] == "insert")||($f_data['type'] == "replace")||($f_data['type'] == "update"))
+				if ((($f_data['type'] == "insert")||($f_data['type'] == "replace")||($f_data['type'] == "update"))&&($f_data['set_attributes']))
 				{
-					if ($f_data['set_attributes'])
-					{
-						$f_xml_node_array = $direct_classes['xml_bridge']->xml2array ($f_data['set_attributes'],true,false);
-						if (isset ($f_xml_node_array['sqlvalues'])) { $this->query_cache .= " SET ".($this->query_build_set_attributes ($f_xml_node_array['sqlvalues'])); }
-					}
+					$f_xml_node_array = $direct_classes['xml_bridge']->xml2array ($f_data['set_attributes'],true,false);
+					if (isset ($f_xml_node_array['sqlvalues'])) { $this->query_cache .= " SET ".($this->query_build_set_attributes ($f_xml_node_array['sqlvalues'])); }
 				}
 
 				if (($f_data['type'] == "delete")||($f_data['type'] == "select")||($f_data['type'] == "update"))
@@ -410,13 +400,10 @@ $this->pdo = array (
 					}
 				}
 
-				if ($f_data['type'] == "select")
+				if (($f_data['type'] == "select")&&($f_data['ordering']))
 				{
-					if ($f_data['ordering'])
-					{
-						$f_xml_node_array = $direct_classes['xml_bridge']->xml2array ($f_data['ordering'],true,false);
-						if (isset ($f_xml_node_array['sqlordering'])) { $this->query_cache .= " ORDER BY ".($this->query_build_ordering ($f_xml_node_array['sqlordering'])); }
-					}
+					$f_xml_node_array = $direct_classes['xml_bridge']->xml2array ($f_data['ordering'],true,false);
+					if (isset ($f_xml_node_array['sqlordering'])) { $this->query_cache .= " ORDER BY ".($this->query_build_ordering ($f_xml_node_array['sqlordering'])); }
 				}
 
 				if (($f_data['type'] == "insert")||($f_data['type'] == "replace"))
@@ -433,16 +420,8 @@ $this->pdo = array (
 					}
 				}
 
-				if (($f_data['type'] == "delete")||($f_data['type'] == "select")||($f_data['type'] == "update"))
-				{
-					if ($f_data['limit']) { $this->query_cache .= " LIMIT ".$f_data['limit']; }
-				}
-
-				if ($f_data['type'] == "select")
-				{
-					if ($f_data['offset']) { $this->query_cache .= " OFFSET ".$f_data['offset']; }
-				}
-
+				if ((($f_data['type'] == "delete")||($f_data['type'] == "select")||($f_data['type'] == "update"))&&($f_data['limit'])) { $this->query_cache .= " LIMIT ".$f_data['limit']; }
+				if (($f_data['type'] == "select")&&($f_data['offset'])) { $this->query_cache .= " OFFSET ".$f_data['offset']; }
 				$f_return = (($f_data['answer'] == "sql") ? $this->query_cache : $this->query_exec ($f_data['answer'],$this->query_cache));
 			}
 			else { trigger_error ("sWG/#echo(__FILEPATH__)# -db_class->query_build ()- (#echo(__LINE__)#) reporting: Required definition elements are missing",E_USER_WARNING); }
