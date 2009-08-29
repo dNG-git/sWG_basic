@@ -202,7 +202,11 @@ Add a variable for the current boundary
 					$f_header_name = strtolower ($f_header_array[0]);
 					$f_header_array[1] = trim ($f_header_array[1]);
 
-					if (isset ($f_return[$f_header_name])) { $f_return[$f_header_name][] = ((is_array ($f_return[$f_header_name])) ? $f_header_array[1] : array ($f_return[$f_header_name],$f_header_array[1])); }
+					if (isset ($f_return[$f_header_name]))
+					{
+						if (is_array ($f_return[$f_header_name])) { $f_return[$f_header_name][] = $f_header_array[1]; }
+						else { $f_return[$f_header_name] = array ($f_return[$f_header_name],$f_header_array[1]); }
+					}
 					else { $f_return[$f_header_name] = $f_header_array[1]; }
 				}
 				elseif (strlen ($f_header_array[0]))
