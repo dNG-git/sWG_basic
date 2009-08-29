@@ -122,8 +122,8 @@ case "form-save":
 We should have input in save mode
 ------------------------------------------------------------------------- */
 
-		$direct_cachedata['i_ausername'] = (isset ($GLOBALS['i_ausername']) ? ($direct_classes['basic_functions']->inputfilter_basic ($GLOBALS['i_ausername'])) : "");
-		$direct_cachedata['i_asecid'] = (isset ($GLOBALS['i_asecid']) ? ($direct_classes['basic_functions']->inputfilter_basic ($GLOBALS['i_asecid'])) : "");
+		$direct_cachedata['i_apassword'] = (isset ($GLOBALS['i_apassword']) ? ($direct_classes['basic_functions']->inputfilter_basic ($GLOBALS['i_apassword'])) : "");
+		$direct_cachedata['i_apassword_new'] = (isset ($GLOBALS['i_apassword_new']) ? ($direct_classes['basic_functions']->inputfilter_basic ($GLOBALS['i_apassword_new'])) : "");
 	}
 	else
 	{
