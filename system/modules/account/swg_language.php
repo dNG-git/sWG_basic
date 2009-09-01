@@ -143,15 +143,15 @@ case "select-save":
 		$g_language = preg_replace ("#\W+#i","",$GLOBALS['i_alang']);
 		if (file_exists ($direct_settings['path_lang']."/swg_account.$g_language.xml")) { $direct_settings['lang'] = $g_language; }
 
-		direct_local_integration ("core","en",true);
-		direct_local_integration ("account","en",true);
+		direct_local_integration ("core",$direct_settings['lang'],true);
+		direct_local_integration ("account",$direct_settings['lang'],true);
 
 		$direct_cachedata['output_job'] = direct_local_get ("account_language_select");
 		$direct_cachedata['output_job_desc'] = direct_local_get ("account_done_language_select");
 
 		if ($g_target_url)
 		{
-			$g_target_link = str_replace (array ("[oid]","[lang]"),(array ("","&lang=".$g_lang)),$g_target_url);
+			$g_target_link = str_replace (array ("[oid]","[lang]"),(array ("","&lang=".$direct_settings['lang'])),$g_target_url);
 
 			$direct_cachedata['output_jsjump'] = 2000;
 			$direct_cachedata['output_pagetarget'] = str_replace ('"',"",(direct_linker ("url0",$g_target_link)));

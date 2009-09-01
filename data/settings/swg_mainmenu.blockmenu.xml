@@ -23,7 +23,7 @@
    <link value='m=account&amp;s=status&amp;a=logout' type='url0' />
    <guests value='0' />
    <members value='1' />
-   <group_right value='0' />
+   <group_right value='srutype-ex' />
   </status_logout_en>
 
   <status_logout_de active='1' level='' lang='de'>
@@ -31,7 +31,7 @@
    <link value='m=account&amp;s=status&amp;a=logout' type='url0' />
    <guests value='0' />
    <members value='1' />
-   <group_right value='0' />
+   <group_right value='srutype-ex' />
   </status_logout_de>
 
   <services_en active='1' level='' lang='en'>
@@ -74,8 +74,11 @@
    <link value='m=cp' type='url0' />
    <guests value='0' />
    <members value='0' />
-   <group_right value='cp_access' />
-   <group_right value='srutype-ad' />
+   <group>
+    <right value='cp_access' />
+    <right value='srutype-ad' />
+    <right value='developer_access' />
+   </group>
   </en>
 
   <de active='1' level='' lang='de'>
@@ -83,8 +86,11 @@
    <link value='m=cp' type='url0' />
    <guests value='0' />
    <members value='0' />
-   <group_right value='cp_access' />
-   <group_right value='srutype-ad' />
+   <group>
+    <right value='cp_access' />
+    <right value='srutype-ad' />
+    <right value='developer_access' />
+   </group>
   </de>
 
  </cp>
