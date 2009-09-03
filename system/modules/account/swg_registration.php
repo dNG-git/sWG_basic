@@ -59,6 +59,7 @@ if (!isset ($direct_settings['account_registration_mods_support'])) { $direct_se
 if (!isset ($direct_settings['account_secid_bytemix'])) { $direct_settings['account_secid_bytemix'] = ($direct_settings['swg_id'] ^ (strrev ($direct_settings['swg_id']))); }
 if (!isset ($direct_settings['serviceicon_default_back'])) { $direct_settings['serviceicon_default_back'] = "mini_default_back.png"; }
 if (!isset ($direct_settings['users_min'])) { $direct_settings['users_min'] = 3; }
+if (!isset ($direct_settings['users_password_min'])) { $direct_settings['users_password_min'] = 6; }
 if (!isset ($direct_settings['users_registration_credits_onetime'])) { $direct_settings['users_registration_credits_onetime'] = 200; }
 if (!isset ($direct_settings['users_registration_credits_periodically'])) { $direct_settings['users_registration_credits_periodically'] = 0; }
 if (!isset ($direct_settings['users_registration_time'])) { $direct_settings['users_registration_time'] = 864000; }

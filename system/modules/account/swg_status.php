@@ -57,6 +57,7 @@ if (!isset ($direct_settings['account_https_login'])) { $direct_settings['accoun
 if (!isset ($direct_settings['account_status_mods_support'])) { $direct_settings['account_status_mods_support'] = false; }
 if (!isset ($direct_settings['serviceicon_default_back'])) { $direct_settings['serviceicon_default_back'] = "mini_default_back.png"; }
 if (!isset ($direct_settings['users_min'])) { $direct_settings['users_min'] = 3; }
+if (!isset ($direct_settings['users_password_min'])) { $direct_settings['users_password_min'] = 6; }
 $direct_settings['additional_copyright'][] = array ("Module basic #echo(sWGbasicVersion)# - (C) ","http://www.direct-netware.de/redirect.php?swg","direct Netware Group"," - All rights reserved");
 
 if ($direct_settings['a'] == "index") { $direct_settings['a'] = "login"; }
@@ -168,15 +169,12 @@ Save data edited
 ------------------------------------------------------------------------- */
 
 		$g_cookie = (((USE_cookies)&&($direct_cachedata['i_acookie'])) ? true : false);
-		$g_form_view = false;
 		$g_user_array = $direct_classes['kernel']->v_user_get ("",$direct_cachedata['i_ausername'],true);
 
 		if (direct_mods_include ($direct_settings['account_status_mods_support'],"account_status","test"))
 		{
 			$g_override_check = direct_mods_include (true,"account_status","login_process",$g_user_array);
-
 			if ($g_override_check) { $g_user_array = $direct_classes['kernel']->v_user_get ("",$direct_cachedata['i_ausername'],true); }
-			else { $g_form_view = true; }
 		}
 		else { $g_override_check = false; }
 
@@ -237,7 +235,7 @@ $g_log_array = array (
 					$direct_classes['output']->header (false,true,$direct_settings['p3p_url'],$direct_settings['p3p_cp']);
 					$direct_classes['output']->page_show ($direct_cachedata['output_job']);
 				}
-				else { $direct_classes['error_functions']->error_page ("standard","core_unknown_error","sWG/#echo(__FILEPATH__)# _a=login-save_ (#echo(__LINE__)#)"); }
+				elseif (is_bool ($g_override_check)) { $direct_classes['error_functions']->error_page ("standard","core_unknown_error","sWG/#echo(__FILEPATH__)# _a=login-save_ (#echo(__LINE__)#)"); }
 			}
 			else
 			{
@@ -255,9 +253,7 @@ $g_log_array = array (
 		}
 		else { $direct_classes['error_functions']->error_page ("standard","core_username_unknown","sWG/#echo(__FILEPATH__)# _a=login-save_ (#echo(__LINE__)#)"); }
 	}
-	else { $g_form_view = true; }
-
-	if ($g_form_view)
+	else
 	{
 /* -------------------------------------------------------------------------
 View form

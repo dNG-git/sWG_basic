@@ -56,6 +56,7 @@ if (!defined ("direct_product_iversion")) { exit (); }
 if (!isset ($direct_settings['account_https_password_change'])) { $direct_settings['account_https_password_change'] = false; }
 if (!isset ($direct_settings['serviceicon_account_profile_edit'])) { $direct_settings['serviceicon_account_profile_edit'] = "mini_default_option.png"; }
 if (!isset ($direct_settings['serviceicon_default_back'])) { $direct_settings['serviceicon_default_back'] = "mini_default_back.png"; }
+if (!isset ($direct_settings['users_password_min'])) { $direct_settings['users_password_min'] = 6; }
 $direct_settings['additional_copyright'][] = array ("Module basic #echo(sWGbasicVersion)# - (C) ","http://www.direct-netware.de/redirect.php?swg","direct Netware Group"," - All rights reserved");
 
 if ($direct_settings['a'] == "index") { $direct_settings['a'] = "form"; }
