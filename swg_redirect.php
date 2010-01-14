@@ -60,51 +60,58 @@ import_request_variables ("CGP","i_");
 //j// Script specific commands
 
 if ((!$my_swg_file)||($my_swg_file == "<<CHANGE ME NOW>>")) { $my_swg_file = "swg.php"; }
-define (OW_PHP_SELF,$my_swg_file);
+define ("OW_PHP_SELF",$my_swg_file);
 
 if (trim ($_SERVER['QUERY_STRING']))
 {
-	if ((/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($_SERVER['QUERY_STRING'],"%3b") !== false)&&(strpos ($_SERVER['QUERY_STRING'],";") === false)) { $g_query = explode (";",(urldecode ($_SERVER['QUERY_STRING'])),4); }
-	else { $g_query = explode (";",$_SERVER['QUERY_STRING'],4); }
+	if ((/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($_SERVER['QUERY_STRING'],"%3b") !== false)&&(strpos ($_SERVER['QUERY_STRING'],";") === false)) { $g_query_array = explode (";;",(urldecode ($_SERVER['QUERY_STRING'])),2); }
+	else { $g_query_array = explode (";;",$_SERVER['QUERY_STRING'],2); }
 
-	switch (count ($g_query))
+	if (isset ($g_query_array[1])) { $g_query_array[0] .= ";"; }
+	$g_target_array = explode (";",$g_query_array[0],4);
+
+	switch (count ($g_target_array))
 	{
 	case 4:
 	{
-		$i_m = (($g_query[0] == "-") ? "" : $g_query[0]);
-		$i_s = (($g_query[1] == "-") ? "" : $g_query[1]);
-		$i_a = (($g_query[2] == "-") ? "" : $g_query[2]);
-		if ($g_query[3] == "-") { $g_query[3] = ""; }
+		$i_m = (($g_target_array[0] == "-") ? "" : $g_target_array[0]);
+		$i_s = (($g_target_array[1] == "-") ? "" : $g_target_array[1]);
+		$i_a = (($g_target_array[2] == "-") ? "" : $g_target_array[2]);
+		if (isset ($g_query_array[1])) { $g_target_array[3] = $g_query_array[1]; }
+		if ($g_target_array[3] == "-") { $g_target_array[3] = ""; }
 
-		if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($g_query[3],"++") === false) { $i_dsd = "idata+".(preg_replace ("#\&(.*?)$#","",$g_query[3])); }
-		else { $i_dsd = preg_replace ("#\&(.*?)$#","",$g_query[3]); }
+		if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($g_target_array[3],"++") === false) { $i_dsd = "idata+".(preg_replace ("#\&(.*?)$#","",$g_target_array[3])); }
+		else { $i_dsd = preg_replace ("#\&(.*?)$#","",$g_target_array[3]); }
 
 		break 1;
 	}
 	case 3:
 	{
-		$i_m = (($g_query[0] == "-") ? "" : $g_query[0]);
-		$i_s = (($g_query[1] == "-") ? "" : $g_query[1]);
-		if ($g_query[2] == "-") { $g_query[2] = ""; }
+		$i_m = (($g_target_array[0] == "-") ? "" : $g_target_array[0]);
+		$i_s = (($g_target_array[1] == "-") ? "" : $g_target_array[1]);
+		if (isset ($g_query_array[1])) { $g_target_array[2] = $g_query_array[1]; }
+		if ($g_target_array[2] == "-") { $g_target_array[2] = ""; }
 
-		if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($g_query[2],"++") === false) { $i_dsd = "idata+".(preg_replace ("#\&(.*?)$#","",$g_query[2])); }
-		else { $i_dsd = preg_replace ("#\&(.*?)$#","",$g_query[2]); }
+		if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($g_target_array[2],"++") === false) { $i_dsd = "idata+".(preg_replace ("#\&(.*?)$#","",$g_target_array[2])); }
+		else { $i_dsd = preg_replace ("#\&(.*?)$#","",$g_target_array[2]); }
 
 		break 1;
 	}
 	case 2:
 	{
-		$i_m = (($g_query[0] == "-") ? "" : $g_query[0]);
-		if ($g_query[1] == "-") { $g_query[1] = ""; }
+		$i_m = (($g_target_array[0] == "-") ? "" : $g_target_array[0]);
+		if (isset ($g_query_array[1])) { $g_target_array[1] = $g_query_array[1]; }
+		if ($g_target_array[1] == "-") { $g_target_array[1] = ""; }
 
-		if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($g_query[1],"++") === false) { $i_dsd = "idata+".(preg_replace ("#\&(.*?)$#","",$g_query[1])); }
-		else { $i_dsd = preg_replace ("#\&(.*?)$#","",$g_query[1]); }
+		if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($g_target_array[1],"++") === false) { $i_dsd = "idata+".(preg_replace ("#\&(.*?)$#","",$g_target_array[1])); }
+		else { $i_dsd = preg_replace ("#\&(.*?)$#","",$g_target_array[1]); }
 
 		break 1;
 	}
 	}
 
-	unset ($g_query);
+	unset ($g_query_array);
+	unset ($g_target_array);
 }
 
 @include ($my_swg_file);

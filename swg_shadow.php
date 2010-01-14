@@ -60,7 +60,7 @@ import_request_variables ("CGP","i_");
 //j// Script specific commands
 
 if ((!$my_swg_file)||($my_swg_file == "<<CHANGE ME NOW>>")) { $my_swg_file = "swg.php"; }
-define (OW_PHP_SELF,$my_swg_file);
+define ("OW_PHP_SELF",$my_swg_file);
 
 if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($_SERVER['QUERY_STRING'],"&amp;") !== false) { parse_str (preg_replace ("#&amp;#i","&",$_SERVER['QUERY_STRING'])); }
 
