@@ -133,9 +133,8 @@ Informing the system about available functions
 		$direct_settings['theme_xhtml_type'] = "application/xhtml+xml; charset=".$direct_local['lang_charset'];
 		header ("Content-Type: ".$direct_settings['theme_xhtml_type'],true);
 
-$this->page = ("<?xml version='1.0' encoding='$direct_local[lang_charset]' ?>
-<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">
-<html xmlns='http://www.w3.org/1999/xhtml' xml:lang='en'>
+$this->page = ("<?xml version='1.0' encoding='$direct_local[lang_charset]' ?><!DOCTYPE html SYSTEM \"about:legacy-compat\">
+<html xmlns='http://www.w3.org/1999/xhtml' xml:lang='$direct_local[lang_iso_domain]'>
 
 <head>
 <title>$f_title</title>");
@@ -156,18 +155,20 @@ a:visited { text-decoration:underline }
 a:hover { text-decoration:none }
 a:focus { text-decoration:underline }
 
-body { height:100%;margin:0px;padding:0px 31px;background-color:#FFFFFF }
+body { margin:0px;padding:0px 4%;background-color:#FFFFFF }
 body { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;font-style:normal;line-height:normal;font-weight:normal }
 form { margin:0px;padding:0px }
-html { height:100% }
-img { border:0px }
+img { border:none }
 input.file { width:90%;text-align:center;background-color:#F5F5F5 }
 input.file { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;color:#000000 }
-table { margin:0px;border:0px;table-layout:fixed }
+table { margin:0px;table-layout:fixed;border:none;border-collapse:collapse;border-spacing:0px }
 td { padding:0px }
 
 .designcopyrightcontent { text-align:center;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10px;color:#000000 }
 .designcopyrightcontent a, .designcopyrightcontent a:link, .designcopyrightcontent a:active, .designcopyrightcontent a:visited, .designcopyrightcontent a:hover, .designcopyrightcontent a:focus { color:#000000 }
+
+.designpagebg *:first-child { margin-top:0px }
+.designpagebg *:last-child { margin-bottom:0px }
 
 .designservicemenucontent { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;color:#222222 }
 .designservicemenucontent a, .designservicemenucontent a:link, .designservicemenucontent a:visited { color:#000000;text-decoration:underline }
@@ -180,7 +181,7 @@ td { padding:0px }
 
 .pagebg { background-color:#FFFFFF }
 
-.pageborder1 { background-color:#193879 }
+.pageborder1 { background-color:#193879;border-collapse:separate;border-spacing:1px }
 .pageborder2 { border:1px solid #193879;background-color:#D9D9DA;padding:4px }
 
 .pagecontent { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;color:#222222 }
@@ -197,6 +198,9 @@ td { padding:0px }
 .pagecontenttitle { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;font-weight:bold;color:#DDDDDD }
 .pagecontenttitle a, .pagecontenttitle a:link, .pagecontenttitle a:active, .pagecontenttitle a:visited, .pagecontenttitle a:hover, .pagecontenttitle a:focus { color:#FFFFFF }
 
+.pageembeddedborder1 { background-color:#DDDDDD;border-collapse:separate;border-spacing:1px }
+.pageembeddedborder2 { border:1px solid #DDDDDD;background-color:#FFFFFF;padding:4px }
+
 .pageerrorcontent { font-weight:bold;color:#FF0000 }
 .pageerrorcontent a, .pageerrorcontent a:link, .pageerrorcontent a:active, .pageerrorcontent a:visited, .pageerrorcontent a:hover, .pageerrorcontent a:focus { color:#CC0000 }
 
@@ -205,7 +209,7 @@ td { padding:0px }
 .pageextracontent a, .pageextracontent a:link, .pageextracontent a:active, .pageextracontent a:visited, .pageextracontent a:hover, .pageextracontent a:focus { color:#000000 }
 
 .pagehide { display:none }
-.pagehighlightborder1 { background-color:#FF0000 }
+.pagehighlightborder1 { background-color:#FF0000;border-collapse:separate;border-spacing:1px }
 .pagehighlightborder2 { border:1px solid #FF0000;background-color:#FBF6CD;padding:4px }
 
 .pagehr { height:1px;overflow:hidden;border-top:1px solid #193879 }
@@ -218,32 +222,37 @@ td { padding:0px }
 ".($direct_classes['output']->header_elements ())."
 </head>
 
-<body onload='djs_run_onload ();'><!--
-sWG print theme
-// --><table cellspacing='1' summary='' style='width:100%;height:75px;border:1px solid #CCCDD1;background-color:#FFFFFF'>
-<tbody><tr>
-<td valign='middle' align='center' class='designtitlebg'>
-<table cellspacing='0' summary='' style='width:100%;height:75px'>
-<tbody><tr>
-<td align='left' style='width:75px;line-height:0px'><a href='http://www.direct-netware.de/redirect.php?$direct_settings[product_icode]' target='_blank'><img src='$direct_settings[iscript_url]a=cache&amp;dsd=dfile+swg_logo.png' width='75' height='75' alt='$direct_settings[product_lcode_txt]' title='$direct_settings[product_lcode_txt]' /></a></td>
-<td valign='middle' align='right' style='width:100%;padding-right:10px'><span class='designtitlecontent'><span style='font-size:24px'><a href='".(direct_linker ("url0","a=info"))."' target='_blank' style='text-decoration:none'>$direct_settings[product_lcode_html]</a></span><br />
-$direct_settings[product_lcode_subtitle_html]</span></td>
-</tr></tbody>
-</table>
-</td>
-</tr></tbody>
-</table>");
+<body onload='djs_run_onload ();'><div id='swgAJAX_loading_point' style='display:none'><!-- iPoint // --></div><script type='text/javascript'><![CDATA[
+djs_swgAJAX_loading_writeln ('center');
+]]></script><table style='width:100%'>
+<thead><tr>
+<td class='designtitlebg' style='height:85px;padding:5px 15px;border:1px solid #CCCDD1;text-align:right;vertical-align:middle'><div style='float:left'><a href='http://www.direct-netware.de/redirect.php?$direct_settings[product_icode]' target='_blank'><img src='$direct_settings[iscript_url]a=cache&amp;dsd=dfile+swg_logo.png' width='75' height='75' alt='$direct_settings[product_lcode_txt]' title='$direct_settings[product_lcode_txt]' /></a></div>
+<p class='designtitlecontent'><span id='swgversion_ipoint' style='font-size:24px'><a href='".(direct_linker ("url0","a=info"))."' target='_blank' style='text-decoration:none'>$direct_settings[product_lcode_html]</a><br /></span><script type='text/javascript'><![CDATA[
+if (djs_swgDOM)
+{
+ function djs_swgversion_switch ()
+ {
+  if (self.document.getElementById('swgversion').style.display == 'none') { self.document.getElementById('swgversion').style.display = 'inline'; }
+  else { self.document.getElementById('swgversion').style.display = 'none'; }
+ }
+
+djs_swgDOM_replace (\"<span class='designtitlecontent'><span style='font-size:24px'><a href='javascript:djs_swgversion_switch();' style='text-decoration:none'>$direct_settings[product_lcode_html]</a></span><br />\\n\" +
+\"<span id='swgversion' style='display:none'>$direct_settings[product_version] - $direct_settings[product_buildid]<br /></span></span>\",'swgversion_ipoint')
+}
+]]></script>$direct_settings[product_lcode_subtitle_html]</p></td>
+</tr></thead><tbody><tr>
+<td class='designpagebg' style='padding:20px 0px;text-align:left;vertical-align:middle'>");
 
 		if ($direct_classes['output']->options_check ("servicemenu")) { $this->page .= "\n<p class='pageborder2' style='text-align:left'><span class='pageextracontent'>".($direct_classes['output']->options_generator ("h","servicemenu"))."</span></p>"; }
 		$this->page .= "\n".$direct_classes['output']->page_content;
 		if ($direct_classes['output']->options_check ("servicemenu")) { $this->page .= "\n<p class='pageborder2' style='text-align:right'><span class='pageextracontent'>".($direct_classes['output']->options_generator ("h","servicemenu"))."</span></p>"; }
 
-$this->page .= ("<p class='designcopyrightcontent'>Powered by: $direct_settings[product_lcode_html] $direct_settings[product_version]<br />
-&copy; <a href='http://www.direct-netware.de/redirect.php?$direct_settings[product_icode]' target='_blank'><span style='font-style:italic'>direct</span> Netware Group</a> - All rights reserved");
-
-		if ($direct_classes['output']->output_additional_copyright) { $this->page .= "<br />".$direct_classes['output']->output_additional_copyright; }
-
-$this->page .= ("</p>
+$this->page .= ("</td>
+</tr></tbody><tfoot><tr>
+<td style='height:50px;border-top:1px solid #CCCDD1;text-align:center;vertical-align:middle'><span class='designcopyrightcontent'>Powered by: $direct_settings[product_lcode_html] $direct_settings[product_version]<br />
+&#xA9; <a href='http://www.direct-netware.de/redirect.php?$direct_settings[product_icode]' target='_blank'><span style='font-style:italic'>direct</span> Netware Group</a> - All rights reserved</span></td>
+</tr></tfoot>
+</table>
 </body>
 
 </html>");

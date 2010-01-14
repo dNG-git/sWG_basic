@@ -133,9 +133,10 @@ Informing the system about available functions
 		$direct_settings['theme_xhtml_type'] = "application/xhtml+xml; charset=".$direct_local['lang_charset'];
 		header ("Content-Type: ".$direct_settings['theme_xhtml_type'],true);
 
-$this->page = ("<?xml version='1.0' encoding='$direct_local[lang_charset]' ?>
-<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">
-<html xmlns='http://www.w3.org/1999/xhtml' xml:lang='en'>
+		if (!isset ($direct_settings['theme_mainmenu'])) { $direct_settings['theme_mainmenu'] = "mainmenu"; }
+
+$this->page = ("<?xml version='1.0' encoding='$direct_local[lang_charset]' ?><!DOCTYPE html SYSTEM \"about:legacy-compat\">
+<html xmlns='http://www.w3.org/1999/xhtml' xml:lang='$direct_local[lang_iso_domain]'>
 
 <head>
 <title>$f_title - Light Edition</title>");
@@ -156,81 +157,96 @@ a:visited { text-decoration:underline }
 a:hover { text-decoration:none }
 a:focus { text-decoration:underline }
 
-body { margin:0px;padding:0px;background-color:#FFFFFF }
+body { margin:0px;padding:0px 19px;background-color:#6A6A6A }
 body { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;font-style:normal;line-height:normal;font-weight:normal }
 form { margin:0px;padding:0px }
-img { border:0px }
-table { margin:0px;border:0px }
+img { border:none }
+table { margin:0px;table-layout:fixed;border:none;border-collapse:collapse;border-spacing:0px }
 td { padding:0px }
 
-.designcopyrightcontent { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10px;color:#000000 }
-.designcopyrightcontent a, .designcopyrightcontent a:link, .designcopyrightcontent a:active, .designcopyrightcontent a:visited, .designcopyrightcontent a:hover, .designcopyrightcontent a:focus { color:#000000 }
+.designcopyrightbg { background-color:#808080 }
+.designcopyrightcontent { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10px;color:#DDDDDD }
+.designcopyrightcontent a, .designcopyrightcontent a:link, .designcopyrightcontent a:active, .designcopyrightcontent a:visited, .designcopyrightcontent a:hover, .designcopyrightcontent a:focus { color:#FFFFFF }
 
-.designmenu1bg { background-color:#294563 }
-.designmenu1content { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;color:#EEEEEE }
-.designmenu1content a, .designmenu1content a:link, .designmenu1content a:visited { color:#FFFFFF;text-decoration:none }
-.designmenu1content a:active, .designmenu1content a:hover, .designmenu1content a:focus { color:#FFFFFF;text-decoration:underline }
+.designmainmenucontent { border:1px solid #375A9D;border-radius:3px 3px;padding:5px;text-align:center }
+.designmainmenucontent { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;color:#222222 }
+.designmainmenucontent span { white-space:nowrap }
+.designmainmenucontent span a, .designmainmenucontent span a:link, .designmainmenucontent span a:visited { color:#000000;text-decoration:underline }
+.designmainmenucontent span a:active, .designmainmenucontent span a:hover, .designmainmenucontent span a:focus { color:#444444;text-decoration:none }
 
-.designmenu2bg { background-color:#FFFFFF }
-.designmenu2content { text-align:center;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:11px;color:#222222 }
-.designmenu2content a, .designmenu2content a:link, .designmenu2content a:visited { color:#000000;text-decoration:underline }
-.designmenu2content a:active, .designmenu2content a:hover, .designmenu2content a:focus { color:#444444;text-decoration:none }
+.designpagebg { background-color:#FFFFFF }
+.designpagebg *:first-child { margin-top:0px }
+.designpagebg *:last-child { margin-bottom:0px }
 
-.designservicemenucontent { display:block;margin-bottom:1px;padding:5px;border:1px solid #CBDE7B;background-color:#F2F6DE }
-.designservicemenucontent { text-align:center;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10px;color:#222222 }
+.designpagemenucontent { border:1px solid #193879;border-radius:3px 3px;padding:5px;text-align:center }
+.designpagemenucontent { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;font-weight:bold;color:#222222 }
+.designpagemenucontent span { white-space:nowrap }
+.designpagemenucontent span a, .designpagemenucontent span a:link, .designpagemenucontent span a:visited { color:#000000;text-decoration:underline }
+.designpagemenucontent span a:active, .designpagemenucontent span a:hover, .designpagemenucontent span a:focus { color:#444444;text-decoration:none }
+
+.designservicemenucontent { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;color:#222222 }
 .designservicemenucontent a, .designservicemenucontent a:link, .designservicemenucontent a:visited { color:#000000;text-decoration:underline }
 .designservicemenucontent a:active, .designservicemenucontent a:hover, .designservicemenucontent a:focus { color:#444444;text-decoration:none }
 
-.designtitlebg { background-image:url(".(direct_linker_dynamic ("url0","a=cache&dsd=dfile+swg_bg.png",false,false)).");background-color:#CCCDD1 }
+.designtitlebg { background-image:url($direct_settings[iscript_url]a=cache&dsd=dfile+swg_bg.png);background-repeat:repeat-x;background-color:#FFFFFF }
 .designtitlecontent { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;color:#000000 }
-.designtitlecontent a, .pagetitlecontent a:link, .pagetitlecontent a:visited { color:#000000;text-decoration:underline }
-.designtitlecontent a:active, .pagetitlecontent a:hover, .pagetitlecontent a:focus { color:#363B21;text-decoration:none }
+.designtitlecontent a, .designtitlecontent a:link, .designtitlecontent a:visited { color:#000000;text-decoration:underline }
+.designtitlecontent a:active, .designtitlecontent a:hover, .designtitlecontent a:focus { color:#193879;text-decoration:none }
 
-.pagebg { background-color:#ECECED }
+.pagebg { background-color:#FFFFFF }
 
-.pageborder1 { background-color:#CCCCCC }
-.pageborder2 { border:1px solid #CCCCCC;background-color:#FFFFFF;padding:5px }
+.pageborder1 { background-color:#193879;border-collapse:separate;border-spacing:1px }
+.pageborder2 { border:1px solid #193879;background-color:#D9D9DA;padding:4px }
 
-.pagecontent { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;color:#000000 }
+.pagecontent { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;color:#222222 }
 .pagecontent a, .pagecontent a:link, .pagecontent a:active, .pagecontent a:visited, .pagecontent a:hover, .pagecontent a:focus { color:#000000 }
-.pagecontentinputbutton { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;color:#000000;background-color:#FFFFFF }
-.pagecontentinputcheckbox { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;color:#000000;background-color:#EEEEEE }
-.pagecontentinputtextnpassword { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;color:#000000;background-color:#FFFFFF }
-.pagecontentselect { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;color:#000000;background-color:#EEEEEE }
-.pagecontenttextarea { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;color:#000000;background-color:#FFFFFF }
-.pagecontenttitle { border:1px solid #4C6C8F;background-color:#FFFFFF;padding:5px }
-.pagecontenttitle { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;font-weight:bold;color:#000000 }
-.pagecontenttitle a, .pagecontenttitle a:link, .pagecontenttitle a:active, .pagecontenttitle a:visited, .pagecontenttitle a:hover, .pagecontenttitle a:focus { color:#444444 }
+.pagecontentinputbutton { background-color:#F5F5F5;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;color:#000000 }
+.pagecontentinputcheckbox { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;color:#222222;background-color:#FFFFFF }
+.pagecontentinputtextnpassword { border:1px solid #C0C0C0;background-color:#F5F5F5 }
+.pagecontentinputtextnpassword { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;color:#222222 }
+.pagecontentselect { border:1px solid #C0C0C0;background-color:#F5F5F5 }
+.pagecontentselect { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;color:#222222 }
+.pagecontenttextarea { border:1px solid #C0C0C0;background-color:#F5F5F5 }
+.pagecontenttextarea { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;color:#222222 }
+.pagecontenttitle { border:1px solid #193879;background-color:#375A9D;padding:5px }
+.pagecontenttitle { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;font-weight:bold;color:#DDDDDD }
+.pagecontenttitle a, .pagecontenttitle a:link, .pagecontenttitle a:active, .pagecontenttitle a:visited, .pagecontenttitle a:hover, .pagecontenttitle a:focus { color:#FFFFFF }
+
+.pageembeddedborder1 { background-color:#DDDDDD;border-collapse:separate;border-spacing:1px }
+.pageembeddedborder2 { border:1px solid #DDDDDD;background-color:#FFFFFF;padding:4px }
 
 .pageerrorcontent { font-weight:bold;color:#FF0000 }
 .pageerrorcontent a, .pageerrorcontent a:link, .pageerrorcontent a:active, .pageerrorcontent a:visited, .pageerrorcontent a:hover, .pageerrorcontent a:focus { color:#CC0000 }
 
-.pageextrabg { background-color:#FFFFFF }
+.pageextrabg { background-color:#D9D9DA }
 .pageextracontent { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;color:#222222 }
 .pageextracontent a, .pageextracontent a:link, .pageextracontent a:active, .pageextracontent a:visited, .pageextracontent a:hover, .pageextracontent a:focus { color:#000000 }
 
 .pagehide { display:none }
-.pagehighlightborder1 { background-color:#FF0000 }
+.pagehighlightborder1 { background-color:#FF0000;border-collapse:separate;border-spacing:1px }
 .pagehighlightborder2 { border:1px solid #FF0000;background-color:#FBF6CD;padding:4px }
 
-.pagehr { height:1px;border-top:1px solid #FFAD65 }
+.pagehr { height:1px;overflow:hidden;border-top:1px solid #193879 }
 
-.pagetitlecellbg { padding:5px;background-color:#FFFFFF }
-.pagetitlecellcontent { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;font-weight:bold;color:#000000 }
-.pagetitlecellcontent a, .pagetitlecellcontent a:link, .pagetitlecellcontent a:active, .pagetitlecellcontent a:visited, .pagetitlecellcontent a:hover, .pagetitlecellcontent a:focus { color:#444444 }
+.pagetitlecellbg { background-color:#375A9D }
+.pagetitlecellcontent { display:block;padding:3px }
+.pagetitlecellcontent { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;font-weight:bold;color:#FFFFFF }
+.pagetitlecellcontent a, .pagetitlecellcontent a:link, .pagetitlecellcontent a:active, .pagetitlecellcontent a:visited, .pagetitlecellcontent a:hover, .pagetitlecellcontent a:focus { color:#FFFFFF }
 ]]></style>
 ".($direct_classes['output']->header_elements ())."
 </head>
 
-<body onload='djs_run_onload ();'><!--
-sWG light theme
-// --><table cellspacing='1' summary='' style='width:100%;height:75px;border:1px solid #CCCDD1;background-color:#FFFFFF'>
-<tbody><tr>
-<td valign='middle' align='center' class='designtitlebg'>
-<table cellspacing='0' summary='' style='width:100%;height:75px'>
-<tbody><tr>
-<td align='left' style='width:75px;line-height:0px'><a href='http://www.direct-netware.de/redirect.php?$direct_settings[product_icode]' target='_blank'><img src='$direct_settings[iscript_url]a=cache&amp;dsd=dfile+swg_logo.png' width='75' height='75' alt='$direct_settings[product_lcode_txt]' title='$direct_settings[product_lcode_txt]' /></a></td>
-<td valign='middle' align='right' style='width:100%;padding-right:10px'><span class='designtitlecontent'><span id='swgversion_ipoint' style='font-size:24px'><a href='".(direct_linker ("url0","a=info"))."' target='_blank' style='text-decoration:none'>$direct_settings[product_lcode_html]</a><br /></span><script language='JavaScript' type='text/javascript'><![CDATA[
+<body onload='djs_run_onload ();'><div id='swgAJAX_loading_point' style='display:none'><!-- iPoint // --></div><script type='text/javascript'><![CDATA[
+djs_swgAJAX_loading_writeln ('center');
+]]></script><div style='position:absolute;top:0px;left:0px;z-index:255;width:19px;height:71px;background-color:#FFFFFF'>
+<div style='width:19px;height:16px;background-color:#000000'></div>
+<div style='width:19px;height:1px;margin-top:1px;background-color:#000000'></div>
+<div style='width:19px;height:49px;margin-top:1px;background-color:#193879'></div>
+<div style='width:19px;height:1px;margin-top:1px;background-color:#193879'></div>
+</div><div style='width:100%;height:10px;background-color:#000000'></div><table style='width:100%'>
+<thead><tr>
+<td class='designtitlebg' style='height:85px;padding:5px 15px;text-align:right;vertical-align:middle'><div style='float:left'><a href='http://www.direct-netware.de/redirect.php?$direct_settings[product_icode]' target='_blank'><img src='$direct_settings[iscript_url]a=cache&amp;dsd=dfile+swg_logo.png' width='75' height='75' alt='$direct_settings[product_lcode_txt]' title='$direct_settings[product_lcode_txt]' /></a></div>
+<p class='designtitlecontent'><span id='swgversion_ipoint' style='font-size:24px'><a href='".(direct_linker ("url0","a=info"))."' target='_blank' style='text-decoration:none'>$direct_settings[product_lcode_html]</a><br /></span><script type='text/javascript'><![CDATA[
 if (djs_swgDOM)
 {
  function djs_swgversion_switch ()
@@ -242,55 +258,39 @@ if (djs_swgDOM)
 djs_swgDOM_replace (\"<span class='designtitlecontent'><span style='font-size:24px'><a href='javascript:djs_swgversion_switch();' style='text-decoration:none'>$direct_settings[product_lcode_html]</a></span><br />\\n\" +
 \"<span id='swgversion' style='display:none'>$direct_settings[product_version] - $direct_settings[product_buildid]<br /></span></span>\",'swgversion_ipoint')
 }
-]]></script>$direct_settings[product_lcode_subtitle_html]</span></td>
-</tr></tbody>
-</table>
-</td>
-</tr></tbody>
-</table>
-<table cellspacing='1' summary='' style='width:100%;background-color:#CCCDD1'>
-<tbody>");
+]]></script>$direct_settings[product_lcode_subtitle_html]</p></td>
+</tr></thead><tbody><tr>
+<td class='designpagebg' style='padding:10px 12px;text-align:left;vertical-align:middle'>");
 
 		if ($direct_classes['output']->options_check ("pagemenu"))
 		{
-			$this->page .= "<tr>\n<td valign='top' align='center' class='designmenu2bg' style='padding:8px 3px'><span class='designmenu2content'>";
+			$this->page .= "<p class='designpagemenucontent'>";
 			if ($direct_cachedata['output_pagemenu_title']) { $this->page .= "<span style='font-weight:bold'>{$direct_cachedata['output_pagemenu_title']}:</span> "; }
-			$this->page .= "<span style='white-space:nowrap'>[ ".($direct_classes['output']->options_generator ("v","pagemenu"," ]</span> <span style='white-space:nowrap'>[ "))." ]</span></span></td>\n</tr>";
+			$this->page .= "<span>[ ".($direct_classes['output']->options_generator ("v","pagemenu"," ]</span> <span>[ "))." ]</span></p>";
 		}
 
-$this->page .= ("<tr>
-<td valign='top' align='center' class='designmenu1bg' style='padding:8px 3px'><span class='designmenu1content'><span style='white-space:nowrap'>[ ".(direct_block_get ("blockmenu","h","mainmenu"," ]</span> <span style='white-space:nowrap'>[ "))." ]</span></span></td>
-</tr><tr>
-<td valign='top' align='center' class='designmenu2bg' style='padding:5px 3px'><span class='designmenu2content'><span style='white-space:nowrap'>[ ".($direct_classes['output']->options_generator ("v","servicemenu"," ]</span> <span style='white-space:nowrap'>[ "))." ]</span></span></td>
-</tr></tbody>
-</table><span style='font-size:8px'>&#0160;</span><table cellspacing='0' summary='' style='width:100%'>
-<tbody><tr>
-<td align='center'>
-<table cellspacing='1' summary='' style='width:82%;border:1px solid #CCCDD1'>
-<tbody><tr>
-<td valign='middle' align='left' class='pagebg'>
-<table cellspacing='0' summary='' style='width:100%;background-color:#FFFFFF'>
-<tbody><tr>
-<td valign='middle' align='left' class='pagebg' style='padding:5px'>".$direct_classes['output']->page_content);
+		$this->page .= "<p class='designmainmenucontent'><span>[ ".(direct_block_get ("blockmenu","h",$direct_settings['theme_mainmenu']," ]</span> <span>[ "))." ]</span></p>";
 
-		if ($direct_classes['output']->options_check ("servicemenu")) { $this->page .= "<p class='designservicemenucontent'>".($direct_classes['output']->options_generator ("h","servicemenu"))."</p>"; }
+		if ((is_array ($direct_cachedata['output_warning']))&&(!empty ($direct_cachedata['output_warning'])))
+		{
+			foreach ($direct_cachedata['output_warning'] as $f_warning_array) { $this->page .= "<p class='pagehighlightborder2'><span class='pageextracontent'><span style='font-weight:bold'>{$f_warning_array['title']}</span><br />\n{$f_warning_array['text']}</span></p>"; }
+		}
+
+		if ($direct_classes['output']->options_check ("servicemenu")) { $this->page .= "\n<p class='pageborder2' style='text-align:left'><span class='pageextracontent'>".($direct_classes['output']->options_generator ("h","servicemenu"))."</span></p>"; }
+		$this->page .= "\n".$direct_classes['output']->page_content;
+		if ($direct_classes['output']->options_check ("servicemenu")) { $this->page .= "\n<p class='pageborder2' style='text-align:right'><span class='pageextracontent'>".($direct_classes['output']->options_generator ("h","servicemenu"))."</span></p>"; }
 
 $this->page .= ("</td>
-</tr></tbody>
-</table>
-</td>
-</tr><tr>
-<td valign='middle' align='center' style='height:40px'><span class='designcopyrightcontent'>Powered by: $direct_settings[product_lcode_html] $direct_settings[product_version]<br />
-&copy; <a href='http://www.direct-netware.de/redirect.php?$direct_settings[product_icode]' target='_blank'><span style='font-style:italic'>direct</span> Netware Group</a> - All rights reserved");
-
-		if ($direct_classes['output']->output_additional_copyright) { $this->page .= "<br />".$direct_classes['output']->output_additional_copyright; }
-
-$this->page .= ("</span></td>
-</tr></tbody>
-</table>
-</td>
-</tr></tbody>
-</table>
+</tr></tbody><tfoot><tr>
+<td class='designcopyrightbg' style='height:50px;text-align:center;vertical-align:middle'><span class='designcopyrightcontent'>Powered by: $direct_settings[product_lcode_html] $direct_settings[product_version]<br />
+&#xA9; <a href='http://www.direct-netware.de/redirect.php?$direct_settings[product_icode]' target='_blank'><span style='font-style:italic'>direct</span> Netware Group</a> - All rights reserved</span></td>
+</tr></tfoot>
+</table><div style='position:absolute;top:0px;right:0px;z-index:255;width:19px;height:71px;background-color:#FFFFFF'>
+<div style='width:19px;height:16px;background-color:#000000'></div>
+<div style='width:19px;height:1px;margin-top:1px;background-color:#000000'></div>
+<div style='width:19px;height:49px;margin-top:1px;background-color:#193879'></div>
+<div style='width:19px;height:1px;margin-top:1px;background-color:#193879'></div>
+</div>
 </body>
 
 </html>");

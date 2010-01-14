@@ -130,9 +130,8 @@ Informing the system about available functions
 		$direct_settings['theme_xhtml_type'] = "application/xhtml+xml; charset=".$direct_local['lang_charset'];
 		header ("Content-Type: ".$direct_settings['theme_xhtml_type'],true);
 
-$this->page = ("<?xml version='1.0' encoding='$direct_local[lang_charset]' ?>
-<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">
-<html xmlns='http://www.w3.org/1999/xhtml' xml:lang='en'>
+$this->page = ("<?xml version='1.0' encoding='$direct_local[lang_charset]' ?><!DOCTYPE html SYSTEM \"about:legacy-compat\">
+<html xmlns='http://www.w3.org/1999/xhtml' xml:lang='$direct_local[lang_iso_domain]'>
 
 <head>
 <title>$f_title</title>");
@@ -157,13 +156,13 @@ body { height:100%;margin:0px;padding:0px;background-color:#FFFFFF }
 body { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;font-style:normal;line-height:normal;font-weight:normal }
 form { margin:0px;padding:0px }
 html { height:100% }
-img { border:0px }
-table { margin:0px;border:0px }
+img { border:none }
+table { margin:0px;table-layout:fixed;border:none;border-collapse:collapse;border-spacing:0px }
 td { padding:0px }
 
 .pagebg { background-color:#FFFFFF }
 
-.pageborder1 { background-color:#193879 }
+.pageborder1 { background-color:#193879;border-collapse:separate;border-spacing:1px }
 .pageborder2 { border:1px solid #193879;background-color:#D9D9DA;padding:4px }
 
 .pagecontent { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;color:#222222 }
@@ -180,6 +179,9 @@ td { padding:0px }
 .pagecontenttitle { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;font-weight:bold;color:#DDDDDD }
 .pagecontenttitle a, .pagecontenttitle a:link, .pagecontenttitle a:active, .pagecontenttitle a:visited, .pagecontenttitle a:hover, .pagecontenttitle a:focus { color:#FFFFFF }
 
+.pageembeddedborder1 { background-color:#DDDDDD;border-collapse:separate;border-spacing:1px }
+.pageembeddedborder2 { border:1px solid #DDDDDD;background-color:#FFFFFF;padding:4px }
+
 .pageerrorcontent { font-weight:bold;color:#FF0000 }
 .pageerrorcontent a, .pageerrorcontent a:link, .pageerrorcontent a:active, .pageerrorcontent a:visited, .pageerrorcontent a:hover, .pageerrorcontent a:focus { color:#CC0000 }
 
@@ -188,7 +190,7 @@ td { padding:0px }
 .pageextracontent a, .pageextracontent a:link, .pageextracontent a:active, .pageextracontent a:visited, .pageextracontent a:hover, .pageextracontent a:focus { color:#000000 }
 
 .pagehide { display:none }
-.pagehighlightborder1 { background-color:#FF0000 }
+.pagehighlightborder1 { background-color:#FF0000;border-collapse:separate;border-spacing:1px }
 .pagehighlightborder2 { border:1px solid #FF0000;background-color:#FBF6CD;padding:4px }
 
 .pagehr { height:1px;overflow:hidden;border-top:1px solid #193879 }
@@ -201,14 +203,12 @@ td { padding:0px }
 ".($direct_classes['output']->header_elements ())."
 </head>
 
-<body onload='djs_run_onload ();'><div id='swgAJAX_loading_point' style='display:none'><!-- iPoint // --></div><script language='JavaScript1.5' type='text/javascript'><![CDATA[
+<body onload='djs_run_onload ();'><div id='swgAJAX_loading_point' style='display:none'><!-- iPoint // --></div><script type='text/javascript'><![CDATA[
 djs_swgAJAX_loading_writeln ('center');
-]]></script><table cellspacing='1' summary='' style='width:100%;height:100%'>
-<tbody>
-<tr>
-<td valign='middle' align='left' class='pagebg' style='padding:5px'>".$direct_classes['output']->page_content."</td>
-</tr>
-</tbody>
+]]></script><table style='width:100%;height:100%'>
+<tbody><tr>
+<td class='pagebg' style='padding:5px;text-align:left;vertical-align:middle'>".$direct_classes['output']->page_content."</td>
+</tr></tbody>
 </table>
 </body>
 

@@ -127,9 +127,8 @@ Check the blocker support and inform the system about available functions
 		$direct_settings['theme_xhtml_type'] = "application/xhtml+xml; charset=".$direct_local['lang_charset'];
 		header ("Content-Type: ".$direct_settings['theme_xhtml_type'],true);
 
-$this->page = ("<?xml version='1.0' encoding='$direct_local[lang_charset]' ?>
-<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">
-<html xmlns='http://www.w3.org/1999/xhtml' xml:lang='en'>
+$this->page = ("<?xml version='1.0' encoding='$direct_local[lang_charset]' ?><!DOCTYPE html SYSTEM \"about:legacy-compat\">
+<html xmlns='http://www.w3.org/1999/xhtml' xml:lang='$direct_local[lang_iso_domain]'>
 
 <head>
 <title>$f_title</title>");
@@ -150,12 +149,12 @@ a:visited { text-decoration:underline }
 a:hover { text-decoration:none }
 a:focus { text-decoration:underline }
 
-body { height:100%;margin:0px;padding:0px;background-color:#FFFFFF }
+body { height:100%;margin:0px;padding:0px;background-color:#6A6A6A }
 body { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;font-style:normal;line-height:normal;font-weight:normal }
 form { margin:0px;padding:0px }
 html { height:100% }
-img { border:0px }
-table { margin:0px;border:0px }
+img { border:none }
+table { margin:0px;table-layout:fixed;border:none;border-collapse:collapse;border-spacing:0px }
 td { padding:0px }
 ]]></style>
 ".($direct_classes['output']->header_elements ())."

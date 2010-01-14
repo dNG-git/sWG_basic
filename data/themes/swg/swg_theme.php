@@ -130,9 +130,8 @@ Check the blocker support and inform the system about available functions
 
 		if (!isset ($direct_settings['theme_mainmenu'])) { $direct_settings['theme_mainmenu'] = "mainmenu"; }
 
-$this->page = ("<?xml version='1.0' encoding='$direct_local[lang_charset]' ?>
-<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">
-<html xmlns='http://www.w3.org/1999/xhtml' xml:lang='en'>
+$this->page = ("<?xml version='1.0' encoding='$direct_local[lang_charset]' ?><!DOCTYPE html SYSTEM \"about:legacy-compat\">
+<html xmlns='http://www.w3.org/1999/xhtml' xml:lang='$direct_local[lang_iso_domain]'>
 
 <head>
 <title>$f_title</title>");
@@ -153,45 +152,50 @@ a:visited { text-decoration:underline }
 a:hover { text-decoration:none }
 a:focus { text-decoration:underline }
 
-body { height:100%;margin:0px;padding:0px 31px;background-color:#FFFFFF }
+body { margin:0px;padding:0px 31px;background-color:#6A6A6A }
 body { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;font-style:normal;line-height:normal;font-weight:normal }
 form { margin:0px;padding:0px }
-html { height:100% }
-img { border:0px }
+img { border:none }
 input.file { width:90%;text-align:center;background-color:#F5F5F5 }
 input.file { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;color:#000000 }
-table { margin:0px;border:0px;table-layout:fixed }
+table { margin:0px;table-layout:fixed;border:none;border-collapse:collapse;border-spacing:0px }
 td { padding:0px }
 
-.designcopyrightbg { background-color:#606060 }
+.designcopyrightbg { background-color:#808080 }
 .designcopyrightcontent { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10px;color:#DDDDDD }
 .designcopyrightcontent a, .designcopyrightcontent a:link, .designcopyrightcontent a:active, .designcopyrightcontent a:visited, .designcopyrightcontent a:hover, .designcopyrightcontent a:focus { color:#FFFFFF }
 
-.designlogobg { background-image:url(".(direct_linker_dynamic ("url0","s=cache&dsd=dfile+$direct_settings[path_themes]/swg/v3/design_05.png",false,false)).");background-repeat:no-repeat }
+.designlogobg { width:152px;height:80px;background-image:url(".(direct_linker_dynamic ("url0","s=cache&dsd=dfile+$direct_settings[path_themes]/swg/v4/design_05.png",false,false)).");background-repeat:no-repeat;text-align:left }
+.designlogobg { margin-top:4px;padding-top:1px;text-align:left }
 
-.designmenu1content { border:1px solid #375A9D;border-radius:3px 3px;padding:5px;text-align:center }
-.designmenu1content { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;color:#222222 }
-.designmenu1content a, .designmenu1content a:link, .designmenu1content a:visited { color:#000000;text-decoration:underline }
-.designmenu1content a:active, .designmenu1content a:hover, .designmenu1content a:focus { color:#444444;text-decoration:none }
+.designmainmenucontent { border:1px solid #375A9D;border-radius:3px 3px;padding:5px;text-align:center }
+.designmainmenucontent { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;color:#222222 }
+.designmainmenucontent span { white-space:nowrap }
+.designmainmenucontent span a, .designmainmenucontent span a:link, .designmainmenucontent span a:visited { color:#000000;text-decoration:underline }
+.designmainmenucontent span a:active, .designmainmenucontent span a:hover, .designmainmenucontent span a:focus { color:#444444;text-decoration:none }
 
-.designmenu2content { border:1px solid #193879;border-radius:3px 3px;padding:5px;text-align:center }
-.designmenu2content { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;font-weight:bold;color:#222222 }
-.designmenu2content a, .designmenu2content a:link, .designmenu2content a:visited { color:#000000;text-decoration:underline }
-.designmenu2content a:active, .designmenu2content a:hover, .designmenu2content a:focus { color:#444444;text-decoration:none }
+.designpagebg { background-color:#FFFFFF }
+.designpagebg *:first-child { margin-top:0px }
+.designpagebg *:last-child { margin-bottom:0px }
 
-.designpagebg { background-image:url(".(direct_linker_dynamic ("url0","s=cache&dsd=dfile+$direct_settings[path_themes]/swg/v3/design_04.png",false,false)).");background-repeat:repeat-x;background-color:#FFFFFF }
+.designpagemenucontent { border:1px solid #193879;border-radius:3px 3px;padding:5px;text-align:center }
+.designpagemenucontent { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;font-weight:bold;color:#222222 }
+.designpagemenucontent span { white-space:nowrap }
+.designpagemenucontent span a, .designpagemenucontent span a:link, .designpagemenucontent span a:visited { color:#000000;text-decoration:underline }
+.designpagemenucontent span a:active, .designpagemenucontent span a:hover, .designpagemenucontent span a:focus { color:#444444;text-decoration:none }
 
 .designservicemenucontent { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;color:#222222 }
 .designservicemenucontent a, .designservicemenucontent a:link, .designservicemenucontent a:visited { color:#000000;text-decoration:underline }
 .designservicemenucontent a:active, .designservicemenucontent a:hover, .designservicemenucontent a:focus { color:#444444;text-decoration:none }
 
+.designtitlebg { background-image:url(".(direct_linker_dynamic ("url0","s=cache&dsd=dfile+$direct_settings[path_themes]/swg/v4/design_04.png",false,false)).");background-repeat:repeat-x;background-color:#FFFFFF }
 .designtitlecontent { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;color:#000000 }
-.designtitlecontent a, .pagetitlecontent a:link, .pagetitlecontent a:visited { color:#000000;text-decoration:underline }
-.designtitlecontent a:active, .pagetitlecontent a:hover, .pagetitlecontent a:focus { color:#363B21;text-decoration:none }
+.designtitlecontent a, .designtitlecontent a:link, .designtitlecontent a:visited { color:#000000;text-decoration:underline }
+.designtitlecontent a:active, .designtitlecontent a:hover, .designtitlecontent a:focus { color:#193879;text-decoration:none }
 
 .pagebg { background-color:#FFFFFF }
 
-.pageborder1 { background-color:#193879 }
+.pageborder1 { background-color:#193879;border-collapse:separate;border-spacing:1px }
 .pageborder2 { border:1px solid #193879;background-color:#D9D9DA;padding:4px }
 
 .pagecontent { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;color:#222222 }
@@ -208,6 +212,9 @@ td { padding:0px }
 .pagecontenttitle { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;font-weight:bold;color:#DDDDDD }
 .pagecontenttitle a, .pagecontenttitle a:link, .pagecontenttitle a:active, .pagecontenttitle a:visited, .pagecontenttitle a:hover, .pagecontenttitle a:focus { color:#FFFFFF }
 
+.pageembeddedborder1 { background-color:#DDDDDD;border-collapse:separate;border-spacing:1px }
+.pageembeddedborder2 { border:1px solid #DDDDDD;background-color:#FFFFFF;padding:4px }
+
 .pageerrorcontent { font-weight:bold;color:#FF0000 }
 .pageerrorcontent a, .pageerrorcontent a:link, .pageerrorcontent a:active, .pageerrorcontent a:visited, .pageerrorcontent a:hover, .pageerrorcontent a:focus { color:#CC0000 }
 
@@ -216,7 +223,7 @@ td { padding:0px }
 .pageextracontent a, .pageextracontent a:link, .pageextracontent a:active, .pageextracontent a:visited, .pageextracontent a:hover, .pageextracontent a:focus { color:#000000 }
 
 .pagehide { display:none }
-.pagehighlightborder1 { background-color:#FF0000 }
+.pagehighlightborder1 { background-color:#FF0000;border-collapse:separate;border-spacing:1px }
 .pagehighlightborder2 { border:1px solid #FF0000;background-color:#FBF6CD;padding:4px }
 
 .pagehr { height:1px;overflow:hidden;border-top:1px solid #193879 }
@@ -229,17 +236,17 @@ td { padding:0px }
 ".($direct_classes['output']->header_elements ())."
 </head>
 
-<body onload='djs_run_onload ();'><div id='swgAJAX_loading_point' style='display:none'><!-- iPoint // --></div><script language='JavaScript1.5' type='text/javascript'><![CDATA[
+<body onload='djs_run_onload ();'><div id='swgAJAX_loading_point' style='display:none'><!-- iPoint // --></div><script type='text/javascript'><![CDATA[
 djs_swgAJAX_loading_writeln ('center');
 ]]></script><div style='position:absolute;top:0px;left:0px;z-index:254;width:31px;height:71px;background-color:#FFFFFF'>
 <div style='width:31px;height:16px;background-color:#000000'></div>
 <div style='width:19px;height:1px;margin-top:1px;background-color:#000000'></div>
 <div style='width:19px;height:49px;margin-top:1px;background-color:#193879'></div>
 <div style='width:19px;height:1px;margin-top:1px;background-color:#193879'></div>
-</div><img src='".(direct_linker_dynamic ("url0","s=cache&dsd=dfile+$direct_settings[path_themes]/swg/v3/design_01.png",true,false))."' width='31' height='125' alt='' title='' style='position:absolute;top:0px;left:0px;z-index:255' /><table cellspacing='0' summary='' style='width:100%;height:100%;border-top:10px solid #000000;background-image:url(".(direct_linker_dynamic ("url0","s=cache&dsd=dfile+$direct_settings[path_themes]/swg/v3/design_02.png",true,false)).");background-repeat:repeat-x'>
-<tbody><tr style='height:100%'>
-<td valign='top' align='left' class='designpagebg'><div class='designlogobg' style='position:absolute;top:14px;left:31px;z-index:1;width:152px;height:27px'><a href='http://www.direct-netware.de/redirect.php?$direct_settings[product_icode]' target='_blank'><img src='".(direct_linker_dynamic ("url0","s=cache&dsd=dfile+$direct_settings[path_themes]/swg/v3/design_06.png",true,false))."' width='75' height='75' alt='$direct_settings[product_lcode_txt]' title='$direct_settings[product_lcode_txt]' style='position:absolute;top:3px;left:0px;z-index:2' /></a></div>
-<p class='designtitlecontent' style='width:100%;height:58px;padding-bottom:7px;text-align:right'><span id='swgversion_ipoint' style='font-size:24px'><a href='".(direct_linker ("url0","a=info"))."' target='_blank' style='text-decoration:none'>$direct_settings[product_lcode_html]</a><br /></span><script language='JavaScript' type='text/javascript'><![CDATA[
+</div><img src='".(direct_linker_dynamic ("url0","s=cache&dsd=dfile+$direct_settings[path_themes]/swg/v4/design_01.png",true,false))."' width='31' height='125' alt='' title='' style='position:absolute;top:0px;left:0px;z-index:255' /><div style='width:100%;height:10px;background-color:#000000'></div><table style='width:100%;background-image:url(".(direct_linker_dynamic ("url0","s=cache&dsd=dfile+$direct_settings[path_themes]/swg/v4/design_02.png",true,false)).");background-repeat:repeat-x'>
+<thead><tr>
+<td class='designtitlebg' style='height:85px;text-align:right;vertical-align:middle'><div class='designlogobg' style='float:left'><a href='http://www.direct-netware.de/redirect.php?$direct_settings[product_icode]' target='_blank'><img src='$direct_settings[iscript_url]a=cache&amp;dsd=dfile+swg_logo.png' width='75' height='75' alt='$direct_settings[product_lcode_txt]' title='$direct_settings[product_lcode_txt]' /></a></div>
+<p class='designtitlecontent' style='padding:5px 0px'><span id='swgversion_ipoint' style='font-size:24px'><a href='".(direct_linker ("url0","a=info"))."' target='_blank' style='text-decoration:none'>$direct_settings[product_lcode_html]</a><br /></span><script type='text/javascript'><![CDATA[
 if (djs_swgDOM)
 {
  function djs_swgversion_switch ()
@@ -251,41 +258,43 @@ if (djs_swgDOM)
 djs_swgDOM_replace (\"<span class='designtitlecontent'><span style='font-size:24px'><a href='javascript:djs_swgversion_switch();' style='text-decoration:none'>$direct_settings[product_lcode_html]</a></span><br />\\n\" +
 \"<span id='swgversion' style='display:none'>$direct_settings[product_version] - $direct_settings[product_buildid]<br /></span></span>\",'swgversion_ipoint')
 }
-]]></script>$direct_settings[product_lcode_subtitle_html]</p>");
+]]></script>$direct_settings[product_lcode_subtitle_html]</p></td>
+</tr></thead><tbody><tr>
+<td class='designpagebg' style='padding:10px 12px;text-align:left;vertical-align:middle'>");
 
 		if ($direct_classes['output']->options_check ("pagemenu"))
 		{
-			$this->page .= "<p class='designmenu2content'>";
+			$this->page .= "<p class='designpagemenucontent'>";
 			if ($direct_cachedata['output_pagemenu_title']) { $this->page .= "<span style='font-weight:bold'>{$direct_cachedata['output_pagemenu_title']}:</span> "; }
-			$this->page .= "<span style='white-space:nowrap'>[ ".($direct_classes['output']->options_generator ("v","pagemenu"," ]</span> <span style='white-space:nowrap'>[ "))." ]</span></p>";
+			$this->page .= "<span>[ ".($direct_classes['output']->options_generator ("v","pagemenu"," ]</span> <span>[ "))." ]</span></p>\n";
 		}
 
-		$this->page .= "<p class='designmenu1content'><span style='white-space:nowrap'>[ ".(direct_block_get ("blockmenu","h",$direct_settings['theme_mainmenu']," ]</span> <span style='white-space:nowrap'>[ "))." ]</span></p>";
+		$this->page .= "<p class='designmainmenucontent'><span>[ ".(direct_block_get ("blockmenu","h",$direct_settings['theme_mainmenu']," ]</span> <span>[ "))." ]</span></p>\n";
 
 		if ((is_array ($direct_cachedata['output_warning']))&&(!empty ($direct_cachedata['output_warning'])))
 		{
-			foreach ($direct_cachedata['output_warning'] as $f_warning_array) { $this->page .= "<p class='pagehighlightborder2'><span class='pageextracontent'><span style='font-weight:bold'>{$f_warning_array['title']}</span><br />\n{$f_warning_array['text']}</span></p>"; }
+			foreach ($direct_cachedata['output_warning'] as $f_warning_array) { $this->page .= "<p class='pagehighlightborder2'><span class='pageextracontent'><span style='font-weight:bold'>{$f_warning_array['title']}</span><br />\n{$f_warning_array['text']}</span></p>\n"; }
 		}
 
-		if ($direct_classes['output']->options_check ("servicemenu")) { $this->page .= "\n<p class='pageborder2' style='text-align:left'><span class='pageextracontent'>".($direct_classes['output']->options_generator ("h","servicemenu"))."</span></p>"; }
-		$this->page .= "\n".$direct_classes['output']->page_content;
+		if ($direct_classes['output']->options_check ("servicemenu")) { $this->page .= "<p class='pageborder2' style='text-align:left'><span class='pageextracontent'>".($direct_classes['output']->options_generator ("h","servicemenu"))."</span></p>\n"; }
+		$this->page .= $direct_classes['output']->page_content;
 		if ($direct_classes['output']->options_check ("servicemenu")) { $this->page .= "\n<p class='pageborder2' style='text-align:right'><span class='pageextracontent'>".($direct_classes['output']->options_generator ("h","servicemenu"))."</span></p>"; }
 
 $this->page .= ("</td>
-</tr><tr style='height:50px'>
-<td valign='middle' align='center' class='designcopyrightbg'><span class='designcopyrightcontent'>Powered by: $direct_settings[product_lcode_html] $direct_settings[product_version]<br />
-&copy; <a href='http://www.direct-netware.de/redirect.php?$direct_settings[product_icode]' target='_blank'><span style='font-style:italic'>direct</span> Netware Group</a> - All rights reserved");
+</tr></tbody><tfoot><tr>
+<td class='designcopyrightbg' style='height:50px;text-align:center;vertical-align:middle'><span class='designcopyrightcontent'>Powered by: $direct_settings[product_lcode_html] $direct_settings[product_version]<br />
+&#xA9; <a href='http://www.direct-netware.de/redirect.php?$direct_settings[product_icode]' target='_blank'><span style='font-style:italic'>direct</span> Netware Group</a> - All rights reserved");
 
 		if ($direct_classes['output']->output_additional_copyright) { $this->page .= "<br />\n".$direct_classes['output']->output_additional_copyright; }
 
 $this->page .= ("</span></td>
-</tr></tbody>
+</tr></tfoot>
 </table><div style='position:absolute;top:0px;right:0px;z-index:254;width:31px;height:71px;background-color:#FFFFFF'>
 <div style='width:31px;height:16px;background-color:#000000'></div>
 <div style='width:19px;height:1px;margin-top:1px;background-color:#000000'></div>
 <div style='width:19px;height:49px;margin-top:1px;background-color:#193879'></div>
 <div style='width:19px;height:1px;margin-top:1px;background-color:#193879'></div>
-</div><img src='".(direct_linker_dynamic ("url0","s=cache&dsd=dfile+$direct_settings[path_themes]/swg/v3/design_03.png",true,false))."' width='31' height='125' alt='' title='' style='position:absolute;top:0px;right:0px;z-index:255' />
+</div><img src='".(direct_linker_dynamic ("url0","s=cache&dsd=dfile+$direct_settings[path_themes]/swg/v4/design_03.png",true,false))."' width='31' height='125' alt='' title='' style='position:absolute;top:0px;right:0px;z-index:255' />
 </body>
 
 </html>");
