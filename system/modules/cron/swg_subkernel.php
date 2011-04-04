@@ -123,26 +123,21 @@ Informing the system about the available function
 */
 	/*#ifndef(PHP4) */public /* #*/function subkernel_init ($f_threshold_id = "")
 	{
-		global $direct_classes,$direct_settings;
+		global $direct_globals,$direct_settings;
 		if (USE_debug_reporting) { direct_debug (2,"sWG/#echo(__FILEPATH__)# -kernel_class->subkernel_init ($f_threshold_id)- (#echo(__LINE__)#)"); }
 
-		if (($direct_classes['basic_functions']->include_file ($direct_settings['path_system']."/classes/swg_output.php"))&&($direct_classes['basic_functions']->include_file ($direct_settings['path_system']."/classes/swg_db.php")))
-		{
-			if (direct_class_init ("db")) { $f_return = array (); }
-			else { $f_return = array ("errors_core_unknown_error","FATAL ERROR:<br />Unable to instantiate &quot;db&quot;.<br /><br />sWG/#echo(__FILEPATH__)# -kernel_class->subkernel_init ()- (#echo(__LINE__)#)"); }
-		}
-		else { $f_return = array ("core_required_object_not_found","FATAL ERROR:<br />&quot;$direct_settings[path_system]/classes/swg_output.php&quot; was not found<br /><br />sWG/#echo(__FILEPATH__)# -kernel_class->subkernel_init ()- (#echo(__LINE__)#)"); }
+		if (($direct_globals['basic_functions']->include_file ($direct_settings['path_system']."/classes/swg_db.php"))&&(direct_class_init ("db"))) { $f_return = array (); }
+		else { $f_return = array ("errors_core_unknown_error","FATAL ERROR: Unable to instantiate &quot;db&quot;.","sWG/#echo(__FILEPATH__)# -kernel_class->subkernel_init ()- (#echo(__LINE__)#)"); }
 
 		if (empty ($f_return))
 		{
-			if ($direct_classes['db']->v_connect ())
+			if ($direct_globals['db']->v_connect ())
 			{
-				if (($direct_settings['swg_cron_client'])&&($direct_settings['user_ip'] != $direct_settings['swg_cron_client'])) { $f_return = array ("core_access_denied","sWG/#echo(__FILEPATH__)# _main_ (#echo(__LINE__)#)"); }
+				if ((isset ($direct_settings['swg_cron_client']))&&($direct_settings['user_ip'] != $direct_settings['swg_cron_client'])) { $f_return = array ("core_access_denied","","sWG/#echo(__FILEPATH__)# _main_ (#echo(__LINE__)#)"); }
 			}
-			else { $f_return = array ("core_database_error","FATAL ERROR:<br />Error while setting up a database connection<br />sWG/#echo(__FILEPATH__)# -kernel_class->subkernel_init ()- (#echo(__LINE__)#)"); }
+			else { $f_return = array ("core_database_error","FATAL ERROR: Error while setting up a database connection","sWG/#echo(__FILEPATH__)# -kernel_class->subkernel_init ()- (#echo(__LINE__)#)"); }
 		}
 
-		if (defined ("CLASS_direct_output_control")) { direct_output_theme ($direct_settings['theme']); }
 		return /*#ifdef(DEBUG):direct_debug (7,"sWG/#echo(__FILEPATH__)# -kernel_class->subkernel_init ()- (#echo(__LINE__)#)",:#*/$f_return/*#ifdef(DEBUG):,true):#*/;
 	}
 }
@@ -151,13 +146,13 @@ Informing the system about the available function
 Mark this class as the most up-to-date one
 ------------------------------------------------------------------------- */
 
-$direct_classes['@names']['subkernel_cron'] = "direct_subkernel_cron";
+$direct_globals['@names']['subkernel_cron'] = "direct_subkernel_cron";
 define ("CLASS_direct_subkernel_cron",true);
 
 //j// Script specific commands
 
 direct_class_init ("subkernel_cron");
-$direct_classes['kernel']->v_call_set ("v_subkernel_init",$direct_classes['subkernel_cron'],"subkernel_init");
+$direct_globals['kernel']->v_call_set ("v_subkernel_init",$direct_globals['subkernel_cron'],"subkernel_init");
 }
 
 //j// EOF

@@ -103,7 +103,7 @@ Extend the class using old and new behavior
 */
 	public function __construct ()
 	{
-		global $direct_classes,$direct_settings;
+		global $direct_globals,$direct_settings;
 		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -db_class->__construct (direct_dbraw_pdo_mysql)- (#echo(__LINE__)#)"); }
 
 		if (isset ($direct_settings['db_synchronisation']))
@@ -112,7 +112,7 @@ Extend the class using old and new behavior
 
 			if (($direct_settings['db_synchronisation'])&&($direct_settings['db_synchronisation_mantrig']))
 			{
-				if (!$direct_classes['basic_functions']->include_file ($direct_settings['path_system']."/functions/swg_dbsync.php",1)) { trigger_error ("sWG/#echo(__FILEPATH__)# _dbraw_pdo_mysql_ (#echo(__LINE__)#) reporting: Manual synchronisation trigger unavailable",E_USER_WARNING); }
+				if (!$direct_globals['basic_functions']->include_file ($direct_settings['path_system']."/functions/swg_dbsync.php",1)) { trigger_error ("sWG/#echo(__FILEPATH__)# _dbraw_pdo_mysql_ (#echo(__LINE__)#) reporting: Manual synchronisation trigger unavailable",E_USER_WARNING); }
 			}
 		}
 
@@ -148,6 +148,7 @@ Set up some variables
 
 		$this->query_cache = "";
 		$this->resource = NULL;
+		$this->transactions = 0;
 
 /* -------------------------------------------------------------------------
 Set up PDO constants
@@ -240,13 +241,8 @@ $this->pdo = array (
 */
 	public function disconnect ()
 	{
-		global $direct_settings;
 		if (USE_debug_reporting) { direct_debug (3,"sWG/#echo(__FILEPATH__)# -db_class->disconnect ()- (#echo(__LINE__)#)"); }
-
-		$f_return = ((is_object ($this->resource)) ? true : false);
-		$this->resource = NULL;
-
-		return /*#ifdef(DEBUG):direct_debug (7,"sWG/#echo(__FILEPATH__)# -db_class->disconnect ()- (#echo(__LINE__)#)",:#*/$f_return/*#ifdef(DEBUG):,true):#*/;
+		return /*#ifdef(DEBUG):direct_debug (7,"sWG/#echo(__FILEPATH__)# -db_class->disconnect ()- (#echo(__LINE__)#)",:#*/is_object ($this->resource)/*#ifdef(DEBUG):,true):#*/;
 	}
 
 	//f// direct_dbraw_pdo_mysql->query_build ($f_data)
@@ -268,7 +264,7 @@ $this->pdo = array (
 */
 	public function query_build ($f_data)
 	{
-		global $direct_classes;
+		global $direct_globals;
 		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -db_class->query_build (+f_data)- (#echo(__LINE__)#)"); }
 
 		$f_return = false;
@@ -361,7 +357,7 @@ $this->pdo = array (
 
 						if (!empty ($f_join_array['requirements']))
 						{
-							$f_xml_node_array = $direct_classes['xml_bridge']->xml2array ($f_join_array['requirements'],true,false);
+							$f_xml_node_array = $direct_globals['xml_bridge']->xml2array ($f_join_array['requirements'],true,false);
 							if (isset ($f_xml_node_array['sqlconditions'])) { $this->query_cache .= $this->query_build_row_conditions_walker ($f_xml_node_array['sqlconditions']); }
 						}
 					}
@@ -369,7 +365,7 @@ $this->pdo = array (
 
 				if ((($f_data['type'] == "insert")||($f_data['type'] == "replace")||($f_data['type'] == "update"))&&($f_data['set_attributes']))
 				{
-					$f_xml_node_array = $direct_classes['xml_bridge']->xml2array ($f_data['set_attributes'],true,false);
+					$f_xml_node_array = $direct_globals['xml_bridge']->xml2array ($f_data['set_attributes'],true,false);
 					if (isset ($f_xml_node_array['sqlvalues'])) { $this->query_cache .= " SET ".($this->query_build_set_attributes ($f_xml_node_array['sqlvalues'])); }
 				}
 
@@ -379,7 +375,7 @@ $this->pdo = array (
 
 					if ($f_data['row_conditions'])
 					{
-						$f_xml_node_array = $direct_classes['xml_bridge']->xml2array ($f_data['row_conditions'],true,false);
+						$f_xml_node_array = $direct_globals['xml_bridge']->xml2array ($f_data['row_conditions'],true,false);
 
 						if (isset ($f_xml_node_array['sqlconditions']))
 						{
@@ -392,7 +388,7 @@ $this->pdo = array (
 					{
 						if ($f_data['search_conditions'])
 						{
-							$f_xml_node_array = $direct_classes['xml_bridge']->xml2array ($f_data['search_conditions'],true,false);
+							$f_xml_node_array = $direct_globals['xml_bridge']->xml2array ($f_data['search_conditions'],true,false);
 							if (isset ($f_xml_node_array['sqlconditions'])) { $this->query_cache .= ($f_where_defined ? " AND (".($this->query_build_search_conditions ($f_xml_node_array['sqlconditions'])).")" : " WHERE ".($this->query_build_search_conditions ($f_xml_node_array['sqlconditions']))); }
 						}
 
@@ -402,20 +398,17 @@ $this->pdo = array (
 
 				if (($f_data['type'] == "select")&&($f_data['ordering']))
 				{
-					$f_xml_node_array = $direct_classes['xml_bridge']->xml2array ($f_data['ordering'],true,false);
+					$f_xml_node_array = $direct_globals['xml_bridge']->xml2array ($f_data['ordering'],true,false);
 					if (isset ($f_xml_node_array['sqlordering'])) { $this->query_cache .= " ORDER BY ".($this->query_build_ordering ($f_xml_node_array['sqlordering'])); }
 				}
 
 				if (($f_data['type'] == "insert")||($f_data['type'] == "replace"))
 				{
-					if ($f_data['values_keys'])
-					{
-						if (is_array ($f_data['values_keys'])) { $this->query_cache .= " (".(implode (",",$f_data['values_keys'])).")"; }
-					}
+					if ((is_array ($f_data['values_keys']))&&($f_data['values_keys'])) { $this->query_cache .= " (".(implode (",",$f_data['values_keys'])).")"; }
 
 					if ($f_data['values'])
 					{
-						$f_xml_node_array = $direct_classes['xml_bridge']->xml2array ($f_data['values'],true,false);
+						$f_xml_node_array = $direct_globals['xml_bridge']->xml2array ($f_data['values'],true,false);
 						if (isset ($f_xml_node_array['sqlvalues'])) { $this->query_cache .= " VALUES ".($this->query_build_values ($f_xml_node_array['sqlvalues'])); }
 					}
 				}
@@ -562,7 +555,7 @@ $this->pdo = array (
 							$f_return .= " {$f_requirement_array['attributes']['operator']} ";
 							$f_return .= ((($f_requirement_array['attributes']['type'] == "string")&&($f_requirement_array['value'][0] != "'")) ? "'{$f_requirement_array['value']}'" : $f_requirement_array['value']);
 						}
-						else { $f_return .= " {$f_requirement_array['attributes']['operator']} NULL"; }
+						else { $f_return .= (($f_requirement_array['attributes']['type'] == "string") ? " {$f_requirement_array['attributes']['operator']} ''" : " {$f_requirement_array['attributes']['operator']} NULL"); }
 					}
 				}
 			}
@@ -708,9 +701,7 @@ Don't forget to check the buffer $f_word_buffer
 Parse other typical words and add our filtered string to the SQL request.
 ------------------------------------------------------------------------- */
 
-					$f_search_term = str_replace (" NOT "," -",$f_search_term);
-					$f_search_term = str_replace ("HIGH ",">",$f_search_term);
-					$f_search_term = str_replace ("LOW ","<",$f_search_term);
+					$f_search_term = str_replace (array (" NOT ","HIGH ","LOW "),(array (" -",">","<")),$f_search_term);
 					$this->secure ($f_search_term);
 
 					$f_return .= "($f_search_term IN BOOLEAN MODE)";
@@ -724,12 +715,8 @@ Result is: [0] => %Test% [1] => %Test1 Test2 Test3% [2] => %Test4%
            [3] => %Test5% [4] => %Test6 Test7%
 ------------------------------------------------------------------------- */
 
-					$f_search_term = preg_replace ("#^\*#m","%",$f_search_term);
-					$f_search_term = preg_replace ("#(\w)\*#","\\1%",$f_search_term);
-					$f_search_term = str_replace (" OR "," ",$f_search_term);
-					$f_search_term = str_replace (" NOT "," ",$f_search_term);
-					$f_search_term = str_replace ("HIGH ","",$f_search_term);
-					$f_search_term = str_replace ("LOW ","",$f_search_term);
+					$f_search_term = preg_replace (array ("#^\*#m","#(\w)\*#"),(array ("%","\\1%")),$f_search_term);
+					$f_search_term = str_replace (array (" OR "," NOT ","HIGH ","LOW "),(array (" "," ","","")),$f_search_term);
 
 					$f_words = explode (" ",$f_search_term);
 					$f_and_check = false;
@@ -827,7 +814,7 @@ Don't forget to check the buffer $f_word_buffer
 
 				if (isset ($f_attribute_array['attributes']['null'])) { $f_return .= "NULL"; }
 				elseif (strlen ($f_attribute_array['value'])) { $f_return .= ((($f_attribute_array['attributes']['type'] == "string")&&($f_attribute_array['value'][0] != "'")) ? "'{$f_attribute_array['value']}'" : $f_attribute_array['value']); }
-				else { $f_return .= "NULL"; }
+				else { $f_return .= (($f_attribute_array['attributes']['type'] == "string") ? "''" : "NULL"); }
 			}
 		}
 
@@ -870,7 +857,7 @@ Don't forget to check the buffer $f_word_buffer
 
 					if (isset ($f_value_array['attributes']['null'])) { $f_return .= "NULL"; }
 					elseif (strlen ($f_value_array['value'])) { $f_return .= ((($f_value_array['attributes']['type'] == "string")&&($f_value_array['value'][0] != "'")) ? "'{$f_value_array['value']}'" : $f_value_array['value']); }
-					else { $f_return .= "NULL"; }
+					else { $f_return .= (($f_value_array['attributes']['type'] == "string") ? "''" : "NULL"); }
 				}
 			}
 
@@ -886,8 +873,8 @@ Don't forget to check the buffer $f_word_buffer
 	* format via $f_answer.
 	*
 	* @param  string $f_answer Defines the requested type that should be returned
-    *         The following types are supported: "ar", "co", "ma", "ms", "nr",
-    *         "sa" or "ss".
+	*         The following types are supported: "ar", "co", "ma", "ms", "nr",
+	*         "sa" or "ss".
 	* @param  string $f_query Valid SQL query
 	* @uses   direct_debug()
 	* @uses   USE_debug_reporting

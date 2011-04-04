@@ -62,31 +62,31 @@ all development packets)
 */
 function direct_data_get ($f_id_data)
 {
-	global $direct_cachedata,$direct_classes,$direct_settings;
+	global $direct_cachedata,$direct_globals,$direct_settings;
 	if (USE_debug_reporting) { direct_debug (3,"sWG/#echo(__FILEPATH__)# -direct_data_get (+f_id_data)- (#echo(__LINE__)#)"); }
 
 	$f_return = false;
 
 	if (is_array ($f_id_data))
 	{
-		$direct_classes['db']->init_select ($direct_settings['data_table']);
-		$direct_classes['db']->define_attributes ($direct_settings['data_table'].".*");
+		$direct_globals['db']->init_select ($direct_settings['data_table']);
+		$direct_globals['db']->define_attributes ($direct_settings['data_table'].".*");
 
 		$f_select_criteria = "<sqlconditions>";
-		foreach ($f_id_data as $f_id) { $f_select_criteria .= $direct_classes['db']->define_row_conditions_encode ($direct_settings['data_table'].".ddbdata_id",$f_id,"string","==","or"); }
+		foreach ($f_id_data as $f_id) { $f_select_criteria .= $direct_globals['db']->define_row_conditions_encode ($direct_settings['data_table'].".ddbdata_id",$f_id,"string","==","or"); }
 		$f_select_criteria .= "</sqlconditions>";
 
-		$direct_classes['db']->define_row_conditions ($f_select_criteria);
-		$f_return = $direct_classes['db']->query_exec ("ma");
+		$direct_globals['db']->define_row_conditions ($f_select_criteria);
+		$f_return = $direct_globals['db']->query_exec ("ma");
 	}
 	else
 	{
-		$direct_classes['db']->init_select ($direct_settings['data_table']);
+		$direct_globals['db']->init_select ($direct_settings['data_table']);
 
-		$direct_classes['db']->define_attributes ($direct_settings['data_table'].".*");
-		$direct_classes['db']->define_row_conditions ("<sqlconditions>".($direct_classes['db']->define_row_conditions_encode ($direct_settings['data_table'].".ddbdata_id",$f_id_data,"string"))."</sqlconditions>");
+		$direct_globals['db']->define_attributes ($direct_settings['data_table'].".*");
+		$direct_globals['db']->define_row_conditions ("<sqlconditions>".($direct_globals['db']->define_row_conditions_encode ($direct_settings['data_table'].".ddbdata_id",$f_id_data,"string"))."</sqlconditions>");
 
-		$f_return = $direct_classes['db']->query_exec ("sa");
+		$f_return = $direct_globals['db']->query_exec ("sa");
 	}
 
 	return /*#ifdef(DEBUG):direct_debug (7,"sWG/#echo(__FILEPATH__)# -direct_data_get ()- (#echo(__LINE__)#)",:#*/$f_return/*#ifdef(DEBUG):,true):#*/;
@@ -112,7 +112,7 @@ function direct_data_get ($f_id_data)
 */
 function direct_data_write ($f_data,$f_id_data,$f_id_cat = "")
 {
-	global $direct_cachedata,$direct_classes,$direct_settings;
+	global $direct_cachedata,$direct_globals,$direct_settings;
 	if (USE_debug_reporting) { direct_debug (3,"sWG/#echo(__FILEPATH__)# -direct_data_write (+f_data,$f_id_data,$f_id_cat)- (#echo(__LINE__)#)"); }
 
 	$f_return = false;
@@ -134,27 +134,27 @@ $f_replace_array = array (
 
 	if (!empty ($f_replace_array))
 	{
-		$direct_classes['db']->init_replace ($direct_settings['data_table']);
+		$direct_globals['db']->init_replace ($direct_settings['data_table']);
 
 		$f_replace_attributes = array ($direct_settings['data_table'].".ddbdata_id",$direct_settings['data_table'].".ddbdata_id_cat",$direct_settings['data_table'].".ddbdata_owner",$direct_settings['data_table'].".ddbdata_title",$direct_settings['data_table'].".ddbdata_data",$direct_settings['data_table'].".ddbdata_sid",$direct_settings['data_table'].".ddbdata_mode_user",$direct_settings['data_table'].".ddbdata_mode_group",$direct_settings['data_table'].".ddbdata_mode_all");
-		$direct_classes['db']->define_values_keys ($f_replace_attributes);
+		$direct_globals['db']->define_values_keys ($f_replace_attributes);
 
 $f_replace_values = ("<sqlvalues>
-".($direct_classes['db']->define_values_encode ($f_id_data,"string"))."
-".($direct_classes['db']->define_values_encode ($f_id_cat,"string"))."
-".($direct_classes['db']->define_values_encode ($f_replace_array['owner'],"string"))."
-".($direct_classes['db']->define_values_encode ($f_replace_array['title'],"string"))."
-".($direct_classes['db']->define_values_encode ($f_replace_array['data'],"string"))."
-".($direct_classes['db']->define_values_encode ($f_replace_array['sid'],"string"))."
-".($direct_classes['db']->define_values_encode ($f_replace_array['mode_user'],"string"))."
-".($direct_classes['db']->define_values_encode ($f_replace_array['mode_group'],"string"))."
-".($direct_classes['db']->define_values_encode ($f_replace_array['mode_all'],"string"))."
+".($direct_globals['db']->define_values_encode ($f_id_data,"string"))."
+".($direct_globals['db']->define_values_encode ($f_id_cat,"string"))."
+".($direct_globals['db']->define_values_encode ($f_replace_array['owner'],"string"))."
+".($direct_globals['db']->define_values_encode ($f_replace_array['title'],"string"))."
+".($direct_globals['db']->define_values_encode ($f_replace_array['data'],"string"))."
+".($direct_globals['db']->define_values_encode ($f_replace_array['sid'],"string"))."
+".($direct_globals['db']->define_values_encode ($f_replace_array['mode_user'],"string"))."
+".($direct_globals['db']->define_values_encode ($f_replace_array['mode_group'],"string"))."
+".($direct_globals['db']->define_values_encode ($f_replace_array['mode_all'],"string"))."
 </sqlvalues>");
 
-		$direct_classes['db']->define_values ($f_replace_values);
-		$f_return = $direct_classes['db']->query_exec ("co");
+		$direct_globals['db']->define_values ($f_replace_values);
+		$f_return = $direct_globals['db']->query_exec ("co");
 
-		if (($f_return)&&(function_exists ("direct_dbsync_event"))) { direct_dbsync_event ($direct_settings['data_table'],"replace",("<sqlconditions>".($direct_classes['db']->define_row_conditions_encode ($direct_settings['data_table'].".ddbdata_id",$f_id_data,"string"))."</sqlconditions>")); }
+		if (($f_return)&&(function_exists ("direct_dbsync_event"))) { direct_dbsync_event ($direct_settings['data_table'],"replace",("<sqlconditions>".($direct_globals['db']->define_row_conditions_encode ($direct_settings['data_table'].".ddbdata_id",$f_id_data,"string"))."</sqlconditions>")); }
 	}
 
 	return /*#ifdef(DEBUG):direct_debug (7,"sWG/#echo(__FILEPATH__)# -direct_data_write ()- (#echo(__LINE__)#)",:#*/$f_return/*#ifdef(DEBUG):,true):#*/;

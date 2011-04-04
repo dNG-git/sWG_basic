@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<swg_lang_file_v1 xmlns="urn:de.direct-netware.xmlns:swg.lang.v1">
+
+<de>
+<cp><core>
+<string tid="6edf3629ea5c69ef1b6fabd76daf3be3" translation="Basis-Einstellungen" />
+<string tid="c72775446a547d39ebf7b99cadf3fd12" translation="Konfiguriere deine secured WebGine Seite." />
+</core></cp>
+</de>
+
+<de_formal>
+<cp><core>
+<string tid="6edf3629ea5c69ef1b6fabd76daf3be3" translation="Basis-Einstellungen" />
+<string tid="c72775446a547d39ebf7b99cadf3fd12" translation="Konfigurieren Sie Ihre secured WebGine Seite." />
+</core></cp>
+</de_formal>
+
+</swg_lang_file_v1>

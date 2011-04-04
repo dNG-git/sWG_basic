@@ -55,32 +55,32 @@ if (!defined ("direct_product_iversion")) { exit (); }
 
 if (USE_debug_reporting) { direct_debug (1,"sWG/#echo(__FILEPATH__)# _main_ (#echo(__LINE__)#)"); }
 
-if ($direct_classes['kernel']->service_init_rboolean ())
+if ($direct_globals['kernel']->service_init_rboolean ())
 {
 //j// BOA
-$direct_classes['basic_functions']->require_file ($direct_settings['path_system']."/functions/swg_data_storager.php");
-$direct_classes['basic_functions']->require_file ($direct_settings['path_system']."/functions/swg_log_storager.php");
-$direct_classes['basic_functions']->require_file ($direct_settings['path_system']."/functions/swg_tmp_storager.php");
+$direct_globals['basic_functions']->require_file ($direct_settings['path_system']."/functions/swg_data_storager.php");
+$direct_globals['basic_functions']->require_file ($direct_settings['path_system']."/functions/swg_log_storager.php");
+$direct_globals['basic_functions']->require_file ($direct_settings['path_system']."/functions/swg_tmp_storager.php");
 
 header ("Cache-Control: no-cache, must-revalidate");
 header ("Pragma: no-cache");
 header ("Expires: ".(gmdate ("D, d M Y H:i:s",($direct_cachedata['core_time'] - 2419200)))." GMT");
 header ("Last-Modified: ".(gmdate ("D, d M Y H:i:s",$direct_cachedata['core_time']))." GMT");
-header ("Content-Type: text/plain; charset=ISO-8859-1");
+header ("Content-Type: text/plain; charset=UTF-8");
 
 echo "Searching for jobs ... ";
 
-$direct_classes['db']->init_select ($direct_settings['tmp_storage_table']);
-$direct_classes['db']->define_attributes ("*");
+$direct_globals['db']->init_select ($direct_settings['tmp_storage_table']);
+$direct_globals['db']->define_attributes ("*");
 
 $g_select_criteria = ("<sqlconditions>
 <element1 attribute='ddbtmp_storage_sid' value='9d3bb895f22bf0afa958d68c2a58ded7' type='string' />
-".($direct_classes['db']->define_row_conditions_encode ("ddbtmp_storage_time_min",$direct_cachedata['core_time'],"number","<"))."
+".($direct_globals['db']->define_row_conditions_encode ("ddbtmp_storage_time_min",$direct_cachedata['core_time'],"number","<"))."
 </sqlconditions>");
 // md5 ("cron")
 
-$direct_classes['db']->define_row_conditions ($g_select_criteria);
-$g_cronjobs_array = $direct_classes['db']->query_exec ("ma");
+$direct_globals['db']->define_row_conditions ($g_select_criteria);
+$g_cronjobs_array = $direct_globals['db']->query_exec ("ma");
 
 if (empty ($g_cronjobs_array)) { echo "done (".(time ()).")\n> Looks like there is nothing to do"; }
 else
@@ -101,9 +101,9 @@ else
 			if (($direct_cachedata['job']['ddbtmp_storage_time_max'])&&($direct_cachedata['job']['ddbtmp_storage_time_max'] < $direct_cachedata['core_time']))
 			{
 $g_log_array = array (
-"identifier" => "cron_warning_time_limit",
-"data" => $direct_cachedata['job_data']['job_identifier'],
-"sid" => "9d3bb895f22bf0afa958d68c2a58ded7"
+"ddblog_identifier" => "cron_warning_time_limit",
+"ddblog_data" => $direct_cachedata['job_data']['job_identifier'],
+"ddblog_sid" => "9d3bb895f22bf0afa958d68c2a58ded7"
 // md5 ("cron")
 );
 
@@ -125,7 +125,7 @@ $g_log_array = array (
 				if (file_exists ($direct_settings['path_system']."/modules/cron/".$direct_cachedata['job_data']['job_control_file']))
 				{
 					echo "done (".(time ()).")";
-					$direct_classes['basic_functions']->include_file ($direct_settings['path_system']."/modules/cron/".$direct_cachedata['job_data']['job_control_file']);
+					$direct_globals['basic_functions']->include_file ($direct_settings['path_system']."/modules/cron/".$direct_cachedata['job_data']['job_control_file']);
 
 					if ($direct_cachedata['job_data']['job_control_function'])
 					{
@@ -147,10 +147,11 @@ $g_log_array = array (
 			if ($direct_cachedata['job_data']['job_log'])
 			{
 $g_log_array = array (
-"identifier" => "cron_result",
-"data" => $direct_cachedata['job_result'],
-"sid" => "9d3bb895f22bf0afa958d68c2a58ded7"
+"ddblog_identifier" => "cron_result",
+"ddblog_data" => $direct_cachedata['job_result'],
+"ddblog_sid" => "9d3bb895f22bf0afa958d68c2a58ded7",
 // md5 ("cron")
+"ddblog_maintained" => 1
 );
 
 				direct_log_write ($g_log_array);
@@ -171,6 +172,7 @@ $g_log_array = array (
 }
 //j// EOA
 }
+else { header ("HTTP/1.1 403 Forbidden"); }
 
 $direct_cachedata['core_service_activated'] = true;
 

@@ -64,42 +64,54 @@ switch ($direct_settings['a'])
 case "form":
 case "form-save":
 {
-	$g_mode_save = (($direct_settings['a'] == "form-save") ? true : false);
+	$g_mode_ajax_dialog = false;
+	$g_mode_save = false;
+
+	if ($direct_settings['a'] == "form-save")
+	{
+		if ($direct_settings['ohandler'] == "ajax_dialog") { $g_mode_ajax_dialog = true; }
+		$g_mode_save = true;
+	}
+
 	if (USE_debug_reporting) { direct_debug (1,"sWG/#echo(__FILEPATH__)# _a={$direct_settings['a']}_ (#echo(__LINE__)#)"); }
 
 	if ($g_mode_save)
 	{
-		$g_tfile = (isset ($direct_settings['dsd']['tfile']) ? ($direct_classes['basic_functions']->inputfilter_basic ($direct_settings['dsd']['tfile'])) : "");
-		$g_tlang = (isset ($direct_settings['dsd']['tlang']) ? ($direct_classes['basic_functions']->inputfilter_basic ($direct_settings['dsd']['tlang'])) : "");
+		$g_tfile = (isset ($direct_settings['dsd']['tfile']) ? ($direct_globals['basic_functions']->inputfilter_basic ($direct_settings['dsd']['tfile'])) : "");
+		$g_tlang = (isset ($direct_settings['dsd']['tlang']) ? ($direct_globals['basic_functions']->inputfilter_basic ($direct_settings['dsd']['tlang'])) : "");
 
 		$direct_cachedata['page_this'] = "";
-		$direct_cachedata['page_backlink'] = "m=developer&s=translations&dsd=tfile+{$g_tfile}++tlang+".$g_tlang;
-		$direct_cachedata['page_homelink'] = "m=developer&a=services";
+		$direct_cachedata['page_backlink'] = "m=developer;s=translations;dsd=tfile+{$g_tfile}++tlang+".$g_tlang;
+		$direct_cachedata['page_homelink'] = "m=developer;a=services";
 	}
 	else
 	{
-		$g_tfile = (isset ($GLOBALS['i_tfile']) ? ($direct_classes['basic_functions']->inputfilter_basic ($GLOBALS['i_tfile'])) : "");
+		$g_tfile = (isset ($GLOBALS['i_tfile']) ? ($direct_globals['basic_functions']->inputfilter_basic ($GLOBALS['i_tfile'])) : "");
 		$g_tlang = ((isset ($GLOBALS['i_tlang']) && (is_array ($GLOBALS['i_tlang']))) ? (implode (",",$GLOBALS['i_tlang'])) : "");
 
-		$direct_cachedata['page_this'] = "m=developer&s=translations&dsd=tfile+{$g_tfile}++tlang+".$g_tlang;
-		$direct_cachedata['page_backlink'] = "m=developer&a=services";
-		$direct_cachedata['page_homelink'] = "m=developer&a=services";
+		$direct_cachedata['page_this'] = "m=developer;s=translations;dsd=tfile+{$g_tfile}++tlang+".$g_tlang;
+		$direct_cachedata['page_backlink'] = "m=developer;a=services";
+		$direct_cachedata['page_homelink'] = "m=developer;a=services";
 	}
 
-	if ($direct_classes['kernel']->service_init_default ())
+	if ($direct_globals['kernel']->service_init_default ())
 	{
 	//j// BOA
-	if ($g_mode_save) { direct_output_related_manager ("developer_translations_form_save","pre_module_service_action"); }
-	else { direct_output_related_manager ("developer_translations_form","pre_module_service_action"); }
+	if ($g_mode_save)
+	{
+		if ($g_mode_ajax_dialog) { $direct_globals['output']->related_manager ("developer_translations_form_save","pre_module_service_action_ajax"); }
+		else { $direct_globals['output']->related_manager ("developer_translations_form_save","pre_module_service_action"); }
+	}
+	elseif ($g_mode_ajax_dialog) { $direct_globals['output']->related_manager ("developer_translations_form","pre_module_service_action_ajax"); }
+	else { $direct_globals['output']->related_manager ("developer_translations_form","pre_module_service_action"); }
 
-	$direct_classes['basic_functions']->require_file ($direct_settings['path_system']."/classes/swg_formbuilder.php");
+	$direct_globals['basic_functions']->require_file ($direct_settings['path_system']."/classes/swg_formbuilder.php");
 	direct_local_integration ("developer");
 
-	if ($g_mode_save) { $direct_classes['basic_functions']->require_file ($direct_settings['path_system']."/classes/swg_xml.php"); }
+	if ($g_mode_save) { $direct_globals['basic_functions']->require_file ($direct_settings['path_system']."/classes/swg_xml.php"); }
 
 	direct_class_init ("formbuilder");
-	direct_class_init ("output");
-	$direct_classes['output']->options_insert (2,"servicemenu",$direct_cachedata['page_backlink'],(direct_local_get ("core_back")),$direct_settings['serviceicon_default_back'],"url0");
+	$direct_globals['output']->options_insert (2,"servicemenu",$direct_cachedata['page_backlink'],(direct_local_get ("core_back")),$direct_settings['serviceicon_default_back'],"url0");
 
 	$g_languages_array = array ();
 	$g_languages_installed_array = array ();
@@ -143,14 +155,14 @@ case "form-save":
 			if (file_exists ($direct_settings['path_lang']."/swg_$g_tfile.$g_language_id.xml"))
 			{
 				$g_file_content = direct_file_get ("s",$direct_settings['path_lang']."/swg_$g_tfile.$g_language_id.xml");
-				$g_translation_array = $direct_classes['xml_bridge']->xml2array ($g_file_content,false);
+				$g_translation_array = $direct_globals['xml_bridge']->xml2array ($g_file_content,false);
 				$t_translations_array[$g_language_id] = $g_translation_array;
 			}
 			else { $t_translations_array[$g_language_id] = array (); }
 		}
 
 		$g_file_content = direct_file_get ("s",$direct_settings['path_lang']."/swg_$g_tfile.xml");
-		$t_translation_elements_array = $direct_classes['xml_bridge']->xml2array ($g_file_content,false);
+		$t_translation_elements_array = $direct_globals['xml_bridge']->xml2array ($g_file_content,false);
 		$g_continue_check = ((empty ($t_translation_elements_array)) ? false : true);
 	}
 	else { $g_continue_check = false; }
@@ -176,21 +188,20 @@ We should have input in save mode
 					$g_element_id = preg_replace ("#^swg_lang_file_v1_#","",$g_element_id);
 					if ($g_element_node_array['tag'] == "input") { $g_element_id = preg_replace ("#_input$#","",$g_element_id); }
 
-					$direct_classes['formbuilder']->entry_add ("subtitle","t".$g_element_id,$g_element_id);
+					$direct_globals['formbuilder']->entry_add ("subtitle",(array ("name" => "t".$g_element_id,"title" => $g_element_id)));
 
 					foreach ($g_languages_array as $g_language_id => $g_language)
 					{
 						if ($g_element_node_array['attributes']['input'] == "number")
 						{
-							$direct_cachedata["i_t{$g_element_id}_".$g_language_id] = (isset ($GLOBALS["i_t{$g_element_id}_".$g_language_id]) ? ($direct_classes['basic_functions']->inputfilter_number ($GLOBALS["i_t{$g_element_id}_".$g_language_id])) : 0);
+							$direct_cachedata["i_t{$g_element_id}_".$g_language_id] = (isset ($GLOBALS["i_t{$g_element_id}_".$g_language_id]) ? ($direct_globals['basic_functions']->inputfilter_number ($GLOBALS["i_t{$g_element_id}_".$g_language_id])) : 0);
 							if (!$direct_cachedata["i_t{$g_element_id}_".$g_language_id]) { $direct_cachedata["i_t{$g_element_id}_".$g_language_id] = 0; }
-
-							$direct_classes['formbuilder']->entry_add_number ("t{$g_element_id}_".$g_language_id,$g_language,false,"s");
+							$direct_globals['formbuilder']->entry_add_number (array ("name" => "t{$g_element_id}_".$g_language_id,"title" => $g_language,"size" => "s"));
 						}
 						else
 						{
-							$direct_cachedata["i_t{$g_element_id}_".$g_language_id] = (isset ($GLOBALS["i_t{$g_element_id}_".$g_language_id]) ? ($direct_classes['basic_functions']->inputfilter_basic ($GLOBALS["i_t{$g_element_id}_".$g_language_id])) : "");
-							$direct_classes['formbuilder']->entry_add_text ("t{$g_element_id}_".$g_language_id,$g_language,false,"l");
+							$direct_cachedata["i_t{$g_element_id}_".$g_language_id] = (isset ($GLOBALS["i_t{$g_element_id}_".$g_language_id]) ? ($direct_globals['basic_functions']->inputfilter_basic ($GLOBALS["i_t{$g_element_id}_".$g_language_id])) : "");
+							$direct_globals['formbuilder']->entry_add_text (array ("name" => "t{$g_element_id}_".$g_language_id,"title" => $g_language,"size" => "l"));
 						}
 
 						$g_xml_node_path = $g_language_id." swg_lang_file_v1 ".(str_replace ("_"," ",$g_element_id));
@@ -221,7 +232,7 @@ We should have input in save mode
 					$g_element_id = preg_replace ("#^swg_lang_file_v1_#","",$g_element_id);
 					if ($g_element_node_array['tag'] == "input") { $g_element_id = preg_replace ("#_input$#","",$g_element_id); }
 
-					$direct_classes['formbuilder']->entry_add ("subtitle","t".$g_element_id,$g_element_id);
+					$direct_globals['formbuilder']->entry_add ("subtitle",(array ("name" => "t".$g_element_id,"title" => $g_element_id)));
 
 					foreach ($g_languages_array as $g_language_id => $g_language)
 					{
@@ -229,20 +240,19 @@ We should have input in save mode
 						{
 							if (isset ($t_translations_array[$g_language_id]["swg_lang_file_v1_{$g_element_id}_universal"])) { $direct_cachedata["i_t{$g_element_id}_".$g_language_id] = $t_translations_array[$g_language_id]["swg_lang_file_v1_{$g_element_id}_universal"]['value']; }
 							elseif (isset ($t_translations_array[$g_language_id]["swg_lang_file_v1_{$g_element_id}_text"])) { $direct_cachedata["i_t{$g_element_id}_".$g_language_id] = $t_translations_array[$g_language_id]["swg_lang_file_v1_{$g_element_id}_text"]['value']; }
-							else { $direct_cachedata["i_t{$g_element_id}_".$g_language_id] = ""; }
 						}
 						else { $direct_cachedata["i_t{$g_element_id}_".$g_language_id] = ((isset ($t_translations_array[$g_language_id]["swg_lang_file_v1_".$g_element_id])) ? $t_translations_array[$g_language_id]["swg_lang_file_v1_".$g_element_id]['value'] : ""); }
 
-						if ($g_element_node_array['attributes']['input'] == "number") { $direct_classes['formbuilder']->entry_add_number ("t{$g_element_id}_".$g_language_id,$g_language,false,"s"); }
-						else { $direct_classes['formbuilder']->entry_add_text ("t{$g_element_id}_".$g_language_id,$g_language,false,"l"); }
+						if ($g_element_node_array['attributes']['input'] == "number") { $direct_globals['formbuilder']->entry_add_number (array ("name" => "t{$g_element_id}_".$g_language_id,"title" => $g_language,"size" => "s")); }
+						else { $direct_globals['formbuilder']->entry_add_text (array ("name" => "t{$g_element_id}_".$g_language_id,"title" => $g_language,"size" => "l")); }
 					}
 				}
 			}
 		}
 
-		$direct_cachedata['output_formelements'] = $direct_classes['formbuilder']->form_get ($g_mode_save);
+		$direct_cachedata['output_formelements'] = $direct_globals['formbuilder']->form_get ($g_mode_save);
 
-		if (($g_mode_save)&&($direct_classes['formbuilder']->check_result))
+		if (($g_mode_save)&&($direct_globals['formbuilder']->check_result))
 		{
 			foreach ($g_languages_array as $g_language_id => $g_language)
 			{
@@ -253,35 +263,53 @@ We should have input in save mode
 				{
 					$g_file_content = "<?xml version='1.0' encoding='$direct_local[lang_charset]' ?>";
 					$g_file_content .= $g_xml_object->array2xml ($g_language_array,false);
-					$direct_classes['basic_functions']->memcache_write_file ($g_file_content,$direct_settings['path_lang']."/swg_$g_tfile.$g_language_id.xml","s0");
+					$direct_globals['basic_functions']->memcache_write_file ($g_file_content,$direct_settings['path_lang']."/swg_$g_tfile.$g_language_id.xml","s0");
 				}
 			}
 
 			$direct_cachedata['output_job'] = direct_local_get ("developer_translations_form");
 			$direct_cachedata['output_job_desc'] = direct_local_get ("developer_done_translations_saved");
 			$direct_cachedata['output_jsjump'] = 2000;
-			$direct_cachedata['output_pagetarget'] = direct_linker ("url0","m=developer&s=translations");
-			$direct_cachedata['output_scripttarget'] = direct_linker ("url0","m=developer&s=translations",false);
+			$direct_cachedata['output_pagetarget'] = direct_linker ("url0","m=developer;s=translations");
 
-			direct_output_related_manager ("developer_translations_form_save","post_module_service_action");
-			$direct_classes['output']->oset ("default","done");
-			$direct_classes['output']->options_flush (true);
-			$direct_classes['output']->header (false,true,$direct_settings['p3p_url'],$direct_settings['p3p_cp']);
-			$direct_classes['output']->page_show ($direct_cachedata['output_job']);
+			$direct_globals['output']->options_flush (true);
+
+			if ($g_mode_ajax_dialog)
+			{
+				$direct_globals['output']->header (false,true);
+				$direct_globals['output']->related_manager ("developer_translations_form_save","post_module_service_action_ajax");
+				$direct_globals['output']->oset ("default_embedded","ajax_dialog_done");
+				$direct_globals['output']->output_send (direct_local_get ("core_done").": ".$direct_cachedata['output_job']);
+			}
+			else
+			{
+				$direct_globals['output']->header (false,true,$direct_settings['p3p_url'],$direct_settings['p3p_cp']);
+				$direct_globals['output']->related_manager ("developer_translations_form_save","post_module_service_action");
+				$direct_globals['output']->oset ("default","done");
+				$direct_globals['output']->output_send ($direct_cachedata['output_job']);
+			}
+		}
+		elseif ($g_mode_ajax_dialog)
+		{
+			$direct_globals['output']->header (false,true);
+			$direct_globals['output']->related_manager ("developer_translations_form_save","post_module_service_action_ajax");
+			$direct_globals['output']->oset ("default_embedded","ajax_dialog_form_results");
+			$direct_globals['output']->output_send (direct_local_get ("formbuilder_error"));
 		}
 		else
 		{
 			$direct_cachedata['output_formbutton'] = direct_local_get ("core_continue");
-			$direct_cachedata['output_formtarget'] = "m=developer&s=translations&a=form-save&dsd=tfile+$g_tfile++tlang+".$g_tlang;
+			$direct_cachedata['output_formsupport_ajax_dialog'] = true;
+			$direct_cachedata['output_formtarget'] = "m=developer;s=translations;a=form-save;dsd=tfile+$g_tfile++tlang+".$g_tlang;
 			$direct_cachedata['output_formtitle'] = direct_local_get ("developer_translations_form");
 
-			direct_output_related_manager ("developer_translations_form","post_module_service_action");
-			$direct_classes['output']->oset ("default","form");
-			$direct_classes['output']->header (false,true,$direct_settings['p3p_url'],$direct_settings['p3p_cp']);
-			$direct_classes['output']->page_show ($direct_cachedata['output_formtitle']);
+			$direct_globals['output']->header (false,true,$direct_settings['p3p_url'],$direct_settings['p3p_cp']);
+			$direct_globals['output']->related_manager ("developer_translations_form","post_module_service_action");
+			$direct_globals['output']->oset ("default","form");
+			$direct_globals['output']->output_send ($direct_cachedata['output_formtitle']);
 		}
 	}
-	else { $direct_classes['error_functions']->error_page ("standard","developer_translations_file_invalid","sWG/#echo(__FILEPATH__)# _a=form_ (#echo(__LINE__)#)"); }
+	else { $direct_globals['output']->output_send_error ("standard","developer_translations_file_invalid","","sWG/#echo(__FILEPATH__)# _a=form_ (#echo(__LINE__)#)"); }
 	//j// EOA
 	}
 
@@ -293,20 +321,19 @@ case "select":
 {
 	if (USE_debug_reporting) { direct_debug (1,"sWG/#echo(__FILEPATH__)# _a=select_ (#echo(__LINE__)#)"); }
 
-	$direct_cachedata['page_this'] = "m=developer&s=translations";
-	$direct_cachedata['page_backlink'] = "m=developer&a=services";
-	$direct_cachedata['page_homelink'] = "m=developer&a=services";
+	$direct_cachedata['page_this'] = "m=developer;s=translations";
+	$direct_cachedata['page_backlink'] = "m=developer;a=services";
+	$direct_cachedata['page_homelink'] = "m=developer;a=services";
 
-	if ($direct_classes['kernel']->service_init_default ())
+	if ($direct_globals['kernel']->service_init_default ())
 	{
 	//j// BOA
-	direct_output_related_manager ("developer_translations_select","pre_module_service_action");
-	$direct_classes['basic_functions']->require_file ($direct_settings['path_system']."/classes/swg_formbuilder.php");
+	$direct_globals['output']->related_manager ("developer_translations_select","pre_module_service_action");
+	$direct_globals['basic_functions']->require_file ($direct_settings['path_system']."/classes/swg_formbuilder.php");
 	direct_local_integration ("developer");
 
 	direct_class_init ("formbuilder");
-	direct_class_init ("output");
-	$direct_classes['output']->options_insert (2,"servicemenu","m=developer&a=services",(direct_local_get ("core_back")),$direct_settings['serviceicon_default_back'],"url0");
+	$direct_globals['output']->options_insert (2,"servicemenu","m=developer;a=services",(direct_local_get ("core_back")),$direct_settings['serviceicon_default_back'],"url0");
 
 	$g_dir_pointer = @opendir ($direct_settings['path_lang']);
 
@@ -361,20 +388,20 @@ case "select":
 		}
 		else { $direct_cachedata['i_alang'] = "<evars><$direct_settings[lang]><value value='$direct_settings[lang]' /><selected value='1' /></$direct_settings[lang]></evars>"; }
 
-		$direct_classes['formbuilder']->entry_add_select ("tfile",(direct_local_get ("developer_translations_file")),true,"l");
-		$direct_classes['formbuilder']->entry_add_multiselect ("tlang",(direct_local_get ("developer_translations_languages")),true,"m");
+		$direct_globals['formbuilder']->entry_add_select (array ("name" => "tfile","title" => (direct_local_get ("developer_translations_file")),"required" => true,"size" => "l"));
+		$direct_globals['formbuilder']->entry_add_multiselect (array ("name" => "tlang","title" => (direct_local_get ("developer_translations_languages")),"required" => true,"size" => "m"));
 
 		$direct_cachedata['output_formbutton'] = direct_local_get ("core_continue");
-		$direct_cachedata['output_formelements'] = $direct_classes['formbuilder']->form_get (false);
-		$direct_cachedata['output_formtarget'] = "m=developer&s=translations&a=form";
+		$direct_cachedata['output_formelements'] = $direct_globals['formbuilder']->form_get (false);
+		$direct_cachedata['output_formtarget'] = "m=developer;s=translations;a=form";
 		$direct_cachedata['output_formtitle'] = direct_local_get ("developer_translations_select");
 
-		direct_output_related_manager ("developer_translations_select","post_module_service_action");
-		$direct_classes['output']->oset ("default","form");
-		$direct_classes['output']->header (false,true,$direct_settings['p3p_url'],$direct_settings['p3p_cp']);
-		$direct_classes['output']->page_show ($direct_cachedata['output_formtitle']);
+		$direct_globals['output']->header (false,true,$direct_settings['p3p_url'],$direct_settings['p3p_cp']);
+		$direct_globals['output']->related_manager ("developer_translations_select","post_module_service_action");
+		$direct_globals['output']->oset ("default","form");
+		$direct_globals['output']->output_send ($direct_cachedata['output_formtitle']);
 	}
-	else { $direct_classes['error_functions']->error_page ("standard","developer_translations_dir_invalid","sWG/#echo(__FILEPATH__)# _a=select_ (#echo(__LINE__)#)"); }
+	else { $direct_globals['output']->output_send_error ("standard","developer_translations_dir_invalid","","sWG/#echo(__FILEPATH__)# _a=select_ (#echo(__LINE__)#)"); }
 	//j// EOA
 	}
 

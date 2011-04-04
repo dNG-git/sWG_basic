@@ -1,10 +1,25 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <swg_services_file_v1 xmlns="urn:de.direct-netware.xmlns:swg.services.v1">
+ <cp>
+  <core active='1' position='1' lang=''>
+   <title value='Core settings' />
+   <description value='Set up your secured WebGine site.' />
+   <image value='list_cp_core.png' />
+   <link value='m=cp;s=core;a=services' type='url0' />
+   <guests value='0' />
+   <members value='0' />
+   <group>
+    <right value='srutype-ma' />
+    <right value='srutype-ad' />
+   </group>
+  </core>
+ </cp>
+
  <developer active='1' position='99999' lang=''>
   <title value='Developer tools' />
   <description value='Run developer tools if activated by the administration to translate strings or develop modules.' />
   <image value='list_cp_developer.png' />
-  <link value='m=developer&amp;a=services' type='url0' />
+  <link value='m=developer;a=services' type='url0' />
   <guests value='0' />
   <members value='0' />
   <group>

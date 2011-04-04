@@ -77,6 +77,16 @@ class direct_basic_rfc_functions extends direct_data_handler
 	* @var string $linesep Line separator (\r\n or \n)
 */
 	/*#ifndef(PHP4) */protected/* #*//*#ifdef(PHP4):var:#*/ $linesep;
+/**
+	* @var boolean $PHP_mb_encode_mimeheader True if the PHP function
+	*      "mb_encode_mimeheader () " is supported.
+*/
+	/*#ifndef(PHP4) */protected/* #*//*#ifdef(PHP4):var:#*/ $PHP_mb_encode_mimeheader;
+/**
+	* @var boolean $PHP_quoted_printable_encode True if the PHP function
+	*      "quoted_printable_encode () " is supported.
+*/
+	/*#ifndef(PHP4) */protected/* #*//*#ifdef(PHP4):var:#*/ $PHP_quoted_printable_encode;
 
 /* -------------------------------------------------------------------------
 Extend the class using old and new behavior
@@ -120,6 +130,8 @@ Add a variable for the current boundary
 
 		$this->data_boundary = "";
 		$this->linesep = "\r\n";
+		$this->PHP_mb_encode_mimeheader = function_exists ("mb_encode_mimeheader");
+		$this->PHP_quoted_printable_encode = function_exists ("quoted_printable_encode");
 	}
 /*#ifdef(PHP4):
 /**
@@ -155,14 +167,16 @@ Add a variable for the current boundary
 
 				if ($f_length > 76)
 				{
-					$f_return .= $this->linesep." ".$f_word;
+					$f_return .= $this->linesep." ";
 					$f_length = (strlen ($f_word) + 1);
 				}
-				else
+				elseif ($f_return)
 				{
-					if ($f_return) { $f_return .= " "; }
-					$f_return .= $f_word;
+					$f_length++;
+					$f_return .= " ";
 				}
+
+				$f_return .= $f_word;
 			}
 		}
 		else { $f_return = $f_header; }
@@ -301,7 +315,7 @@ Add a variable for the current boundary
 */
 	/*#ifndef(PHP4) */protected /* #*/function multipart_footer () { return "--".$this->data_boundary."--"; }
 
-	//f// direct_basic_rfc_functions->multipart_header ()
+	//f// direct_basic_rfc_functions->multipart_header ($f_header_content_type = "multipart/related")
 /**
 	* Adds the unique multipart header to the message.
 	*
@@ -339,13 +353,25 @@ Add a variable for the current boundary
 
 		if ($f_rfc2047)
 		{
-			$f_return = "=?$direct_local[lang_charset]?Q?";
-			$f_rfc2047_length = strlen ($f_return);
+			if ($this->PHP_mb_encode_mimeheader)
+			{
+				$f_return = mb_encode_mimeheader ($f_data);
+				if ($this->linesep != "\r\n") { $f_return = str_replace ("\r\n",$this->linesep,$f_return); }
+			}
+			else
+			{
+				$f_return = "=?$direct_local[lang_charset]?Q?";
+				$f_rfc2047_length = strlen ($f_return);
 
-			$f_length = $f_rfc2047_length;
-			$f_words_array = explode (" ",$f_data);
+				$f_length = $f_rfc2047_length;
+				$f_words_array = explode (" ",$f_data);
+			}
 		}
-		elseif (function_exists ("quoted_printable_encode")) { $f_return = quoted_printable_encode ($f_data); }
+		elseif ($this->PHP_quoted_printable_encode)
+		{
+			$f_return = quoted_printable_encode ($f_data);
+			if ($this->linesep != "\r\n") { $f_return = str_replace ("\r\n",$this->linesep,$f_return); }
+		}
 		else
 		{
 			$f_length = 0;
@@ -402,7 +428,7 @@ Add a variable for the current boundary
 									}
 									else
 									{
-										$f_length = 0;
+										$f_length = strlen ($this->linesep);
 										$f_word_filtered .= $this->linesep;
 									}
 								}
@@ -423,7 +449,7 @@ Add a variable for the current boundary
 								}
 								else
 								{
-									$f_length = 0;
+									$f_length = strlen ($this->linesep);
 									$f_word_filtered .= $this->linesep;
 								}
 
@@ -467,7 +493,7 @@ Add a variable for the current boundary
 								else
 								{
 									$f_length = 0;
-									$f_word_filtered .= $this->linesep;
+									$f_word_filtered .= "=".$this->linesep;
 								}
 							}
 						}

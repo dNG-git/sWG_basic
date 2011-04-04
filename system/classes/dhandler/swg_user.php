@@ -91,11 +91,11 @@ Extend the class using old and new behavior
 */
 	/*#ifndef(PHP4) */public /* #*/function __construct ()
 	{
-		global $direct_classes,$direct_settings;
+		global $direct_globals,$direct_settings;
 		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -user_handler->__construct (direct_user)- (#echo(__LINE__)#)"); }
 
-		if (!defined ("CLASS_direct_formtags")) { $direct_classes['basic_functions']->include_file ($direct_settings['path_system']."/classes/swg_formtags.php",2); }
-		if (!isset ($direct_classes['formtags'])) { direct_class_init ("formtags"); }
+		if (!defined ("CLASS_direct_formtags")) { $direct_globals['basic_functions']->include_file ($direct_settings['path_system']."/classes/swg_formtags.php",2); }
+		if (!isset ($direct_globals['formtags'])) { direct_class_init ("formtags"); }
 
 /* -------------------------------------------------------------------------
 My parent should be on my side to get the work done
@@ -108,7 +108,7 @@ Informing the system about available functions
 ------------------------------------------------------------------------- */
 
 		$this->functions['get_aid'] = true;
-		$this->functions['parse'] = isset ($direct_classes['formtags']);
+		$this->functions['parse'] = isset ($direct_globals['formtags']);
 		$this->functions['set_insert'] = true;
 		$this->functions['set_update'] = true;
 		$this->functions['update'] = true;
@@ -223,7 +223,7 @@ Set up an additional variables :)
 */
 	/*#ifndef(PHP4) */public /* #*/function get_aid ($f_attributes = NULL,$f_values = "")
 	{
-		global $direct_classes,$direct_settings;
+		global $direct_globals,$direct_settings;
 		if (USE_debug_reporting) { direct_debug (3,"sWG/#echo(__FILEPATH__)# -user_handler->get_aid (+f_attributes,+f_values)- (#echo(__LINE__)#)"); }
 
 		if (!isset ($f_attributes)) { $f_attributes = $direct_settings['users_table'].".ddbusers_id"; }
@@ -241,10 +241,10 @@ Set up an additional variables :)
 			if (count ($this->data) > 1) { $f_return = $this->data; }
 			elseif ((($f_values == NULL)&&(!empty ($this->data_extra_conditions)))||(isset ($f_attributes)))
 			{
-				$direct_classes['db']->init_select ($direct_settings['users_table']);
+				$direct_globals['db']->init_select ($direct_settings['users_table']);
 
-				$direct_classes['db']->define_attributes (array ($direct_settings['users_table'].".*",$direct_settings['evars_archive_table'].".ddbevars_archive_data AS ddbusers_avatar_data"));
-				$direct_classes['db']->define_join ("left-outer-join",$direct_settings['evars_archive_table'],"<sqlconditions><element1 attribute='{$direct_settings['evars_archive_table']}.ddbevars_archive_id' value='{$direct_settings['users_table']}.ddbusers_avatar' type='attribute' /></sqlconditions>");
+				$direct_globals['db']->define_attributes (array ($direct_settings['users_table'].".*",$direct_settings['evars_archive_table'].".ddbevars_archive_data AS ddbusers_avatar_data"));
+				$direct_globals['db']->define_join ("left-outer-join",$direct_settings['evars_archive_table'],"<sqlconditions><element1 attribute='{$direct_settings['evars_archive_table']}.ddbevars_archive_id' value='{$direct_settings['users_table']}.ddbusers_avatar' type='attribute' /></sqlconditions>");
 
 				$f_select_criteria = "<sqlconditions>";
 
@@ -253,16 +253,16 @@ Set up an additional variables :)
 					foreach ($f_values as $f_value)
 					{
 						$f_attribute = array_shift ($f_attributes);
-						$f_select_criteria .= $direct_classes['db']->define_row_conditions_encode ($f_attribute,$f_value,"string");
+						$f_select_criteria .= $direct_globals['db']->define_row_conditions_encode ($f_attribute,$f_value,"string");
 					}
 				}
 
 				$f_select_criteria .= "</sqlconditions>";
 
-				$direct_classes['db']->define_row_conditions ($f_select_criteria);
+				$direct_globals['db']->define_row_conditions ($f_select_criteria);
 
-				$direct_classes['db']->define_limit (1);
-				$this->data = $direct_classes['db']->query_exec ("sa");
+				$direct_globals['db']->define_limit (1);
+				$this->data = $direct_globals['db']->query_exec ("sa");
 
 				if ($this->data) { $f_return = $this->data; }
 			}
@@ -290,7 +290,7 @@ Set up an additional variables :)
 */
 	/*#ifndef(PHP4) */public /* #*/function parse ($f_prefix = "")
 	{
-		global $direct_classes,$direct_settings;
+		global $direct_globals,$direct_settings;
 		if (USE_debug_reporting) { direct_debug (3,"sWG/#echo(__FILEPATH__)# -user_handler->parse ($f_prefix)- (#echo(__LINE__)#)"); }
 
 		$f_return = array ();
@@ -306,7 +306,7 @@ Set up an additional variables :)
 			}
 			else
 			{
-				$f_return[$f_prefix."pageurl"] = (($this->data['ddbusers_id']) ? direct_linker ("url0","m=account&s=profile&a=view&dsd=auid+".$this->data['ddbusers_id']) : "");
+				$f_return[$f_prefix."pageurl"] = (($this->data['ddbusers_id']) ? direct_linker ("url0","m=account;s=profile;a=view;dsd=auid+".$this->data['ddbusers_id']) : "");
 
 				switch ($this->data['ddbusers_type'])
 				{
@@ -343,18 +343,18 @@ Set up an additional variables :)
 			$f_return[$f_prefix."email"] = "";
 			$f_return[$f_prefix."pageurl_email"] = "";
 
-			if ($direct_classes['kernel']->v_usertype_get_int ($direct_settings['user']['type']) > 3)
+			if ($direct_globals['kernel']->v_usertype_get_int ($direct_settings['user']['type']) > 3)
 			{
 				$f_return[$f_prefix."email"] = ((isset ($this->data['ddbusers_email'])) ? direct_html_encode_special ($this->data['ddbusers_email']) : NULL);
-				if ($this->data['ddbusers_id']) { $f_return[$f_prefix."pageurl_email"] = direct_linker ("url0","m=account&s=email&dsd=auid+".$this->data['ddbusers_id']); }
+				if ($this->data['ddbusers_id']) { $f_return[$f_prefix."pageurl_email"] = direct_linker ("url0","m=account;s=email;dsd=auid+".$this->data['ddbusers_id']); }
 			}
 			elseif ($this->data['ddbusers_email_public'])
 			{
 				$f_return[$f_prefix."email"] = "";
-				if ($this->data['ddbusers_id']) { $f_return[$f_prefix."pageurl_email"] = direct_linker ("url0","m=account&s=email&dsd=auid+".$this->data['ddbusers_id']); }
+				if ($this->data['ddbusers_id']) { $f_return[$f_prefix."pageurl_email"] = direct_linker ("url0","m=account;s=email;dsd=auid+".$this->data['ddbusers_id']); }
 			}
 
-			$f_return[$f_prefix."title"] = $direct_classes['formtags']->decode ($this->data['ddbusers_title']);
+			$f_return[$f_prefix."title"] = $direct_globals['formtags']->decode ($this->data['ddbusers_title']);
 			$f_return[$f_prefix."avatar"] = "";
 			$f_return[$f_prefix."avatar_small"] = "";
 			$f_return[$f_prefix."avatar_large"] = "";
@@ -362,8 +362,8 @@ Set up an additional variables :)
 			if ((isset ($this->data['ddbusers_avatar']))&&($this->data['ddbusers_avatar']))
 			{
 				$f_return[$f_prefix."avatar"] = $this->data['ddbusers_avatar'];
-				$f_return[$f_prefix."avatar_small"] = direct_linker_dynamic ("url1","m=account&s=avatar&a=transfer&dsd=atype+small++aeid+".$this->data['ddbusers_avatar'],true,false);
-				$f_return[$f_prefix."avatar_large"] = direct_linker_dynamic ("url1","m=account&s=avatar&a=transfer&dsd=atype+large++aeid+".$this->data['ddbusers_avatar'],true,false);
+				$f_return[$f_prefix."avatar_small"] = direct_linker_dynamic ("url1","m=account;s=avatar;a=transfer;dsd=atype+small++aeid+".$this->data['ddbusers_avatar'],true,false);
+				$f_return[$f_prefix."avatar_large"] = direct_linker_dynamic ("url1","m=account;s=avatar;a=transfer;dsd=atype+large++aeid+".$this->data['ddbusers_avatar'],true,false);
 
 				if (!empty ($this->data['ddbusers_avatar_data']))
 				{
@@ -371,13 +371,13 @@ Set up an additional variables :)
 
 					if ($f_avatar_array)
 					{
-						$f_return[$f_prefix."avatar_small"] = (((isset ($f_avatar_array['avatar_small']))&&($f_avatar_array['avatar_small'])) ? direct_linker_dynamic ("url1","m=account&s=avatar&a=transfer&dsd=atype+small++aoid+".$f_avatar_array['avatar_small'],true,false) : "");
-						$f_return[$f_prefix."avatar_large"] = (((isset ($f_avatar_array['avatar_large']))&&($f_avatar_array['avatar_large'])) ? direct_linker_dynamic ("url1","m=account&s=avatar&a=transfer&dsd=atype+large++aoid+".$f_avatar_array['avatar_large'],true,false) : "");
+						$f_return[$f_prefix."avatar_small"] = (((isset ($f_avatar_array['avatar_small']))&&($f_avatar_array['avatar_small'])) ? direct_linker_dynamic ("url1","m=account;s=avatar;a=transfer;dsd=atype+small++aoid+".$f_avatar_array['avatar_small'],true,false) : "");
+						$f_return[$f_prefix."avatar_large"] = (((isset ($f_avatar_array['avatar_large']))&&($f_avatar_array['avatar_large'])) ? direct_linker_dynamic ("url1","m=account;s=avatar;a=transfer;dsd=atype+large++aoid+".$f_avatar_array['avatar_large'],true,false) : "");
 					}
 				}
 			}
 
-			$f_return[$f_prefix."signature"] = ((isset ($this->data['ddbusers_signature'])) ? $direct_classes['formtags']->decode ($this->data['ddbusers_signature']) : NULL);
+			$f_return[$f_prefix."signature"] = ((isset ($this->data['ddbusers_signature'])) ? $direct_globals['formtags']->decode ($this->data['ddbusers_signature']) : NULL);
 			$f_return[$f_prefix."rating"] = (((isset ($this->data['ddbusers_rating']))&&($this->data['ddbusers_rating'])) ? $this->data['ddbusers_rating']." / ".$direct_settings['rating_max'] : direct_local_get ("core_unknown"));
 		}
 
@@ -406,13 +406,7 @@ can use our "parse ()" method to parse even incomplete user data.
 ------------------------------------------------------------------------- */
 
 		$f_continue_check = isset ($f_data['ddbusers_name']);
-
-		if ((isset ($f_data['ddbusers_type']))&&($f_data['ddbusers_type'] == "ex"))
-		{
-			if ((!isset ($f_data['ddbusers_type_ex'])||(!strlen ($f_data['ddbusers_type_ex'])))) { $f_continue_check = false; }
-			$f_deleted = 1;
-		}
-		else { $f_deleted = 0; }
+		$f_deleted = (((isset ($f_data['ddbusers_type']))&&($f_data['ddbusers_type'] == "ex")) ? 1 : 0);
 
 		if ($f_continue_check)
 		{
@@ -420,7 +414,7 @@ can use our "parse ()" method to parse even incomplete user data.
 
 			$this->data['ddbusers_id'] = (((isset ($f_data['ddbusers_id']))&&(strlen ($f_data['ddbusers_id']))) ? $f_data['ddbusers_id'] : (uniqid ("")));
 			$this->data['ddbusers_type'] = (isset ($f_data['ddbusers_type']) ? $f_data['ddbusers_type'] : "me");
-			$this->data['ddbusers_type_ex'] = (isset ($f_data['ddbusers_type_ex']) ? $f_data['ddbusers_type_ex'] : NULL);
+			$this->data['ddbusers_type_ex'] = (isset ($f_data['ddbusers_type_ex']) ? $f_data['ddbusers_type_ex'] : "");
 			$this->data['ddbusers_banned'] = (isset ($f_data['ddbusers_banned']) ? $f_data['ddbusers_banned'] : 0);
 			$this->data['ddbusers_deleted'] = (isset ($f_data['ddbusers_deleted']) ? $f_data['ddbusers_deleted'] : $f_deleted);
 			$this->data['ddbusers_locked'] = (isset ($f_data['ddbusers_locked']) ? $f_data['ddbusers_locked'] : 0);
@@ -530,64 +524,67 @@ test for missing values in the "action" sections.
 */
 	/*#ifndef(PHP4) */public /* #*/function update ($f_insert_mode_deactivate = true)
 	{
-		global $direct_classes,$direct_settings;
+		global $direct_globals,$direct_settings;
 		if (USE_debug_reporting) { direct_debug (3,"sWG/#echo(__FILEPATH__)# -user_handler->update ()- (#echo(__LINE__)#)"); }
 
 		$f_return = false;
 
 		if (count ($this->data) > 1)
 		{
-			if (isset ($this->data['ddbusers_name']/*#ifndef(PHP4) */,/* #*//*#ifdef(PHP4):) && isset (:#*/$this->data['ddbusers_password']/*#ifndef(PHP4) */,/* #*//*#ifdef(PHP4):) && isset (:#*/$this->data['ddbusers_email']/*#ifndef(PHP4) */,/* #*//*#ifdef(PHP4):) && isset (:#*/$this->data['ddbusers_registration_ip']/*#ifndef(PHP4) */,/* #*//*#ifdef(PHP4):) && isset (:#*/$this->data['ddbusers_registration_time']/*#ifndef(PHP4) */,/* #*//*#ifdef(PHP4):) && isset (:#*/$this->data['ddbusers_secid']/*#ifndef(PHP4) */,/* #*//*#ifdef(PHP4):) && isset (:#*/$this->data['ddbusers_lastactivity_time']))
+			$f_continue_check = isset ($this->data['ddbusers_type']);
+			if (($f_continue_check)&&($this->data['ddbusers_type'] == "ex")&&((!isset ($this->data['ddbusers_type_ex'])||(!strlen ($this->data['ddbusers_type_ex']))))) { $f_continue_check = false; }
+
+			if (($f_continue_check)&&(isset ($this->data['ddbusers_name']/*#ifndef(PHP4) */,/* #*//*#ifdef(PHP4):) && isset (:#*/$this->data['ddbusers_password']/*#ifndef(PHP4) */,/* #*//*#ifdef(PHP4):) && isset (:#*/$this->data['ddbusers_email']/*#ifndef(PHP4) */,/* #*//*#ifdef(PHP4):) && isset (:#*/$this->data['ddbusers_registration_ip']/*#ifndef(PHP4) */,/* #*//*#ifdef(PHP4):) && isset (:#*/$this->data['ddbusers_registration_time']/*#ifndef(PHP4) */,/* #*//*#ifdef(PHP4):) && isset (:#*/$this->data['ddbusers_secid']/*#ifndef(PHP4) */,/* #*//*#ifdef(PHP4):) && isset (:#*/$this->data['ddbusers_lastactivity_time'])))
 			{
-				if ($this->data_insert_mode) { $direct_classes['db']->init_insert ($direct_settings['users_table']); }
-				else { $direct_classes['db']->init_update ($direct_settings['users_table']); }
+				if ($this->data_insert_mode) { $direct_globals['db']->init_insert ($direct_settings['users_table']); }
+				else { $direct_globals['db']->init_update ($direct_settings['users_table']); }
 
 $f_data_values = ("<sqlvalues>
-".($direct_classes['db']->define_set_attributes_encode ($direct_settings['users_table'].".ddbusers_id",$this->data['ddbusers_id'],"string"))."
-".($direct_classes['db']->define_set_attributes_encode ($direct_settings['users_table'].".ddbusers_type",$this->data['ddbusers_type'],"string"))."
-".($direct_classes['db']->define_set_attributes_encode ($direct_settings['users_table'].".ddbusers_type_ex",$this->data['ddbusers_type_ex'],"string"))."
-".($direct_classes['db']->define_set_attributes_encode ($direct_settings['users_table'].".ddbusers_banned",$this->data['ddbusers_banned'],"string"))."
-".($direct_classes['db']->define_set_attributes_encode ($direct_settings['users_table'].".ddbusers_deleted",$this->data['ddbusers_deleted'],"string"))."
-".($direct_classes['db']->define_set_attributes_encode ($direct_settings['users_table'].".ddbusers_locked",$this->data['ddbusers_locked'],"string"))."
-".($direct_classes['db']->define_set_attributes_encode ($direct_settings['users_table'].".ddbusers_name",$this->data['ddbusers_name'],"string"))."
-".($direct_classes['db']->define_set_attributes_encode ($direct_settings['users_table'].".ddbusers_password",$this->data['ddbusers_password'],"string"))."
-".($direct_classes['db']->define_set_attributes_encode ($direct_settings['users_table'].".ddbusers_lang",$this->data['ddbusers_lang'],"string"))."
-".($direct_classes['db']->define_set_attributes_encode ($direct_settings['users_table'].".ddbusers_theme",$this->data['ddbusers_theme'],"string"))."
-".($direct_classes['db']->define_set_attributes_encode ($direct_settings['users_table'].".ddbusers_email",$this->data['ddbusers_email'],"string"))."
-".($direct_classes['db']->define_set_attributes_encode ($direct_settings['users_table'].".ddbusers_email_public",$this->data['ddbusers_email_public'],"string"))."
-".($direct_classes['db']->define_set_attributes_encode ($direct_settings['users_table'].".ddbusers_credits",$this->data['ddbusers_credits'],"number"))."
-".($direct_classes['db']->define_set_attributes_encode ($direct_settings['users_table'].".ddbusers_title",$this->data['ddbusers_title'],"string"))."
-".($direct_classes['db']->define_set_attributes_encode ($direct_settings['users_table'].".ddbusers_avatar",$this->data['ddbusers_avatar'],"string"))."
-".($direct_classes['db']->define_set_attributes_encode ($direct_settings['users_table'].".ddbusers_signature",$this->data['ddbusers_signature'],"string"))."
-".($direct_classes['db']->define_set_attributes_encode ($direct_settings['users_table'].".ddbusers_registration_ip",$this->data['ddbusers_registration_ip'],"string"))."
-".($direct_classes['db']->define_set_attributes_encode ($direct_settings['users_table'].".ddbusers_registration_time",$this->data['ddbusers_registration_time'],"number"))."
-".($direct_classes['db']->define_set_attributes_encode ($direct_settings['users_table'].".ddbusers_secid",$this->data['ddbusers_secid'],"string"))."
-".($direct_classes['db']->define_set_attributes_encode ($direct_settings['users_table'].".ddbusers_lastvisit_ip",$this->data['ddbusers_lastvisit_ip'],"string"))."
-".($direct_classes['db']->define_set_attributes_encode ($direct_settings['users_table'].".ddbusers_lastvisit_time",$this->data['ddbusers_lastvisit_time'],"number"))."
-".($direct_classes['db']->define_set_attributes_encode ($direct_settings['users_table'].".ddbusers_lastactivity_time",$this->data['ddbusers_lastactivity_time'],"number"))."
-".($direct_classes['db']->define_set_attributes_encode ($direct_settings['users_table'].".ddbusers_rating",$this->data['ddbusers_rating'],"number"))."
-".($direct_classes['db']->define_set_attributes_encode ($direct_settings['users_table'].".ddbusers_timezone",$this->data['ddbusers_timezone'],"number")));
+".($direct_globals['db']->define_set_attributes_encode ($direct_settings['users_table'].".ddbusers_id",$this->data['ddbusers_id'],"string"))."
+".($direct_globals['db']->define_set_attributes_encode ($direct_settings['users_table'].".ddbusers_type",$this->data['ddbusers_type'],"string"))."
+".($direct_globals['db']->define_set_attributes_encode ($direct_settings['users_table'].".ddbusers_type_ex",$this->data['ddbusers_type_ex'],"string"))."
+".($direct_globals['db']->define_set_attributes_encode ($direct_settings['users_table'].".ddbusers_banned",$this->data['ddbusers_banned'],"string"))."
+".($direct_globals['db']->define_set_attributes_encode ($direct_settings['users_table'].".ddbusers_deleted",$this->data['ddbusers_deleted'],"string"))."
+".($direct_globals['db']->define_set_attributes_encode ($direct_settings['users_table'].".ddbusers_locked",$this->data['ddbusers_locked'],"string"))."
+".($direct_globals['db']->define_set_attributes_encode ($direct_settings['users_table'].".ddbusers_name",$this->data['ddbusers_name'],"string"))."
+".($direct_globals['db']->define_set_attributes_encode ($direct_settings['users_table'].".ddbusers_password",$this->data['ddbusers_password'],"string"))."
+".($direct_globals['db']->define_set_attributes_encode ($direct_settings['users_table'].".ddbusers_lang",$this->data['ddbusers_lang'],"string"))."
+".($direct_globals['db']->define_set_attributes_encode ($direct_settings['users_table'].".ddbusers_theme",$this->data['ddbusers_theme'],"string"))."
+".($direct_globals['db']->define_set_attributes_encode ($direct_settings['users_table'].".ddbusers_email",$this->data['ddbusers_email'],"string"))."
+".($direct_globals['db']->define_set_attributes_encode ($direct_settings['users_table'].".ddbusers_email_public",$this->data['ddbusers_email_public'],"string"))."
+".($direct_globals['db']->define_set_attributes_encode ($direct_settings['users_table'].".ddbusers_credits",$this->data['ddbusers_credits'],"number"))."
+".($direct_globals['db']->define_set_attributes_encode ($direct_settings['users_table'].".ddbusers_title",$this->data['ddbusers_title'],"string"))."
+".($direct_globals['db']->define_set_attributes_encode ($direct_settings['users_table'].".ddbusers_avatar",$this->data['ddbusers_avatar'],"string"))."
+".($direct_globals['db']->define_set_attributes_encode ($direct_settings['users_table'].".ddbusers_signature",$this->data['ddbusers_signature'],"string"))."
+".($direct_globals['db']->define_set_attributes_encode ($direct_settings['users_table'].".ddbusers_registration_ip",$this->data['ddbusers_registration_ip'],"string"))."
+".($direct_globals['db']->define_set_attributes_encode ($direct_settings['users_table'].".ddbusers_registration_time",$this->data['ddbusers_registration_time'],"number"))."
+".($direct_globals['db']->define_set_attributes_encode ($direct_settings['users_table'].".ddbusers_secid",$this->data['ddbusers_secid'],"string"))."
+".($direct_globals['db']->define_set_attributes_encode ($direct_settings['users_table'].".ddbusers_lastvisit_ip",$this->data['ddbusers_lastvisit_ip'],"string"))."
+".($direct_globals['db']->define_set_attributes_encode ($direct_settings['users_table'].".ddbusers_lastvisit_time",$this->data['ddbusers_lastvisit_time'],"number"))."
+".($direct_globals['db']->define_set_attributes_encode ($direct_settings['users_table'].".ddbusers_lastactivity_time",$this->data['ddbusers_lastactivity_time'],"number"))."
+".($direct_globals['db']->define_set_attributes_encode ($direct_settings['users_table'].".ddbusers_rating",$this->data['ddbusers_rating'],"number"))."
+".($direct_globals['db']->define_set_attributes_encode ($direct_settings['users_table'].".ddbusers_timezone",$this->data['ddbusers_timezone'],"number")));
 
 				if ((is_array ($direct_settings['users_tablecells_extras']))&&(!empty ($direct_settings['users_tablecells_extras'])))
 				{
-					foreach ($direct_settings['users_tablecells_extras'] as $f_extra_attribute) { $f_data_values .= $direct_classes['db']->define_set_attributes_encode ($f_extra_attribute,$this->data[$f_extra_attribute],"string"); }
+					foreach ($direct_settings['users_tablecells_extras'] as $f_extra_attribute) { $f_data_values .= $direct_globals['db']->define_set_attributes_encode ($direct_settings['users_table'].".".$f_extra_attribute,$this->data[$f_extra_attribute],"string"); }
 				}
 
 				$f_data_values .= "</sqlvalues>";
 
-				$direct_classes['db']->define_set_attributes ($f_data_values);
-				if (!$this->data_insert_mode) { $direct_classes['db']->define_row_conditions ("<sqlconditions>".($direct_classes['db']->define_row_conditions_encode ($direct_settings['users_table'].".ddbusers_id",$this->data['ddbusers_id'],"string"))."</sqlconditions>"); }
-				$f_return = $direct_classes['db']->query_exec ("co");
+				$direct_globals['db']->define_set_attributes ($f_data_values);
+				if (!$this->data_insert_mode) { $direct_globals['db']->define_row_conditions ("<sqlconditions>".($direct_globals['db']->define_row_conditions_encode ($direct_settings['users_table'].".ddbusers_id",$this->data['ddbusers_id'],"string"))."</sqlconditions>"); }
+				$f_return = $direct_globals['db']->query_exec ("co");
 
 				if ($f_return)
 				{
 					if (function_exists ("direct_dbsync_event"))
 					{
-						if ($this->data_insert_mode) { direct_dbsync_event ($direct_settings['users_table'],"insert",("<sqlconditions>".($direct_classes['db']->define_row_conditions_encode ($direct_settings['users_table'].".ddbusers_id",$this->data['ddbusers_id'],"string"))."</sqlconditions>")); }
-						else { direct_dbsync_event ($direct_settings['users_table'],"update",("<sqlconditions>".($direct_classes['db']->define_row_conditions_encode ($direct_settings['users_table'].".ddbusers_id",$this->data['ddbusers_id'],"string"))."</sqlconditions>")); }
+						if ($this->data_insert_mode) { direct_dbsync_event ($direct_settings['users_table'],"insert",("<sqlconditions>".($direct_globals['db']->define_row_conditions_encode ($direct_settings['users_table'].".ddbusers_id",$this->data['ddbusers_id'],"string"))."</sqlconditions>")); }
+						else { direct_dbsync_event ($direct_settings['users_table'],"update",("<sqlconditions>".($direct_globals['db']->define_row_conditions_encode ($direct_settings['users_table'].".ddbusers_id",$this->data['ddbusers_id'],"string"))."</sqlconditions>")); }
 					}
 
-					if (!$direct_settings['swg_auto_maintenance']) { $direct_classes['db']->optimize_random ($direct_settings['users_table']); }
+					if (!$direct_settings['swg_auto_maintenance']) { $direct_globals['db']->optimize_random ($direct_settings['users_table']); }
 				}
 			}
 		}
@@ -608,6 +605,7 @@ define ("CLASS_direct_user",true);
 
 if (!isset ($direct_settings['swg_auto_maintenance'])) { $direct_settings['swg_auto_maintenance'] = false; }
 if (!isset ($direct_settings['swg_ip_save2db'])) { $direct_settings['swg_ip_save2db'] = true; }
+if (!isset ($direct_settings['users_tablecells_extras'])) { $direct_settings['users_tablecells_extras'] = array (); }
 }
 
 //j// EOF

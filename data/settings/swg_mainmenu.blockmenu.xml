@@ -4,7 +4,7 @@
 
   <status_login_en active='1' level='' lang='en'>
    <title value='Log in' />
-   <link value='m=account&amp;s=status&amp;a=login' type='url0' />
+   <link value='m=account;s=status;a=login' type='url0' />
    <guests value='1' />
    <members value='0' />
    <group_right value='0' />
@@ -12,15 +12,23 @@
 
   <status_login_de active='1' level='' lang='de'>
    <title value='Anmelden' />
-   <link value='m=account&amp;s=status&amp;a=login' type='url0' />
+   <link value='m=account;s=status;a=login' type='url0' />
    <guests value='1' />
    <members value='0' />
    <group_right value='0' />
   </status_login_de>
 
+  <status_login_de_formal active='1' level='' lang='de_formal'>
+   <title value='Anmelden' />
+   <link value='m=account;s=status;a=login' type='url0' />
+   <guests value='1' />
+   <members value='0' />
+   <group_right value='0' />
+  </status_login_de_formal>
+
   <status_logout_en active='1' level='' lang='en'>
    <title value='Log out' />
-   <link value='m=account&amp;s=status&amp;a=logout' type='url0' />
+   <link value='m=account;s=status;a=logout' type='url0' />
    <guests value='0' />
    <members value='1' />
    <group_right value='srutype-ex' />
@@ -28,15 +36,23 @@
 
   <status_logout_de active='1' level='' lang='de'>
    <title value='Abmelden' />
-   <link value='m=account&amp;s=status&amp;a=logout' type='url0' />
+   <link value='m=account;s=status;a=logout' type='url0' />
    <guests value='0' />
    <members value='1' />
    <group_right value='srutype-ex' />
   </status_logout_de>
 
+  <status_logout_de_formal active='1' level='' lang='de_formal'>
+   <title value='Abmelden' />
+   <link value='m=account;s=status;a=logout' type='url0' />
+   <guests value='0' />
+   <members value='1' />
+   <group_right value='srutype-ex' />
+  </status_logout_de_formal>
+
   <services_en active='1' level='' lang='en'>
    <title value='Account' />
-   <link value='m=account&amp;a=services' type='url0' />
+   <link value='m=account;a=services' type='url0' />
    <guests value='1' />
    <members value='1' />
    <group_right value='0' />
@@ -44,15 +60,23 @@
 
   <services_de active='1' level='' lang='de'>
    <title value='Account' />
-   <link value='m=account&amp;a=services' type='url0' />
+   <link value='m=account;a=services' type='url0' />
    <guests value='1' />
    <members value='1' />
    <group_right value='0' />
   </services_de>
 
+  <services_de_formal active='1' level='' lang='de_formal'>
+   <title value='Account' />
+   <link value='m=account;a=services' type='url0' />
+   <guests value='1' />
+   <members value='1' />
+   <group_right value='0' />
+  </services_de_formal>
+
   <actives_en active='1' level='' lang='en'>
    <title value='Active users' />
-   <link value='m=account&amp;a=actives' type='url0' />
+   <link value='m=account;a=actives' type='url0' />
    <guests value='1' />
    <members value='1' />
    <group_right value='0' />
@@ -60,11 +84,19 @@
 
   <actives_de active='1' level='' lang='de'>
    <title value='Aktive Benutzer' />
-   <link value='m=account&amp;a=actives' type='url0' />
+   <link value='m=account;a=actives' type='url0' />
    <guests value='1' />
    <members value='1' />
    <group_right value='0' />
   </actives_de>
+
+  <actives_de_formal active='1' level='' lang='de_formal'>
+   <title value='Aktive Benutzer' />
+   <link value='m=account;a=actives' type='url0' />
+   <guests value='1' />
+   <members value='1' />
+   <group_right value='0' />
+  </actives_de_formal>
 
  </account>
  <cp>
@@ -92,6 +124,18 @@
     <right value='developer_access' />
    </group>
   </de>
+
+  <de_formal active='1' level='' lang='de_formal'>
+   <title value='Kontrollzentrum' />
+   <link value='m=cp' type='url0' />
+   <guests value='0' />
+   <members value='0' />
+   <group>
+    <right value='cp_access' />
+    <right value='srutype-ad' />
+    <right value='developer_access' />
+   </group>
+  </de_formal>
 
  </cp>
 </swg_blockmenu_file_v1>

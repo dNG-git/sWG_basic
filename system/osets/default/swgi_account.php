@@ -59,18 +59,18 @@ function direct_account_oset_status_ex_view ()
 	if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -direct_account_oset_status_ex_view ()- (#echo(__LINE__)#)"); }
 
 $f_return = ("<tr>
-<td valign='top' align='right' class='pageextrabg' style='width:25%;padding:$direct_settings[theme_form_td_padding]'><span class='pageextracontent' style='font-weight:bold'>".(direct_local_get ("core_user_current")).":</span></td>
-<td valign='middle' align='center' class='pagebg' style='width:75%;padding:$direct_settings[theme_form_td_padding]'><span class='pagecontent'>{$direct_cachedata['output_current_user']}</span></td>
+<td class='pageextrabg' style='width:25%;padding:$direct_settings[theme_form_td_padding];text-align:right;vertical-align:top'><span class='pageextracontent' style='font-weight:bold'>".(direct_local_get ("core_user_current")).":</span></td>
+<td class='pagebg' style='width:75%;padding:$direct_settings[theme_form_td_padding];text-align:center;vertical-align:middle'><span class='pagecontent'>{$direct_cachedata['output_current_user']}</span></td>
 </tr><tr>
-<td valign='top' align='right' class='pageextrabg' style='width:25%;padding:$direct_settings[theme_form_td_padding]'><span class='pageextracontent' style='font-weight:bold'>".(direct_local_get ("account_status_ex_verification_type")).":</span></td>
-<td valign='middle' align='center' class='pagebg' style='width:75%;padding:$direct_settings[theme_form_td_padding]'><span class='pagecontent'>{$direct_cachedata['output_current_verification']}</span></td>
+<td class='pageextrabg' style='width:25%;padding:$direct_settings[theme_form_td_padding];text-align:right;vertical-align:top'><span class='pageextracontent' style='font-weight:bold'>".(direct_local_get ("account_status_ex_verification_type")).":</span></td>
+<td class='pagebg' style='width:75%;padding:$direct_settings[theme_form_td_padding];text-align:center;vertical-align:middle'><span class='pagecontent'>{$direct_cachedata['output_current_verification']}</span></td>
 </tr>");
 
 	if (isset ($direct_cachedata['output_current_verification_status']))
 	{
 $f_return .= ("<tr>
-<td valign='top' align='right' class='pageextrabg' style='width:25%;padding:$direct_settings[theme_form_td_padding]'><span class='pageextracontent' style='font-weight:bold'>".(direct_local_get ("account_status_ex_verification_status")).":</span></td>
-<td valign='middle' align='center' class='pagebg' style='width:75%;padding:$direct_settings[theme_form_td_padding]'><span class='pagecontent'>{$direct_cachedata['output_current_verification_status']}</span></td>
+<td class='pageextrabg' style='width:25%;padding:$direct_settings[theme_form_td_padding];text-align:right;vertical-align:top'><span class='pageextracontent' style='font-weight:bold'>".(direct_local_get ("account_status_ex_verification_status")).":</span></td>
+<td class='pagebg' style='width:75%;padding:$direct_settings[theme_form_td_padding];text-align:center;vertical-align:middle'><span class='pagecontent'>{$direct_cachedata['output_current_verification_status']}</span></td>
 </tr>");
 	}
 
@@ -80,7 +80,7 @@ $f_return .= ("<tr>
 		else { $f_url_target = "_top"; }
 
 $f_return .= ("<tr>
-<td colspan='2' align='center' class='pagebg' style='padding:$direct_settings[theme_td_padding]'><span class='pagecontent'><a href=\"{$direct_cachedata['output_link_login']}\" target='$f_url_target'>".(direct_local_get ("core_login"))."</a></span></td>
+<td colspan='2' class='pagebg' style='padding:$direct_settings[theme_td_padding];text-align:center'><span class='pagecontent'><a href=\"{$direct_cachedata['output_link_login']}\" target='$f_url_target'>".(direct_local_get ("core_login"))."</a></span></td>
 </tr>");
 	}
 
@@ -106,10 +106,12 @@ function direct_account_oset_selector_users_parse ($f_users_array)
 
 	if (!empty ($f_users_array))
 	{
-$f_return = ("<table cellspacing='1' summary='' class='pageborder1' style='width:100%;table-layout:auto'>
+$f_return = ("<table class='pageborder1' style='width:100%;table-layout:auto'>
 <thead class='pagehide'><tr>
-<td colspan='2' align='left' class='pagetitlecellbg' style='padding:$direct_settings[theme_td_padding]'><span class='pagetitlecellcontent'>".(direct_local_get ("core_username"))."</span></td>
+<td colspan='2' class='pagetitlecellbg' style='padding:$direct_settings[theme_td_padding];text-align:left'><span class='pagetitlecellcontent'>".(direct_local_get ("core_username"))."</span></td>
 </tr></thead><tbody>");
+
+		$f_user_view = direct_local_get ("account_profile_view");
 
 		foreach ($f_users_array as $f_user_array)
 		{
@@ -120,28 +122,29 @@ $f_return = ("<table cellspacing='1' summary='' class='pageborder1' style='width
 			{
 				if ($f_right_switch)
 				{
-					$f_return .= "</td>\n<td valign='middle' align='left' class='page{$f_css_class}bg' style='width:50%;padding:$direct_settings[theme_td_padding]'>";
+					$f_return .= "</td>\n<td class='page{$f_css_class}bg' style='width:50%;padding:$direct_settings[theme_td_padding];text-align:left;vertical-align:middle'>";
 					$f_right_switch = false;
 				}
 				else
 				{
-					$f_return .= "</td>\n</tr><tr>\n<td valign='middle' align='left' class='page{$f_css_class}bg' style='width:50%;padding:$direct_settings[theme_td_padding]'>";
+					$f_return .= "</td>\n</tr><tr>\n<td class='page{$f_css_class}bg' style='width:50%;padding:$direct_settings[theme_td_padding];text-align:left;vertical-align:middle'>";
 					$f_right_switch = true;
 				}
 			}
 			else
 			{
-				$f_return .= "<tr>\n<td valign='middle' align='left' class='page{$f_css_class}bg' style='width:50%;padding:$direct_settings[theme_td_padding]'>";
+				$f_return .= "<tr>\n<td class='page{$f_css_class}bg' style='width:50%;padding:$direct_settings[theme_td_padding];text-align:left;vertical-align:middle'>";
 				$f_right_switch = true;
 			}
 
-$f_return .= ("<a id=\"{$f_user_array['id']}\" name=\"{$f_user_array['id']}\"></a><span class='page{$f_css_class}content'><span style='font-weight:bold'><a href='{$f_user_array['pageurl']}' target='_blank'>{$f_user_array['name']}</a></span><br />
-<span style='font-size:10px'><a href=\"{$f_user_array['marker_url']}\" target='_self'>{$f_user_array['marker_title']}</a><br />
-{$f_user_array['type']}</span></span>");
+			$f_user_pageurl = (((isset ($direct_settings['swg_clientsupport']['JSDOMManipulation']))||(substr ($direct_settings['ohandler'],0,5) == "ajax_")) ? "href=\"javascript:djs_dialog(null,{url:'".(str_replace ("?","?xhtml_embedded;",$f_user_array['pageurl']))."'})\"" : "href='{$f_user_array['pageurl']}' target='_blank'");
+
+$f_return .= ("<a id=\"{$f_user_array['id']}\" name=\"{$f_user_array['id']}\"></a><span class='page{$f_css_class}content'><span style='padding:0px 0px $direct_settings[theme_td_padding] $direct_settings[theme_td_padding];float:right;font-size:10px'><a href=\"{$f_user_array['marker_url']}\" target='_self' class='pagehoveropacity'>{$f_user_array['marker_title']}</a><br />
+<a $f_user_pageurl class='pagehoveropacity'>$f_user_view</a></span><span style='font-weight:bold'><a href=\"{$f_user_array['marker_url']}\" target='_self'>{$f_user_array['name']}</a></span><br />
+<span style='font-size:10px'>{$f_user_array['type']}</span></span>");
 		}
 
-		if ($f_right_switch) { $f_return .= "</td>\n<td style='width:50%'><span style='font-size:8px'>&#0160;</span></td>\n</tr></tbody>\n</table>"; }
-		else { $f_return .= "</td>\n</tr></tbody>\n</table>"; }
+		$f_return .= ($f_right_switch ? "</td>\n<td class='pagebg' style='width:50%'><span style='font-size:8px'>&#0160;</span></td>\n</tr></tbody>\n</table>" : "</td>\n</tr></tbody>\n</table>");
 	}
 
 	return $f_return;

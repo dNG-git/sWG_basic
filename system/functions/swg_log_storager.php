@@ -71,125 +71,183 @@ if (!defined ("direct_product_iversion")) { exit (); }
 */
 function direct_log_get ($f_log_id,$f_withcustom = false)
 {
-	global $direct_classes,$direct_settings;
-	if (USE_debug_reporting) { direct_debug (3,"sWG/#echo(__FILEPATH__)# -direct_log_get ($f_log_id,$f_withcustom)- (#echo(__LINE__)#)"); }
+	global $direct_globals,$direct_settings;
+	if (USE_debug_reporting) { direct_debug (3,"sWG/#echo(__FILEPATH__)# -direct_log_get (+f_log_id,+f_withcustom)- (#echo(__LINE__)#)"); }
 
 	$f_return = false;
 
+	$direct_globals['db']->init_select ($direct_settings['log_table']);
+
+	$f_select_attributes = array ($direct_settings['log_table'].".*");
+	if ($f_withcustom) { $f_select_attributes[] = $direct_settings['data_table'].".*"; }
+
+	$direct_globals['db']->define_attributes ($f_select_attributes);
+	if ($f_withcustom) { $direct_globals['db']->define_join ("left-outer-join",$direct_settings['data_table'],"<sqlconditions><element1 attribute='$direct_settings[data_table].ddbdata_id' value='$direct_settings[log_table].ddblog_id' type='attribute' /></sqlconditions>"); }
+
 	if (is_array ($f_log_id))
 	{
-		$direct_classes['db']->init_select ($direct_settings['log_table']);
-
-		$f_select_attributes = array ($direct_settings['log_table'].".*");
-		if ($f_withcustom) { $f_select_attributes[] = $direct_settings['data_table'].".*"; }
-
-		$direct_classes['db']->define_attributes ($f_select_attributes);
-		if ($f_withcustom) { $direct_classes['db']->define_join ("left-outer-join",$direct_settings['data_table'],"<sqlconditions><element1 attribute='$direct_settings[data_table].ddbdata_id' value='$direct_settings[log_table].ddblog_id' type='attribute' /></sqlconditions>"); }
-
 		$f_select_criteria = "<sqlconditions>";
-		foreach ($f_log_id as $f_id) { $f_select_criteria .= $direct_classes['db']->define_row_conditions_encode ($direct_settings['log_table'].".ddblog_id",$f_id,"string","==","or"); }
+		foreach ($f_log_id as $f_id) { $f_select_criteria .= $direct_globals['db']->define_row_conditions_encode ($direct_settings['log_table'].".ddblog_id",$f_id,"string","==","or"); }
 		$f_select_criteria .= "</sqlconditions>";
 
-		$direct_classes['db']->define_row_conditions ($f_select_criteria);
-		$f_return = $direct_classes['db']->query_exec ("ma");
+		$direct_globals['db']->define_row_conditions ($f_select_criteria);
+		$f_return = $direct_globals['db']->query_exec ("ma");
 	}
 	else
 	{
-		$direct_classes['db']->init_select ($direct_settings['log_table']);
-
-		$f_select_attributes = array ($direct_settings['log_table'].".*");
-		if ($f_withcustom) { $f_select_attributes[] = $direct_settings['data_table'].".*"; }
-
-		$direct_classes['db']->define_attributes ($f_select_attributes);
-		if ($f_withcustom) { $direct_classes['db']->define_join ("left-outer-join",$direct_settings['data_table'],"<sqlconditions><element1 attribute='$direct_settings[data_table].ddbdata_id' value='$direct_settings[log_table].ddblog_id' type='attribute' /></sqlconditions>"); }
-
-		$direct_classes['db']->define_row_conditions ("<sqlconditions>".($direct_classes['db']->define_row_conditions_encode ($direct_settings['log_table'].".ddblog_id",$f_log_id,"string"))."</sqlconditions>");
-		$f_return = $direct_classes['db']->query_exec ("sa");
+		$direct_globals['db']->define_row_conditions ("<sqlconditions>".($direct_globals['db']->define_row_conditions_encode ($direct_settings['log_table'].".ddblog_id",$f_log_id,"string"))."</sqlconditions>");
+		$f_return = $direct_globals['db']->query_exec ("sa");
 	}
 
 	return /*#ifdef(DEBUG):direct_debug (7,"sWG/#echo(__FILEPATH__)# -direct_log_get ()- (#echo(__LINE__)#)",:#*/$f_return/*#ifdef(DEBUG):,true):#*/;
 }
 
-//f// direct_log_write ($f_data,$f_log_id = "")
+//f// direct_log_search ($f_log_criteria,$f_withcustom = false,$f_offset = 0,$f_perpage = "",$f_sorting_mode = "time-desc")
+/**
+* Retrieves log entries (including custom data entries) based on defined
+* search criteria.
+*
+* @param  mixed $f_log_id One ID (string) or multiple IDs (array) of log data
+* @param  boolean $f_withcustom True to read and return the custom data entry
+* @param  integer $f_offset Offset for the result list
+* @param  integer $f_perpage Object count limit for the result list
+* @param  string $f_sorting_mode Sorting algorithm
+* @uses   direct_db::define_attributes()
+* @uses   direct_db::define_row_conditions()
+* @uses   direct_db::define_row_conditions_encode()
+* @uses   direct_db::init_select()
+* @uses   direct_db::query_exec()
+* @uses   direct_debug()
+* @uses   USE_debug_reporting
+* @return mixed Single or multi dimensional array; false on error
+* @since  v0.1.00
+*/
+function direct_log_search ($f_log_criteria,$f_withcustom = false,$f_offset = 0,$f_perpage = "",$f_sorting_mode = "time-desc")
+{
+	global $direct_globals,$direct_settings;
+	if (USE_debug_reporting) { direct_debug (3,"sWG/#echo(__FILEPATH__)# -direct_log_search (+f_log_criteria,+f_withcustom,$f_offset,$f_perpage,$f_sorting_mode)- (#echo(__LINE__)#)"); }
+
+	$f_return = false;
+
+	if (is_array ($f_log_criteria))
+	{
+		$direct_globals['db']->init_select ($direct_settings['log_table']);
+
+		$f_select_attributes = array ($direct_settings['log_table'].".*");
+		if ($f_withcustom) { $f_select_attributes[] = $direct_settings['data_table'].".*"; }
+
+		$direct_globals['db']->define_attributes ($f_select_attributes);
+		if ($f_withcustom) { $direct_globals['db']->define_join ("left-outer-join",$direct_settings['data_table'],"<sqlconditions><element1 attribute='$direct_settings[data_table].ddbdata_id' value='$direct_settings[log_table].ddblog_id' type='attribute' /></sqlconditions>"); }
+
+		$f_select_criteria = "<sqlconditions>";
+		foreach ($f_log_criteria as $f_attribute => $f_value) { $f_select_criteria .= $direct_globals['db']->define_row_conditions_encode ($direct_settings['log_table'].".".$f_attribute,$f_value,"string","=="); }
+		$f_select_criteria .= "</sqlconditions>";
+
+		$direct_globals['db']->define_row_conditions ($f_select_criteria);
+
+		switch ($f_sorting_mode)
+		{
+		case "id-asc":
+		{
+			$f_select_ordering = "<sqlordering><element1 attribute='$direct_settings[log_table].ddblog_id' type='desc' /></sqlordering>";
+			break 1;
+		}
+		case "id-desc":
+		{
+			$f_select_ordering = "<sqlordering><element1 attribute='$direct_settings[log_table].ddblog_id' type='desc' /></sqlordering>";
+			break 1;
+		}
+		case "time-asc":
+		{
+$f_select_ordering = ("<sqlordering>
+<element1 attribute='$direct_settings[log_table].ddblog_time' type='asc' />
+<element2 attribute='$direct_settings[log_table].ddblog_id' type='asc' />
+</sqlordering>");
+
+			break 1;
+		}
+		default:
+		{
+$f_select_ordering = ("<sqlordering>
+<element1 attribute='$direct_settings[log_table].ddblog_time' type='desc' />
+<element2 attribute='$direct_settings[log_table].ddblog_id' type='desc' />
+</sqlordering>");
+		}
+		}
+
+		$direct_globals['db']->define_ordering ($f_select_ordering);
+
+		if (is_numeric ($f_perpage))
+		{
+			$direct_globals['db']->define_limit ($f_perpage);
+			$direct_globals['db']->define_offset ($f_offset);
+		}
+
+		$f_return = $direct_globals['db']->query_exec ("ma");
+	}
+
+	return /*#ifdef(DEBUG):direct_debug (7,"sWG/#echo(__FILEPATH__)# -direct_log_get ()- (#echo(__LINE__)#)",:#*/$f_return/*#ifdef(DEBUG):,true):#*/;
+}
+
+//f// direct_log_write ($f_data,$f_log_id = "",$f_log_update = true)
 /**
 * This function saves log entries.
 *
 * @param  array $f_data Log entry data
-* @param  string $f_log_id ID of the new log entry (replaces old database entries)
+* @param  string $f_log_id ID of a log entry
+* @param  boolean $f_log_update Update an existing log entry
 * @uses   direct_data_write()
-* @uses   direct_db::define_values()
-* @uses   direct_db::define_values_encode()
-* @uses   direct_db::define_values_keys()
-* @uses   direct_db::init_replace()
+* @uses   direct_db::define_row_conditions()
+* @uses   direct_db::define_row_conditions_encode()
+* @uses   direct_db::define_set_attributes()
+* @uses   direct_db::define_set_attributes_encode()
+* @uses   direct_db::init_insert()
+* @uses   direct_db::init_update()
 * @uses   direct_db::query_exec()
 * @uses   direct_dbsync_event()
 * @uses   direct_debug()
 * @uses   direct_evars_write()
 * @uses   USE_debug_reporting
-* @return mixed Single or multi dimensional array; false on error
+* @return mixed Log entry ID on success; false on error
 * @since  v0.1.00
 */
-function direct_log_write ($f_data,$f_log_id = "")
+function direct_log_write ($f_data,$f_log_id = "",$f_log_update = true)
 {
-	global $direct_cachedata,$direct_classes,$direct_settings;
-	if (USE_debug_reporting) { direct_debug (3,"sWG/#echo(__FILEPATH__)# -direct_log_write (+f_data,$f_log_id)- (#echo(__LINE__)#)"); }
+	global $direct_cachedata,$direct_globals,$direct_settings;
+	if (USE_debug_reporting) { direct_debug (3,"sWG/#echo(__FILEPATH__)# -direct_log_write (+f_data,$f_log_id,+f_log_update)- (#echo(__LINE__)#)"); }
 
-	if (!$f_log_id) { $f_log_id = uniqid (""); }
+	if (!$f_log_id)
+	{
+		$f_log_id = uniqid ("");
+		$f_log_update = false;
+	}
 
-	$f_continue_check = false;
+	$f_continue_check = isset ($f_data['ddblog_sid']/*#ifndef(PHP4) */,/* #*//*#ifdef(PHP4):) && isset (:#*/$f_data['ddblog_identifier']);
 	$f_customdata_id = "";
 	$f_return = false;
 
-	if ((isset ($f_data['identifier']))&&(isset ($f_data['sid'])))
+	if ($f_continue_check)
 	{
-		if (($f_data['customdata_title'])&&($f_data['customdata_text']))
+		if (isset ($f_data['ddbdata_title']/*#ifndef(PHP4) */,/* #*//*#ifdef(PHP4):) && isset (:#*/$f_data['ddbdata_data']))
 		{
 			$f_customdata_id = uniqid ("");
 
-$f_customdata_array = array (
-"owner" => $f_data['source_user_id'],
-"title" => $f_data['customdata_title'],
-"data" => $f_data['customdata_text'],
-"sid" => $f_data['sid'],
-"mode_user" => "w",
-"mode_group" => "r",
-"mode_all" => ""
+$f_insert_array = array (
+"ddbdata_owner" => $f_data['ddbdata_owner'],
+"ddbdata_title" => $f_data['ddbdata_title'],
+"ddbdata_data" => $f_data['ddbdata_data'],
+"ddbdata_sid" => $f_data['ddbdata_sid'],
+"ddbdata_mode_user" => "w",
+"ddbdata_mode_group" => "r",
+"ddbdata_mode_all" => ""
 );
 
-			$f_continue_check = direct_data_write ($f_customdata_array,$f_customdata_id);
+			$f_continue_check = direct_data_write ($f_insert_array,$f_customdata_id);
 		}
-		else { $f_continue_check = true; }
-	}
-	elseif ((isset ($f_data['ddblog_identifier']))&&(isset ($f_data['ddblog_sid'])))
-	{
-		if (($f_data['ddbdata_title'])&&($f_data['ddbdata_data']))
-		{
-			$f_customdata_id = uniqid ("");
+		elseif (!isset ($f_data['ddblog_data'])) { $f_data['ddblog_data'] = NULL; }
 
-$f_customdata_array = array (
-"owner" => $f_data['ddbdata_owner'],
-"title" => $f_data['ddbdata_title'],
-"data" => $f_data['ddbdata_data'],
-"sid" => $f_data['ddbdata_sid'],
-"mode_user" => "w",
-"mode_group" => "r",
-"mode_all" => ""
-);
-
-			$f_continue_check = direct_data_write ($f_customdata_array,$f_customdata_id);
-		}
-		else { $f_continue_check = true; }
-
-$f_data = array (
-"data" => $f_data['ddblog_data'],
-"identifier" => $f_data['ddblog_identifier'],
-"sid" => $f_data['ddblog_sid'],
-"source_user_id" => $f_data['ddblog_source_user_id'],
-"source_user_ip" => $f_data['ddblog_source_user_ip'],
-"target_user_id" => $f_data['ddblog_target_user_id'],
-"target_user_ip" => $f_data['ddblog_target_user_ip'],
-"time" => $f_data['ddblog_time']
-);
+		if (!isset ($f_data['ddblog_source_id'])) { $f_data['ddblog_source_id'] = ""; }
+		if ((!isset ($f_data['ddblog_time']))||(!$f_data['ddblog_time'])) { $f_data['ddblog_time'] = $direct_cachedata['core_time']; }
 
 		if ((!isset ($f_data['ddblog_source_user_id']))||(!$f_data['ddblog_source_user_id']))
 		{
@@ -202,52 +260,63 @@ $f_data = array (
 			$f_data['ddblog_target_user_id'] = "";
 			$f_data['ddblog_target_user_ip'] = "";
 		}
+
+		if (!$direct_settings['swg_ip_save2db'])
+		{
+			$f_data['ddblog_source_user_ip'] = "unknown";
+			$f_data['ddblog_target_user_ip'] = "unknown";
+		}
+
+		if (is_array ($f_data['ddblog_data'])) { $f_data['ddblog_data'] = direct_evars_write ($f_data['ddblog_data']); }
+		if (!isset ($f_data['ddblog_maintained'])) { $f_data['ddblog_maintained'] = 0; }
 	}
 
 	if ($f_continue_check)
 	{
-		$direct_classes['db']->init_replace ($direct_settings['log_table']);
+		if ($f_log_update) { $direct_globals['db']->init_update ($direct_settings['log_table']); }
+		else { $direct_globals['db']->init_insert ($direct_settings['log_table']); }
 
-		$f_replace_attributes = array ($direct_settings['log_table'].".ddblog_id",$direct_settings['log_table'].".ddblog_time",$direct_settings['log_table'].".ddblog_source_user_id",$direct_settings['log_table'].".ddblog_source_user_ip",$direct_settings['log_table'].".ddblog_target_user_id",$direct_settings['log_table'].".ddblog_target_user_ip",$direct_settings['log_table'].".ddblog_sid",$direct_settings['log_table'].".ddblog_identifier",$direct_settings['log_table'].".ddblog_data",$direct_settings['log_table'].".ddblog_customdata_id");
-		$direct_classes['db']->define_values_keys ($f_replace_attributes);
+$f_data_values = ("<sqlvalues>
+".($direct_globals['db']->define_set_attributes_encode ($direct_settings['log_table'].".ddblog_id",$f_log_id,"string"))."
+".($direct_globals['db']->define_set_attributes_encode ($direct_settings['log_table'].".ddblog_source_id",$f_data['ddblog_source_id'],"string"))."
+".($direct_globals['db']->define_set_attributes_encode ($direct_settings['log_table'].".ddblog_time",$f_data['ddblog_time'],"number"))."
+".($direct_globals['db']->define_set_attributes_encode ($direct_settings['log_table'].".ddblog_source_user_id",$f_data['ddblog_source_user_id'],"string"))."
+".($direct_globals['db']->define_set_attributes_encode ($direct_settings['log_table'].".ddblog_source_user_ip",$f_data['ddblog_source_user_ip'],"string"))."
+".($direct_globals['db']->define_set_attributes_encode ($direct_settings['log_table'].".ddblog_target_user_id",$f_data['ddblog_target_user_id'],"string"))."
+".($direct_globals['db']->define_set_attributes_encode ($direct_settings['log_table'].".ddblog_target_user_ip",$f_data['ddblog_target_user_ip'],"string"))."
+".($direct_globals['db']->define_set_attributes_encode ($direct_settings['log_table'].".ddblog_sid",$f_data['ddblog_sid'],"string"))."
+".($direct_globals['db']->define_set_attributes_encode ($direct_settings['log_table'].".ddblog_identifier",$f_data['ddblog_identifier'],"string"))."
+".($direct_globals['db']->define_set_attributes_encode ($direct_settings['log_table'].".ddblog_data",$f_data['ddblog_data'],"string"))."
+".($direct_globals['db']->define_set_attributes_encode ($direct_settings['log_table'].".ddblog_maintained",$f_data['ddblog_maintained'],"string"))."
+".($direct_globals['db']->define_set_attributes_encode ($direct_settings['log_table'].".ddblog_customdata_id",$f_customdata_id,"string"))."
+</sqlvalues>");
 
-		$f_replace_values = "<sqlvalues>".($direct_classes['db']->define_values_encode ($f_log_id,"string"));
-		$f_replace_values .= ($f_data['time'] ? $direct_classes['db']->define_values_encode ($f_data['time'],"number") : $direct_classes['db']->define_values_encode ($direct_cachedata['core_time'],"number"));
+		$direct_globals['db']->define_set_attributes ($f_data_values);
+		if ($f_log_update) { $direct_globals['db']->define_row_conditions ("<sqlconditions>".($direct_globals['db']->define_row_conditions_encode ($direct_settings['log_table'].".ddblog_id",$f_log_id,"string"))."</sqlconditions>"); }
+		$f_return = $direct_globals['db']->query_exec ("co");
 
-		if ((isset ($f_data['source_user_id']))&&($f_data['source_user_id']))
+		if ($f_return)
 		{
-$f_replace_values .= (($direct_classes['db']->define_values_encode ($f_data['source_user_id'],"string"))."
-".($direct_classes['db']->define_values_encode ($f_data['source_user_ip'],"string")));
+			if (function_exists ("direct_dbsync_event"))
+			{
+				if ($f_log_update) { direct_dbsync_event ($direct_settings['log_table'],"update",("<sqlconditions>".($direct_globals['db']->define_row_conditions_encode ($direct_settings['log_table'].".ddblog_id",$f_log_id,"string"))."</sqlconditions>")); }
+				else { direct_dbsync_event ($direct_settings['log_table'],"insert",("<sqlconditions>".($direct_globals['db']->define_row_conditions_encode ($direct_settings['log_table'].".ddblog_id",$f_log_id,"string"))."</sqlconditions>")); }
+			}
+
+			if (!$direct_settings['swg_auto_maintenance']) { $direct_globals['db']->optimize_random ($direct_settings['log_table']); }
 		}
-		else
-		{
-$f_replace_values .= (($direct_classes['db']->define_values_encode ($direct_settings['user']['id'],"string"))."
-".($direct_classes['db']->define_values_encode ($direct_settings['user_ip'],"string")));
-		}
-
-		if ((isset ($f_data['target_user_id']))&&($f_data['target_user_id']))
-		{
-$f_replace_values .= (($direct_classes['db']->define_values_encode ($f_data['target_user_id'],"string"))."
-".($direct_classes['db']->define_values_encode ($f_data['target_user_ip'],"string")));
-		}
-		else { $f_replace_values .= "<element1 value='' type='string' /><element2 value='' type='string' />"; }
-
-		$f_replace_values .= (($direct_classes['db']->define_values_encode ($f_data['sid'],"string")).($direct_classes['db']->define_values_encode ($f_data['identifier'],"string")));
-		$f_replace_values .= ((is_array ($f_data['data'])) ? $direct_classes['db']->define_values_encode ((direct_evars_write ($f_data['data'])),"string") : $direct_classes['db']->define_values_encode ($f_data['data'],"string"));
-		$f_replace_values .= ($direct_classes['db']->define_values_encode ($f_customdata_id,"string"))."</sqlvalues>";
-
-		$direct_classes['db']->define_values ($f_replace_values);
-		$f_return = $direct_classes['db']->query_exec ("co");
-
-		if (($f_return)&&(function_exists ("direct_dbsync_event"))) { direct_dbsync_event ($direct_settings['log_table'],"replace",("<sqlconditions>".($direct_classes['db']->define_row_conditions_encode ($direct_settings['log_table'].".ddblog_id",$f_log_id,"string"))."</sqlconditions>")); }
 	}
 
+	if ($f_return) { $f_return = $f_log_id; }
 	return /*#ifdef(DEBUG):direct_debug (7,"sWG/#echo(__FILEPATH__)# -direct_log_write ()- (#echo(__LINE__)#)",:#*/$f_return/*#ifdef(DEBUG):,true):#*/;
 }
 
 //j// Script specific commands
 
-$direct_classes['basic_functions']->require_file ($direct_settings['path_system']."/functions/swg_data_storager.php");
+if (!isset ($direct_settings['swg_auto_maintenance'])) { $direct_settings['swg_auto_maintenance'] = false; }
+if (!isset ($direct_settings['swg_ip_save2db'])) { $direct_settings['swg_ip_save2db'] = true; }
+
+$direct_globals['basic_functions']->require_file ($direct_settings['path_system']."/functions/swg_data_storager.php");
 
 //j// EOF
 ?>

@@ -65,26 +65,25 @@ case "decode":
 {
 	if (USE_debug_reporting) { direct_debug (1,"sWG/#echo(__FILEPATH__)# _a=decode_ (#echo(__LINE__)#)"); }
 
-	$direct_cachedata['output_page'] = $direct_classes['basic_functions']->inputfilter_number ($direct_settings['dsd']['page']);
+	$direct_cachedata['output_page'] = $direct_globals['basic_functions']->inputfilter_number ($direct_settings['dsd']['page']);
 
-	$direct_cachedata['page_this'] = "m=developer&s=sqlsource";
-	$direct_cachedata['page_backlink'] = "m=developer&a=services";
-	$direct_cachedata['page_homelink'] = "m=developer&a=services";
+	$direct_cachedata['page_this'] = "m=developer;s=sqlsource";
+	$direct_cachedata['page_backlink'] = "m=developer;a=services";
+	$direct_cachedata['page_homelink'] = "m=developer;a=services";
 
-	if ($direct_classes['kernel']->service_init_default ())
+	if ($direct_globals['kernel']->service_init_default ())
 	{
 	//j// BOA
-	direct_output_related_manager ("developer_sqlsource_decode","pre_module_service_action");
-	$direct_classes['basic_functions']->require_file ($direct_settings['path_system']."/classes/swg_formbuilder.php");
-	$direct_classes['basic_functions']->require_file ($direct_settings['path_system']."/functions/developer/swg_sqlsource.php");
+	$direct_globals['output']->related_manager ("developer_sqlsource_decode","pre_module_service_action");
+	$direct_globals['basic_functions']->require_file ($direct_settings['path_system']."/classes/swg_formbuilder.php");
+	$direct_globals['basic_functions']->require_file ($direct_settings['path_system']."/functions/developer/swg_sqlsource.php");
 	direct_local_integration ("developer");
 
 	direct_class_init ("formbuilder");
-	direct_class_init ("output");
-	$direct_classes['output']->options_insert (1,"servicemenu","m=developer&a=services",(direct_local_get ("core_back")),$direct_settings['serviceicon_default_back'],"url0");
+	$direct_globals['output']->options_insert (1,"servicemenu","m=developer&a=services",(direct_local_get ("core_back")),$direct_settings['serviceicon_default_back'],"url0");
 
-	$direct_cachedata['i_dinput'] = (isset ($GLOBALS['i_dinput']) ? ($direct_classes['basic_functions']->inputfilter_basic ($GLOBALS['i_dinput'])) : "");
-	$direct_classes['formbuilder']->entry_add_textarea ("dinput",(direct_local_get ("developer_input")),false,"s",1);
+	$direct_cachedata['i_dinput'] = (isset ($GLOBALS['i_dinput']) ? ($direct_globals['basic_functions']->inputfilter_basic ($GLOBALS['i_dinput'])) : "");
+	$direct_globals['formbuilder']->entry_add_textarea (array ("name" => "dinput","title" => (direct_local_get ("developer_input")),"size" => "s","min" => 1));
 
 	$direct_cachedata['output_sql_source'] = "";
 	$direct_cachedata['output_sql_result'] = "";
@@ -112,14 +111,14 @@ case "decode":
 
 			if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($g_sql_word_array[($g_sql_word_position + 1)],"as") === false)
 			{
-				$direct_cachedata['output_sql_source'] = "\$direct_classes['db']->init_delete ({$g_sql_word_array[$g_sql_word_position]});\n\n";
-				$direct_classes['db']->init_delete ($g_sql_word_array[$g_sql_word_position]);
+				$direct_cachedata['output_sql_source'] = "\$direct_globals['db']->init_delete ({$g_sql_word_array[$g_sql_word_position]});\n\n";
+				$direct_globals['db']->init_delete ($g_sql_word_array[$g_sql_word_position]);
 				$g_sql_word_position++;
 			}
 			else
 			{
-				$direct_cachedata['output_sql_source'] = "\$direct_classes['db']->init_delete ({$g_sql_word_array[$g_sql_word_position]} AS {$g_sql_word_array[($g_sql_word_position + 2)]});\n\n";
-				$direct_classes['db']->init_delete ($g_sql_word_array[$g_sql_word_position]." AS ".$g_sql_word_array[($g_sql_word_position + 2)]);
+				$direct_cachedata['output_sql_source'] = "\$direct_globals['db']->init_delete ({$g_sql_word_array[$g_sql_word_position]} AS {$g_sql_word_array[($g_sql_word_position + 2)]});\n\n";
+				$direct_globals['db']->init_delete ($g_sql_word_array[$g_sql_word_position]." AS ".$g_sql_word_array[($g_sql_word_position + 2)]);
 				$g_sql_word_position += 3;
 			}
 
@@ -131,9 +130,9 @@ $direct_cachedata['output_sql_source'] .= ("\$g_conditions = (\"&lt;sqlcondition
 ".(direct_html_encode_special (direct_developer_sqlsource_get_row_conditions ($g_sql_word_array,$g_sql_word_position)))."
 &lt;/sqlconditions&gt;\");
 
-\$direct_classes['db']->define_row_conditions (\$g_conditions);\n\n");
+\$direct_globals['db']->define_row_conditions (\$g_conditions);\n\n");
 
-				$direct_classes['db']->define_row_conditions ("<sqlconditions><element1 attribute='attribute' value='value' type='string' /></sqlconditions>");
+				$direct_globals['db']->define_row_conditions ("<sqlconditions><element1 attribute='attribute' value='value' type='string' /></sqlconditions>");
 			}
 
 			if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($g_sql_word_array[$g_sql_word_position],"order") !== false)
@@ -144,23 +143,23 @@ $direct_cachedata['output_sql_source'] .= ("\$g_ordering = (\"&lt;sqlordering&gt
 ".(direct_html_encode_special (direct_developer_sqlsource_get_ordering ($g_sql_word_array,$g_sql_word_position)))."
 &lt;/sqlordering&gt;\");
 
-\$direct_classes['db']->define_ordering (\$g_ordering);\n\n");
+\$direct_globals['db']->define_ordering (\$g_ordering);\n\n");
 
-				$direct_classes['db']->define_ordering ("<sqlordering><element1 attribute='attribute' type='asc' /></sqlordering>");
+				$direct_globals['db']->define_ordering ("<sqlordering><element1 attribute='attribute' type='asc' /></sqlordering>");
 			}
 
 			if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($g_sql_word_array[$g_sql_word_position],"limit") !== false)
 			{
 				$g_sql_word_position++;
 
-				$direct_cachedata['output_sql_source'] .= ("\$direct_classes['db']->define_limit ({$g_sql_word_array[$g_sql_word_position]});\n\n");
-				$direct_classes['db']->define_limit ($g_sql_word_array[$g_sql_word_position]);
+				$direct_cachedata['output_sql_source'] .= ("\$direct_globals['db']->define_limit ({$g_sql_word_array[$g_sql_word_position]});\n\n");
+				$direct_globals['db']->define_limit ($g_sql_word_array[$g_sql_word_position]);
 
 				$g_sql_word_position++;
 			}
 
 			$direct_cachedata['output_sql_source'] = str_replace ("''","'",$direct_cachedata['output_sql_source']);
-			$direct_cachedata['output_sql_source'] .= "\$direct_classes['db']->query_exec (\"co\");";
+			$direct_cachedata['output_sql_source'] .= "\$direct_globals['db']->query_exec (\"co\");";
 
 			break 1;
 		}
@@ -172,14 +171,14 @@ $direct_cachedata['output_sql_source'] .= ("\$g_ordering = (\"&lt;sqlordering&gt
 
 			if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($g_sql_word_array[($g_sql_word_position + 1)],"as") === false)
 			{
-				$direct_cachedata['output_sql_source'] = "\$direct_classes['db']->init_insert ({$g_sql_word_array[$g_sql_word_position]});\n\n";
-				$direct_classes['db']->init_insert ($g_sql_word_array[$g_sql_word_position]);
+				$direct_cachedata['output_sql_source'] = "\$direct_globals['db']->init_insert ({$g_sql_word_array[$g_sql_word_position]});\n\n";
+				$direct_globals['db']->init_insert ($g_sql_word_array[$g_sql_word_position]);
 				$g_sql_word_position++;
 			}
 			else
 			{
-				$direct_cachedata['output_sql_source'] = "\$direct_classes['db']->init_insert ({$g_sql_word_array[$g_sql_word_position]} AS {$g_sql_word_array[($g_sql_word_position + 2)]});\n\n";
-				$direct_classes['db']->init_insert ($g_sql_word_array[$g_sql_word_position]." AS ".$g_sql_word_array[($g_sql_word_position + 2)]);
+				$direct_cachedata['output_sql_source'] = "\$direct_globals['db']->init_insert ({$g_sql_word_array[$g_sql_word_position]} AS {$g_sql_word_array[($g_sql_word_position + 2)]});\n\n";
+				$direct_globals['db']->init_insert ($g_sql_word_array[$g_sql_word_position]." AS ".$g_sql_word_array[($g_sql_word_position + 2)]);
 				$g_sql_word_position += 3;
 			}
 
@@ -189,9 +188,9 @@ $direct_cachedata['output_sql_source'] .= ("\$g_attributes = (\"&lt;sqlvalues&gt
 ".(direct_html_encode_special (direct_developer_sqlsource_get_set_attributes ($g_sql_word_array,$g_sql_word_position)))."
 &lt;/sqlvalues&gt;\");
 
-\$direct_classes['db']->define_set_attributes (\$g_attributes);\n\n");
+\$direct_globals['db']->define_set_attributes (\$g_attributes);\n\n");
 
-				$direct_classes['db']->define_set_attributes ("<sqlvalues><element1 attribute='attribute' value='value' type='string' /></sqlvalues>");
+				$direct_globals['db']->define_set_attributes ("<sqlvalues><element1 attribute='attribute' value='value' type='string' /></sqlvalues>");
 				$g_continue_check = false;
 			}
 
@@ -200,9 +199,9 @@ $direct_cachedata['output_sql_source'] .= ("\$g_attributes = (\"&lt;sqlvalues&gt
 				$g_sql_word_position++;
 
 $direct_cachedata['output_sql_source'] .= ("\$g_keys = array (".(direct_html_encode_special (direct_developer_sqlsource_get_values_keys ($g_sql_word_array,$g_sql_word_position))).");
-\$direct_classes['db']->define_values_keys (\$g_keys);\n\n");
+\$direct_globals['db']->define_values_keys (\$g_keys);\n\n");
 
-				$direct_classes['db']->define_values_keys (array ("attribute"));
+				$direct_globals['db']->define_values_keys (array ("attribute"));
 				$g_sql_word_position++;
 			}
 
@@ -214,14 +213,14 @@ $direct_cachedata['output_sql_source'] .= ("\$g_values = (\"&lt;sqlvalues&gt;
 ".(direct_html_encode_special (direct_developer_sqlsource_get_values ($g_sql_word_array,$g_sql_word_position)))."
 &lt;/sqlvalues&gt;\");
 
-\$direct_classes['db']->define_values (\$g_values);\n\n");
+\$direct_globals['db']->define_values (\$g_values);\n\n");
 
-				$direct_classes['db']->define_values ("<sqlvalues><element1 value='value' type='string' /></sqlvalues>");
+				$direct_globals['db']->define_values ("<sqlvalues><element1 value='value' type='string' /></sqlvalues>");
 				$g_sql_word_position++;
 			}
 
 			$direct_cachedata['output_sql_source'] = str_replace ("''","'",$direct_cachedata['output_sql_source']);
-			$direct_cachedata['output_sql_source'] .= "\$direct_classes['db']->query_exec (\"co\");";
+			$direct_cachedata['output_sql_source'] .= "\$direct_globals['db']->query_exec (\"co\");";
 
 			break 1;
 		}
@@ -233,14 +232,14 @@ $direct_cachedata['output_sql_source'] .= ("\$g_values = (\"&lt;sqlvalues&gt;
 
 			if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($g_sql_word_array[($g_sql_word_position + 1)],"as") === false)
 			{
-				$direct_cachedata['output_sql_source'] = "\$direct_classes['db']->init_replace ({$g_sql_word_array[$g_sql_word_position]});\n\n";
-				$direct_classes['db']->init_replace ($g_sql_word_array[$g_sql_word_position]);
+				$direct_cachedata['output_sql_source'] = "\$direct_globals['db']->init_replace ({$g_sql_word_array[$g_sql_word_position]});\n\n";
+				$direct_globals['db']->init_replace ($g_sql_word_array[$g_sql_word_position]);
 				$g_sql_word_position++;
 			}
 			else
 			{
-				$direct_cachedata['output_sql_source'] = "\$direct_classes['db']->init_replace ({$g_sql_word_array[$g_sql_word_position]} AS {$g_sql_word_array[($g_sql_word_position + 2)]});\n\n";
-				$direct_classes['db']->init_replace ($g_sql_word_array[$g_sql_word_position]." AS ".$g_sql_word_array[($g_sql_word_position + 2)]);
+				$direct_cachedata['output_sql_source'] = "\$direct_globals['db']->init_replace ({$g_sql_word_array[$g_sql_word_position]} AS {$g_sql_word_array[($g_sql_word_position + 2)]});\n\n";
+				$direct_globals['db']->init_replace ($g_sql_word_array[$g_sql_word_position]." AS ".$g_sql_word_array[($g_sql_word_position + 2)]);
 				$g_sql_word_position += 3;
 			}
 
@@ -250,9 +249,9 @@ $direct_cachedata['output_sql_source'] .= ("\$g_attributes = (\"&lt;sqlvalues&gt
 ".(direct_html_encode_special (direct_developer_sqlsource_get_set_attributes ($g_sql_word_array,$g_sql_word_position)))."
 &lt;/sqlvalues&gt;\");
 
-\$direct_classes['db']->define_set_attributes (\$g_attributes);\n\n");
+\$direct_globals['db']->define_set_attributes (\$g_attributes);\n\n");
 
-				$direct_classes['db']->define_set_attributes ("<sqlvalues><element1 attribute='attribute' value='value' type='string' /></sqlvalues>");
+				$direct_globals['db']->define_set_attributes ("<sqlvalues><element1 attribute='attribute' value='value' type='string' /></sqlvalues>");
 				$g_continue_check = false;
 			}
 
@@ -261,9 +260,9 @@ $direct_cachedata['output_sql_source'] .= ("\$g_attributes = (\"&lt;sqlvalues&gt
 				$g_sql_word_position++;
 
 $direct_cachedata['output_sql_source'] .= ("\$g_keys = array (".(direct_html_encode_special (direct_developer_sqlsource_get_values_keys ($g_sql_word_array,$g_sql_word_position))).");
-\$direct_classes['db']->define_values_keys (\$g_keys);\n\n");
+\$direct_globals['db']->define_values_keys (\$g_keys);\n\n");
 
-				$direct_classes['db']->define_values_keys (array ("attribute"));
+				$direct_globals['db']->define_values_keys (array ("attribute"));
 				$g_sql_word_position++;
 			}
 
@@ -275,14 +274,14 @@ $direct_cachedata['output_sql_source'] .= ("\$g_values = (\"&lt;sqlvalues&gt;
 ".(direct_html_encode_special (direct_developer_sqlsource_get_values ($g_sql_word_array,$g_sql_word_position)))."
 &lt;/sqlvalues&gt;\");
 
-\$direct_classes['db']->define_values (\$g_values);\n\n");
+\$direct_globals['db']->define_values (\$g_values);\n\n");
 
-				$direct_classes['db']->define_values ("<sqlvalues><element1 value='value' type='string' /></sqlvalues>");
+				$direct_globals['db']->define_values ("<sqlvalues><element1 value='value' type='string' /></sqlvalues>");
 				$g_sql_word_position++;
 			}
 
 			$direct_cachedata['output_sql_source'] = str_replace ("''","'",$direct_cachedata['output_sql_source']);
-			$direct_cachedata['output_sql_source'] .= "\$direct_classes['db']->query_exec (\"co\");";
+			$direct_cachedata['output_sql_source'] .= "\$direct_globals['db']->query_exec (\"co\");";
 
 			break 1;
 		}
@@ -292,7 +291,7 @@ $direct_cachedata['output_sql_source'] .= ("\$g_values = (\"&lt;sqlvalues&gt;
 
 			if ($g_sql_word_array[$g_sql_word_position] == "*")
 			{
-				$g_attributes_code = "\$direct_classes['db']->define_attributes (\"*\");\n\n";
+				$g_attributes_code = "\$direct_globals['db']->define_attributes (\"*\");\n\n";
 				$g_sql_word_position++;
 			}
 			else
@@ -333,25 +332,25 @@ $direct_cachedata['output_sql_source'] .= ("\$g_values = (\"&lt;sqlvalues&gt;
 				}
 				while ($g_continue_check);
 
-				$g_attributes_code .= ");\n\$direct_classes['db']->define_attributes (\$g_attributes);\n\n";
+				$g_attributes_code .= ");\n\$direct_globals['db']->define_attributes (\$g_attributes);\n\n";
 			}
 
 			$g_sql_word_position++;
 
 			if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($g_sql_word_array[($g_sql_word_position + 1)],"as") === false)
 			{
-				$direct_cachedata['output_sql_source'] = "\$direct_classes['db']->init_select ({$g_sql_word_array[$g_sql_word_position]});\n\n".$g_attributes_code;
-				$direct_classes['db']->init_select ($g_sql_word_array[$g_sql_word_position]);
+				$direct_cachedata['output_sql_source'] = "\$direct_globals['db']->init_select ({$g_sql_word_array[$g_sql_word_position]});\n\n".$g_attributes_code;
+				$direct_globals['db']->init_select ($g_sql_word_array[$g_sql_word_position]);
 				$g_sql_word_position++;
 			}
 			else
 			{
-				$direct_cachedata['output_sql_source'] = "\$direct_classes['db']->init_select ({$g_sql_word_array[$g_sql_word_position]} AS {$g_sql_word_array[($g_sql_word_position + 2)]});\n\n".$g_attributes_code;
-				$direct_classes['db']->init_select ($g_sql_word_array[$g_sql_word_position]." AS ".$g_sql_word_array[($g_sql_word_position + 2)]);
+				$direct_cachedata['output_sql_source'] = "\$direct_globals['db']->init_select ({$g_sql_word_array[$g_sql_word_position]} AS {$g_sql_word_array[($g_sql_word_position + 2)]});\n\n".$g_attributes_code;
+				$direct_globals['db']->init_select ($g_sql_word_array[$g_sql_word_position]." AS ".$g_sql_word_array[($g_sql_word_position + 2)]);
 				$g_sql_word_position += 3;
 			}
 
-			$direct_classes['db']->define_attributes (array ("attributes"));
+			$direct_globals['db']->define_attributes (array ("attributes"));
 
 			$g_continue_check = true;
 
@@ -391,9 +390,9 @@ $direct_cachedata['output_sql_source'] .= ("\$g_conditions = (\"&lt;sqlcondition
 ".(direct_html_encode_special (direct_developer_sqlsource_get_row_conditions ($g_sql_word_array,$g_sql_word_position)))."
 &lt;/sqlconditions&gt;\");
 
-\$direct_classes['db']->define_join (\"left-outer-join\",\"$g_attribute\",\$g_conditions);\n\n");
+\$direct_globals['db']->define_join (\"left-outer-join\",\"$g_attribute\",\$g_conditions);\n\n");
 
-					$direct_classes['db']->define_join ("left-outer-join",$g_attribute,"<sqlconditions><element1 attribute='attribute' value='value' type='string' /></sqlconditions>");
+					$direct_globals['db']->define_join ("left-outer-join",$g_attribute,"<sqlconditions><element1 attribute='attribute' value='value' type='string' /></sqlconditions>");
 					break 1;
 				}
 				case "natural":
@@ -427,9 +426,9 @@ $direct_cachedata['output_sql_source'] .= ("\$g_conditions = (\"&lt;sqlcondition
 ".(direct_html_encode_special (direct_developer_sqlsource_get_row_conditions ($g_sql_word_array,$g_sql_word_position)))."
 &lt;/sqlconditions&gt;\");
 
-\$direct_classes['db']->define_join (\"right-outer-join\",\"$g_attribute\",\$g_conditions);\n\n");
+\$direct_globals['db']->define_join (\"right-outer-join\",\"$g_attribute\",\$g_conditions);\n\n");
 
-					$direct_classes['db']->define_join ("right-outer-join",$g_attribute,"<sqlconditions><element1 attribute='attribute' value='value' type='string' /></sqlconditions>");
+					$direct_globals['db']->define_join ("right-outer-join",$g_attribute,"<sqlconditions><element1 attribute='attribute' value='value' type='string' /></sqlconditions>");
 					break 1;
 				}
 				default: { $g_continue_check = false; }
@@ -445,9 +444,9 @@ $direct_cachedata['output_sql_source'] .= ("\$g_conditions = (\"&lt;sqlcondition
 ".(direct_html_encode_special (direct_developer_sqlsource_get_row_conditions ($g_sql_word_array,$g_sql_word_position)))."
 &lt;/sqlconditions&gt;\");
 
-\$direct_classes['db']->define_row_conditions (\$g_conditions);\n\n");
+\$direct_globals['db']->define_row_conditions (\$g_conditions);\n\n");
 
-				$direct_classes['db']->define_row_conditions ("<sqlconditions><element1 attribute='attribute' value='value' type='string' /></sqlconditions>");
+				$direct_globals['db']->define_row_conditions ("<sqlconditions><element1 attribute='attribute' value='value' type='string' /></sqlconditions>");
 			}
 
 			if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($g_sql_word_array[$g_sql_word_position],"order") !== false)
@@ -458,17 +457,17 @@ $direct_cachedata['output_sql_source'] .= ("\$g_ordering = (\"&lt;sqlordering&gt
 ".(direct_html_encode_special (direct_developer_sqlsource_get_ordering ($g_sql_word_array,$g_sql_word_position)))."
 &lt;/sqlordering&gt;\");
 
-\$direct_classes['db']->define_ordering (\$g_ordering);\n\n");
+\$direct_globals['db']->define_ordering (\$g_ordering);\n\n");
 
-				$direct_classes['db']->define_ordering ("<sqlordering><element1 attribute='attribute' type='asc' /></sqlordering>");
+				$direct_globals['db']->define_ordering ("<sqlordering><element1 attribute='attribute' type='asc' /></sqlordering>");
 			}
 
 			if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($g_sql_word_array[$g_sql_word_position],"limit") !== false)
 			{
 				$g_sql_word_position++;
 
-				$direct_cachedata['output_sql_source'] .= ("\$direct_classes['db']->define_limit ({$g_sql_word_array[$g_sql_word_position]});\n\n");
-				$direct_classes['db']->define_limit ($g_sql_word_array[$g_sql_word_position]);
+				$direct_cachedata['output_sql_source'] .= ("\$direct_globals['db']->define_limit ({$g_sql_word_array[$g_sql_word_position]});\n\n");
+				$direct_globals['db']->define_limit ($g_sql_word_array[$g_sql_word_position]);
 
 				$g_sql_word_position++;
 			}
@@ -477,14 +476,14 @@ $direct_cachedata['output_sql_source'] .= ("\$g_ordering = (\"&lt;sqlordering&gt
 			{
 				$g_sql_word_position++;
 
-				$direct_cachedata['output_sql_source'] .= ("\$direct_classes['db']->define_offset ({$g_sql_word_array[$g_sql_word_position]});\n\n");
-				$direct_classes['db']->define_offset ($g_sql_word_array[$g_sql_word_position]);
+				$direct_cachedata['output_sql_source'] .= ("\$direct_globals['db']->define_offset ({$g_sql_word_array[$g_sql_word_position]});\n\n");
+				$direct_globals['db']->define_offset ($g_sql_word_array[$g_sql_word_position]);
 
 				$g_sql_word_position++;
 			}
 
 			$direct_cachedata['output_sql_source'] = str_replace ("''","'",$direct_cachedata['output_sql_source']);
-			$direct_cachedata['output_sql_source'] .= "\$direct_classes['db']->query_exec (\"co\");";
+			$direct_cachedata['output_sql_source'] .= "\$direct_globals['db']->query_exec (\"co\");";
 
 			break 1;
 		}
@@ -494,14 +493,14 @@ $direct_cachedata['output_sql_source'] .= ("\$g_ordering = (\"&lt;sqlordering&gt
 
 			if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($g_sql_word_array[($g_sql_word_position + 1)],"as") === false)
 			{
-				$direct_cachedata['output_sql_source'] = "\$direct_classes['db']->init_update ({$g_sql_word_array[$g_sql_word_position]});\n\n";
-				$direct_classes['db']->init_update ($g_sql_word_array[$g_sql_word_position]);
+				$direct_cachedata['output_sql_source'] = "\$direct_globals['db']->init_update ({$g_sql_word_array[$g_sql_word_position]});\n\n";
+				$direct_globals['db']->init_update ($g_sql_word_array[$g_sql_word_position]);
 				$g_sql_word_position++;
 			}
 			else
 			{
-				$direct_cachedata['output_sql_source'] = "\$direct_classes['db']->init_update ({$g_sql_word_array[$g_sql_word_position]} AS {$g_sql_word_array[($g_sql_word_position + 2)]});\n\n";
-				$direct_classes['db']->init_update ($g_sql_word_array[$g_sql_word_position]." AS ".$g_sql_word_array[($g_sql_word_position + 2)]);
+				$direct_cachedata['output_sql_source'] = "\$direct_globals['db']->init_update ({$g_sql_word_array[$g_sql_word_position]} AS {$g_sql_word_array[($g_sql_word_position + 2)]});\n\n";
+				$direct_globals['db']->init_update ($g_sql_word_array[$g_sql_word_position]." AS ".$g_sql_word_array[($g_sql_word_position + 2)]);
 				$g_sql_word_position += 3;
 			}
 
@@ -511,9 +510,9 @@ $direct_cachedata['output_sql_source'] .= ("\$g_attributes = (\"&lt;sqlvalues&gt
 ".(direct_html_encode_special (direct_developer_sqlsource_get_set_attributes ($g_sql_word_array,$g_sql_word_position)))."
 &lt;/sqlvalues&gt;\");
 
-\$direct_classes['db']->define_set_attributes (\$g_attributes);\n\n");
+\$direct_globals['db']->define_set_attributes (\$g_attributes);\n\n");
 
-			$direct_classes['db']->define_set_attributes ("<sqlvalues><element1 attribute='attribute' value='value' type='string' /></sqlvalues>");
+			$direct_globals['db']->define_set_attributes ("<sqlvalues><element1 attribute='attribute' value='value' type='string' /></sqlvalues>");
 
 			if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($g_sql_word_array[$g_sql_word_position],"where") !== false)
 			{
@@ -523,9 +522,9 @@ $direct_cachedata['output_sql_source'] .= ("\$g_conditions = (\"&lt;sqlcondition
 ".(direct_html_encode_special (direct_developer_sqlsource_get_row_conditions ($g_sql_word_array,$g_sql_word_position)))."
 &lt;/sqlconditions&gt;\");
 
-\$direct_classes['db']->define_row_conditions (\$g_conditions);\n\n");
+\$direct_globals['db']->define_row_conditions (\$g_conditions);\n\n");
 
-				$direct_classes['db']->define_row_conditions ("<sqlconditions><element1 attribute='attribute' value='value' type='string' /></sqlconditions>");
+				$direct_globals['db']->define_row_conditions ("<sqlconditions><element1 attribute='attribute' value='value' type='string' /></sqlconditions>");
 			}
 
 			if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($g_sql_word_array[$g_sql_word_position],"order") !== false)
@@ -536,43 +535,43 @@ $direct_cachedata['output_sql_source'] .= ("\$g_ordering = (\"&lt;sqlordering&gt
 ".(direct_html_encode_special (direct_developer_sqlsource_get_ordering ($g_sql_word_array,$g_sql_word_position)))."
 &lt;/sqlordering&gt;\");
 
-\$direct_classes['db']->define_ordering (\$g_ordering);\n\n");
+\$direct_globals['db']->define_ordering (\$g_ordering);\n\n");
 
-				$direct_classes['db']->define_ordering ("<sqlordering><element1 attribute='attribute' type='asc' /></sqlordering>");
+				$direct_globals['db']->define_ordering ("<sqlordering><element1 attribute='attribute' type='asc' /></sqlordering>");
 			}
 
 			if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($g_sql_word_array[$g_sql_word_position],"limit") !== false)
 			{
 				$g_sql_word_position++;
 
-				$direct_cachedata['output_sql_source'] .= ("\$direct_classes['db']->define_limit ({$g_sql_word_array[$g_sql_word_position]});\n\n");
-				$direct_classes['db']->define_limit ($g_sql_word_array[$g_sql_word_position]);
+				$direct_cachedata['output_sql_source'] .= ("\$direct_globals['db']->define_limit ({$g_sql_word_array[$g_sql_word_position]});\n\n");
+				$direct_globals['db']->define_limit ($g_sql_word_array[$g_sql_word_position]);
 
 				$g_sql_word_position++;
 			}
 
 			$direct_cachedata['output_sql_source'] = str_replace ("''","'",$direct_cachedata['output_sql_source']);
-			$direct_cachedata['output_sql_source'] .= "\$direct_classes['db']->query_exec (\"co\");";
+			$direct_cachedata['output_sql_source'] .= "\$direct_globals['db']->query_exec (\"co\");";
 
 			break 1;
 		}
 		}
 
-		$direct_cachedata['output_sql_result'] = $direct_classes['db']->query_exec ("sql");
+		$direct_cachedata['output_sql_result'] = $direct_globals['db']->query_exec ("sql");
 	}
 
 	$direct_cachedata['output_preview_function_file'] = "swgi_developer";
 	$direct_cachedata['output_preview_function'] = "oset_developer_sqlsource_decode";
 
 	$direct_cachedata['output_formbutton'] = direct_local_get ("core_continue");
-	$direct_cachedata['output_formelements'] = $direct_classes['formbuilder']->form_get (true);
-	$direct_cachedata['output_formtarget'] = "m=developer&s=sqlsource";
+	$direct_cachedata['output_formelements'] = $direct_globals['formbuilder']->form_get (true);
+	$direct_cachedata['output_formtarget'] = "m=developer;s=sqlsource";
 	$direct_cachedata['output_formtitle'] = direct_local_get ("developer_sqlsource_decode");
 
-	direct_output_related_manager ("developer_sqlsource_decode","post_module_service_action");
-	$direct_classes['output']->oset ("default","form_preview");
-	$direct_classes['output']->header (false,true,$direct_settings['p3p_url'],$direct_settings['p3p_cp']);
-	$direct_classes['output']->page_show ($direct_cachedata['output_formtitle']);
+	$direct_globals['output']->header (false,true,$direct_settings['p3p_url'],$direct_settings['p3p_cp']);
+	$direct_globals['output']->related_manager ("developer_sqlsource_decode","post_module_service_action");
+	$direct_globals['output']->oset ("default","form_preview");
+	$direct_globals['output']->output_send ($direct_cachedata['output_formtitle']);
 	//j// EOA
 	}
 

@@ -58,12 +58,12 @@ all development packets)
 */
 function direct_block_get ()
 {
-	global $direct_cachedata,$direct_classes,$direct_settings;
+	global $direct_cachedata,$direct_globals,$direct_settings;
 	if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -direct_block_get (+f_block)- (#echo(__LINE__)#)"); }
 
-	if (!isset ($direct_classes['basic_functions'])) { direct_class_init ("basic_functions"); }
-	if (!isset ($direct_classes['xml_bridge'])) { direct_class_init ("xml_bridge"); }
-	if (!function_exists ("direct_file_get")) { $direct_classes['basic_functions']->require_file ($direct_settings['path_system']."/functions/swg_file_functions.php",2); }
+	if (!isset ($direct_globals['basic_functions'])) { direct_class_init ("basic_functions"); }
+	if (!isset ($direct_globals['xml_bridge'])) { direct_class_init ("xml_bridge"); }
+	if (!function_exists ("direct_file_get")) { $direct_globals['basic_functions']->require_file ($direct_settings['path_system']."/functions/swg_file_functions.php",2); }
 
 	$f_options = func_get_args ();
 	$f_block = array_shift ($f_options);
@@ -71,13 +71,13 @@ function direct_block_get ()
 
 	if (!isset ($direct_cachedata['blocker_data']))
 	{
-		if ((isset ($direct_classes['basic_functions']))||(isset ($direct_classes['xml_bridge']))||(file_exists ($direct_settings['path_data']."/settings/swg_blocks_installed.php")))
+		if ((isset ($direct_globals['basic_functions']))||(isset ($direct_globals['xml_bridge']))||(file_exists ($direct_settings['path_data']."/settings/swg_blocks_installed.php")))
 		{
-			$direct_cachedata['blocker_data'] = $direct_classes['basic_functions']->memcache_get_file ($direct_settings['path_data']."/settings/swg_blocks_installed.php");
+			$direct_cachedata['blocker_data'] = $direct_globals['basic_functions']->memcache_get_file ($direct_settings['path_data']."/settings/swg_blocks_installed.php");
 
 			if ($direct_cachedata['blocker_data'])
 			{
-				$direct_cachedata['blocker_data'] = $direct_classes['xml_bridge']->xml2array ($direct_cachedata['blocker_data'],true,false);
+				$direct_cachedata['blocker_data'] = $direct_globals['xml_bridge']->xml2array ($direct_cachedata['blocker_data'],true,false);
 				$direct_cachedata['blocker_data'] = $direct_cachedata['blocker_data']['swg_blocks_file_v1'];
 			}
 		}
@@ -95,7 +95,7 @@ function direct_block_get ()
 			{
 			case "file":
 			{
-				$f_file_path = $direct_classes['basic_functions']->inputfilter_filepath ($f_xml_node_array['value']);
+				$f_file_path = $direct_globals['basic_functions']->inputfilter_filepath ($f_xml_node_array['value']);
 				break 1;
 			}
 			case "function":
@@ -108,7 +108,7 @@ function direct_block_get ()
 
 		if (($f_file_path)&&($f_function))
 		{
-			if ($direct_classes['basic_functions']->include_file ($direct_settings['path_system']."/blocks/".$f_file_path))
+			if ($direct_globals['basic_functions']->include_file ($direct_settings['path_system']."/blocks/".$f_file_path))
 			{
 				if (function_exists ($f_function)) { $f_return = $f_function ($f_options); }
 			}

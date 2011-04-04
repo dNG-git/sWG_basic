@@ -64,23 +64,22 @@ case "decode":
 {
 	if (USE_debug_reporting) { direct_debug (1,"sWG/#echo(__FILEPATH__)# _a=decode_ (#echo(__LINE__)#)"); }
 
-	$direct_cachedata['page_this'] = "m=developer&a=tools;base64&a=decode";
-	$direct_cachedata['page_backlink'] = "m=developer&a=services";
-	$direct_cachedata['page_homelink'] = "m=developer&a=services";
+	$direct_cachedata['page_this'] = "m=developer;a=tools+base64;a=decode";
+	$direct_cachedata['page_backlink'] = "m=developer;a=services";
+	$direct_cachedata['page_homelink'] = "m=developer;a=services";
 
-	if ($direct_classes['kernel']->service_init_default ())
+	if ($direct_globals['kernel']->service_init_default ())
 	{
 	//j// BOA
-	direct_output_related_manager ("developer_tools_base64_decode","pre_module_service_action");
-	$direct_classes['basic_functions']->require_file ($direct_settings['path_system']."/classes/swg_formbuilder.php");
+	$direct_globals['output']->related_manager ("developer_tools_base64_decode","pre_module_service_action");
+	$direct_globals['basic_functions']->require_file ($direct_settings['path_system']."/classes/swg_formbuilder.php");
 	direct_local_integration ("developer");
 
 	direct_class_init ("formbuilder");
-	direct_class_init ("output");
-	$direct_classes['output']->options_insert (1,"servicemenu","m=developer&a=services",(direct_local_get ("core_back")),$direct_settings['serviceicon_default_back'],"url0");
+	$direct_globals['output']->options_insert (1,"servicemenu","m=developer;a=services",(direct_local_get ("core_back")),$direct_settings['serviceicon_default_back'],"url0");
 
-	$direct_cachedata['i_dinput'] = (isset ($GLOBALS['i_dinput']) ? ($direct_classes['basic_functions']->inputfilter_basic ($GLOBALS['i_dinput'])) : "");
-	$direct_classes['formbuilder']->entry_add_textarea ("dinput",(direct_local_get ("developer_input")),false,"l",1);
+	$direct_cachedata['i_dinput'] = (isset ($GLOBALS['i_dinput']) ? ($direct_globals['basic_functions']->inputfilter_basic ($GLOBALS['i_dinput'])) : "");
+	$direct_globals['formbuilder']->entry_add_textarea (array ("name" => "dinput","title" => (direct_local_get ("developer_input")),"size" => "l","min" => 1));
 
 	if ($direct_cachedata['i_dinput'])
 	{
@@ -93,14 +92,14 @@ case "decode":
 	$direct_cachedata['output_preview_function'] = "oset_developer_input_result_sourcecode";
 
 	$direct_cachedata['output_formbutton'] = direct_local_get ("core_continue");
-	$direct_cachedata['output_formelements'] = $direct_classes['formbuilder']->form_get (true);
-	$direct_cachedata['output_formtarget'] = "m=developer&s=tools;base64&a=decode";
+	$direct_cachedata['output_formelements'] = $direct_globals['formbuilder']->form_get (true);
+	$direct_cachedata['output_formtarget'] = "m=developer;s=tools+base64;a=decode";
 	$direct_cachedata['output_formtitle'] = direct_local_get ("developer_base64_decode");
 
-	direct_output_related_manager ("developer_tools_base64_decode","post_module_service_action");
-	$direct_classes['output']->oset ("default","form_preview");
-	$direct_classes['output']->header (false,true,$direct_settings['p3p_url'],$direct_settings['p3p_cp']);
-	$direct_classes['output']->page_show ($direct_cachedata['output_formtitle']);
+	$direct_globals['output']->header (false,true,$direct_settings['p3p_url'],$direct_settings['p3p_cp']);
+	$direct_globals['output']->related_manager ("developer_tools_base64_decode","post_module_service_action");
+	$direct_globals['output']->oset ("default","form_preview");
+	$direct_globals['output']->output_send ($direct_cachedata['output_formtitle']);
 	//j// EOA
 	}
 
@@ -112,23 +111,22 @@ case "encode":
 {
 	if (USE_debug_reporting) { direct_debug (1,"sWG/#echo(__FILEPATH__)# _a=encode_ (#echo(__LINE__)#)"); }
 
-	$direct_cachedata['page_this'] = "m=developer&a=tools;base64&a=encode";
-	$direct_cachedata['page_backlink'] = "m=developer&a=services";
-	$direct_cachedata['page_homelink'] = "m=developer&a=services";
+	$direct_cachedata['page_this'] = "m=developer;a=tools+base64;a=encode";
+	$direct_cachedata['page_backlink'] = "m=developer;a=services";
+	$direct_cachedata['page_homelink'] = "m=developer;a=services";
 
-	if ($direct_classes['kernel']->service_init_default ())
+	if ($direct_globals['kernel']->service_init_default ())
 	{
 	//j// BOA
-	direct_output_related_manager ("developer_tools_base64_encode","pre_module_service_action");
-	$direct_classes['basic_functions']->require_file ($direct_settings['path_system']."/classes/swg_formbuilder.php");
+	$direct_globals['output']->related_manager ("developer_tools_base64_encode","pre_module_service_action");
+	$direct_globals['basic_functions']->require_file ($direct_settings['path_system']."/classes/swg_formbuilder.php");
 	direct_local_integration ("developer");
 
 	direct_class_init ("formbuilder");
-	direct_class_init ("output");
-	$direct_classes['output']->options_insert (1,"servicemenu","m=developer&a=services",(direct_local_get ("core_back")),$direct_settings['serviceicon_default_back'],"url0");
+	$direct_globals['output']->options_insert (1,"servicemenu","m=developer;a=services",(direct_local_get ("core_back")),$direct_settings['serviceicon_default_back'],"url0");
 
-	$direct_cachedata['i_dinput'] = (isset ($GLOBALS['i_dinput']) ? ($direct_classes['basic_functions']->inputfilter_basic ($GLOBALS['i_dinput'])) : "");
-	$direct_classes['formbuilder']->entry_add_textarea ("dinput",(direct_local_get ("developer_input")),false,"l",1);
+	$direct_cachedata['i_dinput'] = (isset ($GLOBALS['i_dinput']) ? ($direct_globals['basic_functions']->inputfilter_basic ($GLOBALS['i_dinput'])) : "");
+	$direct_globals['formbuilder']->entry_add_textarea (array ("name" => "dinput","title" => (direct_local_get ("developer_input")),"size" => "l","min" => 1));
 
 	if ($direct_cachedata['i_dinput'])
 	{
@@ -141,14 +139,14 @@ case "encode":
 	$direct_cachedata['output_preview_function'] = "oset_developer_input_result_sourcecode";
 
 	$direct_cachedata['output_formbutton'] = direct_local_get ("core_continue");
-	$direct_cachedata['output_formelements'] = $direct_classes['formbuilder']->form_get (true);
-	$direct_cachedata['output_formtarget'] = "m=developer&s=tools;base64&a=encode";
+	$direct_cachedata['output_formelements'] = $direct_globals['formbuilder']->form_get (true);
+	$direct_cachedata['output_formtarget'] = "m=developer;s=tools+base64;a=encode";
 	$direct_cachedata['output_formtitle'] = direct_local_get ("developer_base64_encode");
 
-	direct_output_related_manager ("developer_tools_base64_encode","post_module_service_action");
-	$direct_classes['output']->oset ("default","form_preview");
-	$direct_classes['output']->header (false,true,$direct_settings['p3p_url'],$direct_settings['p3p_cp']);
-	$direct_classes['output']->page_show ($direct_cachedata['output_formtitle']);
+	$direct_globals['output']->header (false,true,$direct_settings['p3p_url'],$direct_settings['p3p_cp']);
+	$direct_globals['output']->related_manager ("developer_tools_base64_encode","post_module_service_action");
+	$direct_globals['output']->oset ("default","form_preview");
+	$direct_globals['output']->output_send ($direct_cachedata['output_formtitle']);
 	//j// EOA
 	}
 

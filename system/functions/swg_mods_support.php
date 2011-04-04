@@ -61,7 +61,7 @@ all development packets)
 */
 function direct_mods_include ()
 {
-	global $direct_classes,$direct_settings;
+	global $direct_globals,$direct_settings;
 	if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -direct_mods_include ()- (#echo(__LINE__)#)"); }
 
 	$f_data = func_get_args ();
@@ -79,11 +79,11 @@ function direct_mods_include ()
 
 	if ($f_support)
 	{
-		$f_file_data = $direct_classes['basic_functions']->memcache_get_file ($direct_settings['path_system']."/mods/$f_modname/swg_modlist.xml");
+		$f_file_data = $direct_globals['basic_functions']->memcache_get_file ($direct_settings['path_system']."/mods/$f_modname/swg_modlist.xml");
 
 		if ($f_file_data)
 		{
-			$f_xml_array = $direct_classes['xml_bridge']->xml2array ($f_file_data,true,false);
+			$f_xml_array = $direct_globals['xml_bridge']->xml2array ($f_file_data,true,false);
 
 			if (isset ($f_xml_array['swg_modlist_file_v1']))
 			{
@@ -102,7 +102,7 @@ function direct_mods_include ()
 							{
 								if (isset ($f_xml_sub_node_array['attributes']['module']/*#ifndef(PHP4) */,/* #*//*#ifdef(PHP4):) && isset (:#*/$f_xml_sub_node_array['attributes']['function']))
 								{
-									$direct_classes['basic_functions']->include_file ($direct_settings['path_system']."/mods/$f_modname/swgi_{$f_xml_sub_node_array['attributes']['module']}.php");
+									$direct_globals['basic_functions']->include_file ($direct_settings['path_system']."/mods/$f_modname/swgi_{$f_xml_sub_node_array['attributes']['module']}.php");
 									$f_function = "direct_mods_{$f_modname}_{$f_xml_sub_node_array['attributes']['function']}_".$f_function_id;
 
 									if (function_exists ($f_function)) { $f_data[0] = $f_function ($f_data); }
@@ -112,7 +112,7 @@ function direct_mods_include ()
 						}
 						elseif (isset ($f_xml_node_array['attributes']['module']/*#ifndef(PHP4) */,/* #*//*#ifdef(PHP4):) && isset (:#*/$f_xml_node_array['attributes']['function']))
 						{
-							$direct_classes['basic_functions']->include_file ($direct_settings['path_system']."/mods/$f_modname/swgi_{$f_xml_node_array['attributes']['module']}.php");
+							$direct_globals['basic_functions']->include_file ($direct_settings['path_system']."/mods/$f_modname/swgi_{$f_xml_node_array['attributes']['module']}.php");
 							$f_function = "direct_mods_{$f_modname}_{$f_xml_node_array['attributes']['function']}_".$f_function_id;
 
 							if (function_exists ($f_function)) { $f_data[0] = $f_function ($f_data); }

@@ -65,21 +65,20 @@ case "view":
 {
 	if (USE_debug_reporting) { direct_debug (1,"sWG/#echo(__FILEPATH__)# _a=view_ (#echo(__LINE__)#)"); }
 
-	$direct_cachedata['page_this'] = "m=developer&s=formbuilder";
-	$direct_cachedata['page_backlink'] = "m=developer&a=services";
-	$direct_cachedata['page_homelink'] = "m=developer&a=services";
+	$direct_cachedata['page_this'] = "m=developer;s=formbuilder";
+	$direct_cachedata['page_backlink'] = "m=developer;a=services";
+	$direct_cachedata['page_homelink'] = "m=developer;a=services";
 
-	if ($direct_classes['kernel']->service_init_default ())
+	if ($direct_globals['kernel']->service_init_default ())
 	{
 	//j// BOA
-	direct_output_related_manager ("developer_formbuilder_view","pre_module_service_action");
-	$direct_classes['basic_functions']->require_file ($direct_settings['path_system']."/classes/swg_formbuilder.php");
+	$direct_globals['output']->related_manager ("developer_formbuilder_view","pre_module_service_action");
+	$direct_globals['basic_functions']->require_file ($direct_settings['path_system']."/classes/swg_formbuilder.php");
 	direct_local_integration ("developer");
 
 	direct_class_init ("formbuilder");
-	direct_class_init ("output");
 	direct_class_init ("output_formbuilder");
-	$direct_classes['output']->options_insert (1,"servicemenu","m=developer&a=services",(direct_local_get ("core_back")),$direct_settings['serviceicon_default_back'],"url0");
+	$direct_globals['output']->options_insert (1,"servicemenu","m=developer&a=services",(direct_local_get ("core_back")),$direct_settings['serviceicon_default_back'],"url0");
 
 $g_form_element_array = array (
 "type" => "",
@@ -88,7 +87,7 @@ $g_form_element_array = array (
 "required" => false,
 "size" => "m",
 "helper_text" => "",
-"helper_url" => direct_linker ("url0","m=developer&s=forbuilder"),
+"helper_url" => direct_linker ("url0","m=developer;s=formbuilder"),
 "helper_closing" => false,
 "content" => ""
 );
@@ -96,7 +95,7 @@ $g_form_element_array = array (
 	$direct_cachedata['output_formelements'] = array ();
 	$g_form_element_count = 0;
 
-	foreach ($direct_classes['output_formbuilder']->functions as $g_method => $g_method_available)
+	foreach ($direct_globals['output_formbuilder']->functions as $g_method => $g_method_available)
 	{
 		if (($g_method_available)&&(preg_match ("#^entry_add_(.+?)$#",$g_method,$g_result_array)))
 		{
@@ -112,13 +111,13 @@ $g_form_element_array = array (
 	}
 
 	$direct_cachedata['output_formbutton'] = direct_local_get ("core_continue");
-	$direct_cachedata['output_formtarget'] = "m=developer&s=formbuilder";
+	$direct_cachedata['output_formtarget'] = "m=developer;s=formbuilder";
 	$direct_cachedata['output_formtitle'] = direct_local_get ("developer_formbuilder");
 
-	direct_output_related_manager ("developer_formbuilder_view","post_module_service_action");
-	$direct_classes['output']->oset ("default","form");
-	$direct_classes['output']->header (false,true,$direct_settings['p3p_url'],$direct_settings['p3p_cp']);
-	$direct_classes['output']->page_show ($direct_cachedata['output_formtitle']);
+	$direct_globals['output']->header (false,true,$direct_settings['p3p_url'],$direct_settings['p3p_cp']);
+	$direct_globals['output']->related_manager ("developer_formbuilder_view","post_module_service_action");
+	$direct_globals['output']->oset ("default","form");
+	$direct_globals['output']->output_send ($direct_cachedata['output_formtitle']);
 	//j// EOA
 	}
 

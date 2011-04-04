@@ -55,13 +55,13 @@ all development packets)
 */
 function direct_oset_developer_input_result ()
 {
-	global $direct_cachedata;
+	global $direct_cachedata,$direct_settings;
 	if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -direct_oset_developer_input_result ()- (#echo(__LINE__)#)"); }
 
 	if ($direct_cachedata['output_input_result'])
 	{
-return ("<p class='pagecontenttitle'>".(direct_local_get ("developer_input_result"))."</p>
-<p class='pageborder2'><span class='pageextracontent'>{$direct_cachedata['output_input_result']}</span></p>");
+return ("<p class='pagecontenttitle{$direct_settings['theme_css_corners']}'>".(direct_local_get ("developer_input_result"))."</p>
+<p class='pageborder2{$direct_settings['theme_css_corners']} pageextracontent'>{$direct_cachedata['output_input_result']}</p>");
 	}
 	else { return ""; }
 }
@@ -77,13 +77,13 @@ return ("<p class='pagecontenttitle'>".(direct_local_get ("developer_input_resul
 */
 function direct_oset_developer_input_result_sourcecode ()
 {
-	global $direct_cachedata;
+	global $direct_cachedata,$direct_settings;
 	if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -direct_oset_developer_input_result_sourcecode ()- (#echo(__LINE__)#)"); }
 
 	if ($direct_cachedata['output_input_result'])
 	{
-return ("<p class='pagecontenttitle'>".(direct_local_get ("developer_input_result"))."</p>
-<p class='pageborder2' style='overflow:auto;white-space:pre'><span class='pageextracontent' style='font-family:\"Courier New\",Courier,mono'>{$direct_cachedata['output_input_result']}</span></p>");
+return ("<p class='pagecontenttitle{$direct_settings['theme_css_corners']}'>".(direct_local_get ("developer_input_result"))."</p>
+<p class='pageborder2{$direct_settings['theme_css_corners']} pageextracontent' style='overflow:auto;white-space:pre;font-family:\"Courier New\",Courier,mono'>{$direct_cachedata['output_input_result']}</p>");
 	}
 	else { return ""; }
 }
@@ -99,17 +99,21 @@ return ("<p class='pagecontenttitle'>".(direct_local_get ("developer_input_resul
 */
 function direct_oset_developer_sqlsource_decode ()
 {
-	global $direct_cachedata;
+	global $direct_cachedata,$direct_settings;
 	if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -direct_oset_developer_sqlsource_decode ()- (#echo(__LINE__)#)"); }
 
 	if ($direct_cachedata['output_sql_result'])
 	{
-return ("<p class='pagecontenttitle'>".(direct_local_get ("developer_sqlsource_decode_result"))."</p>
-<p class='pageborder2' style='overflow:auto;white-space:pre'><span class='pageextracontent' style='font-family:\"Courier New\",Courier,mono'>{$direct_cachedata['output_sql_source']}</span></p>
-<p class='pageborder2' style='overflow:auto;white-space:pre'><span class='pageextracontent' style='font-family:\"Courier New\",Courier,mono'>{$direct_cachedata['output_sql_result']}</span></p>");
+return ("<p class='pagecontenttitle{$direct_settings['theme_css_corners']}'>".(direct_local_get ("developer_sqlsource_decode_result"))."</p>
+<p class='pageborder2{$direct_settings['theme_css_corners']} pageextracontent' style='overflow:auto;white-space:pre;font-family:\"Courier New\",Courier,mono'>{$direct_cachedata['output_sql_source']}</p>
+<p class='pageborder2{$direct_settings['theme_css_corners']} pageextracontent' style='overflow:auto;white-space:pre;font-family:\"Courier New\",Courier,mono'>{$direct_cachedata['output_sql_result']}</p>");
 	}
 	else { return ""; }
 }
+
+//j// Script specific commands
+
+$direct_settings['theme_css_corners'] = ((isset ($direct_settings['theme_css_corners_class'])) ? " ".$direct_settings['theme_css_corners_class'] : " ui-corner-all");
 
 //j// EOF
 ?>

@@ -50,10 +50,8 @@ Testing for required classes
 ------------------------------------------------------------------------- */
 
 $g_continue_check = ((defined ("CLASS_direct_sendmailer_formtags")) ? false : true);
-if (!defined ("CLASS_direct_formtags")) { $direct_classes['basic_functions']->include_file ($direct_settings['path_system']."/classes/swg_formtags.php"); }
-if (!defined ("CLASS_direct_formtags")) { $g_continue_check = false; }
-if (!defined ("CLASS_direct_sendmailer")) { $direct_classes['basic_functions']->include_file ($direct_settings['path_system']."/classes/swg_sendmailer.php"); }
-if (!defined ("CLASS_direct_sendmailer")) { $g_continue_check = false; }
+if (($g_continue_check)&&(!defined ("CLASS_direct_formtags"))) { $g_continue_check = $direct_globals['basic_functions']->include_file ($direct_settings['path_system']."/classes/swg_formtags.php"); }
+if (($g_continue_check)&&(!defined ("CLASS_direct_sendmailer"))) { $g_continue_check = ($direct_globals['basic_functions']->include_file ($direct_settings['path_system']."/classes/swg_sendmailer.php") ? defined ("CLASS_direct_sendmailer") : false); }
 
 if ($g_continue_check)
 {
@@ -154,16 +152,24 @@ Set up the FormTags message cache
 */
 	/*#ifndef(PHP4) */public /* #*/function message_set ($f_data,$f_encoding = "")
 	{
-		global $direct_classes,$direct_local;
+		global $direct_globals,$direct_local,$direct_settings;
 		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -sendmailer_class->message_set (+f_data,$f_encoding)- (#echo(__LINE__)#)"); }
 
-		if (!isset ($direct_classes['formtags'])) { direct_class_init ("formtags"); }
+		if (!isset ($direct_globals['formtags'])) { direct_class_init ("formtags"); }
 
-		if (isset ($direct_classes['formtags']))
+		if (isset ($direct_globals['formtags']))
 		{
-			$f_data = str_replace ("[rewrite:ilink:","[rewrite:elink:",$f_data);
+			if (isset ($direct_settings['swg_sendmailer_copyright'])) { $f_data .= $direct_settings['swg_sendmailer_copyright']; }
+			else
+			{
+$f_data .= ("\n\n[hr]
+(C) $direct_settings[swg_title_txt] ([url]{$direct_settings['home_url']}[/url])
+All rights reserved");
+			}
+
+			$f_data = str_replace ("[rewrite:ilink]","[rewrite:elink]",$f_data);
 			if (!strlen ($f_encoding)) { $f_encoding = $direct_local['lang_charset']; }
-			$this->data_formtags = array ("encoding" => $f_encoding,"data" => $direct_classes['formtags']->encode ($f_data));
+			$this->data_formtags = array ("encoding" => $f_encoding,"data" => $direct_globals['formtags']->encode ($f_data));
 		}
 	}
 
@@ -188,22 +194,20 @@ Set up the FormTags message cache
 */
 	/*#ifndef(PHP4) */public /* #*/function send ($f_type,$f_from,$f_subject)
 	{
-		global $direct_classes,$direct_local,$direct_settings;
+		global $direct_globals,$direct_local,$direct_settings;
 		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -sendmailer_class->send ($f_type,$f_from,$f_subject)- (#echo(__LINE__)#)"); }
 
-		if (!isset ($direct_classes['formtags'])) { direct_class_init ("formtags"); }
+		if (!isset ($direct_globals['formtags'])) { direct_class_init ("formtags"); }
 		$f_return = false;
 
-		if (isset ($direct_classes['formtags']))
+		if (isset ($direct_globals['formtags']))
 		{
-			$f_data = $direct_classes['formtags']->cleanup ($this->data_formtags['data']);
-			if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($this->data_formtags['data'],"[hr]") !== false) { $this->data_formtags['data'] = str_replace ("[hr]","<span class='pagehr' style='$direct_settings[theme_hr_style]' xml:space='preserve'> </span>",$this->data_formtags['data']); }
+			$f_data = $direct_globals['formtags']->cleanup ($this->data_formtags['data']);
+			if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($this->data_formtags['data'],"[hr]") !== false) { $this->data_formtags['data'] = str_replace ("[hr]","<div class='pagehr' style='$direct_settings[theme_hr_style]' xml:space='preserve'> </div>",$this->data_formtags['data']); }
 			$this->text_set ($this->data_formtags['encoding'],$f_data);
 
-$f_data = ("<?xml version='1.0' encoding='$direct_local[lang_charset]' ?>
-<?xml-stylesheet href='#swgCSS' type='text/css' ?>
-<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">
-<html xmlns='http://www.w3.org/1999/xhtml' xml:lang='en'>
+$f_data = ("<?xml version='1.0' encoding='$direct_local[lang_charset]' ?><!DOCTYPE html SYSTEM \"about:legacy-compat\">
+<html xmlns='http://www.w3.org/1999/xhtml' xml:lang='$direct_local[lang_iso_domain]'>
 
 <head>
 <title>$f_subject</title>
@@ -211,7 +215,7 @@ $f_data = ("<?xml version='1.0' encoding='$direct_local[lang_charset]' ?>
 <meta name='author' content='direct Netware Group' />
 <meta name='creator' content='$direct_settings[product_lcode_txt] by the direct Netware Group' />
 <meta name='description' content='$direct_settings[product_lcode_subtitle_txt]' />
-<style type='text/css' id='swgCSS'><![CDATA[
+<style type='text/css'><![CDATA[
 p, td { cursor:default }
 
 a { cursor:pointer }
@@ -221,17 +225,17 @@ a:visited { color:#505050;text-decoration:underline }
 a:hover { color:#000000;text-decoration:none }
 a:focus { color:#000000;text-decoration:underline }
 
-body { height:100%;margin:0px;padding:0px;background-color:#FFFFFF }
+body { margin:0px;padding:0px;background-color:#FFFFFF }
 body { font-size:100%;font-style:normal;font-weight:normal;color:#000000 }
 form { margin:0px;padding:0px }
-html { height:100%;margin:0px;padding:0px }
-img { border:0px }
-table { margin:0px;border:0px;border:0px }
+html { margin:0px;padding:0px }
+img { border:none }
+table { margin:0px;table-layout:fixed;border:none;border-collapse:collapse;border-spacing:0px }
 td { padding:0px }
 
 .pagebg { background-color:#FFFFFF }
 
-.pageborder1 { background-color:#CCCCCC }
+.pageborder1 { background-color:#CCCCCC;border-collapse:separate;border-spacing:1px }
 .pageborder2 { border:1px solid #CCCCCC;background-color:#FFFFFF;padding:5px }
 
 .pagecontent { font-size:100%;color:#000000 }
@@ -253,10 +257,10 @@ td { padding:0px }
 .pageextracontent a, .pageextracontent a:link, .pageextracontent a:active, .pageextracontent a:visited, .pageextracontent a:hover, .pageextracontent a:focus { color:#000000 }
 
 .pagehide { display:none }
-.pagehighlightborder1 { background-color:#294563 }
+.pagehighlightborder1 { background-color:#294563;border-collapse:separate;border-spacing:1px }
 .pagehighlightborder2 { border:1px solid #294563;background-color:#F0F0FF;padding:4px }
 
-.pagehr { height:1px;background-color:#CCCCCC }
+.pagehr { height:1px;overflow:hidden;border-top:1px solid #CCCCCC }
 
 .pagetitlecellbg { background-color:#FFFFFF }
 .pagetitlecellcontent { font-size:100%;font-weight:bold;color:#000000 }
@@ -266,9 +270,9 @@ td { padding:0px }
 
 <body><!--
 sWG e-Mail
-// --><table cellspacing='10' summary='' style='width:100%;height:100%'>
+// --><table style='width:100%;border-collapse:separate;border-spacing:10px'>
 <tbody><tr>
-<td valign='middle' style='padding:1px'><p>".($direct_classes['formtags']->decode ($this->data_formtags['data']))."</p></td>
+<td style='padding:1px'><div>".($direct_globals['formtags']->decode ($this->data_formtags['data']))."</div></td>
 </tr></tbody>
 </table>
 </body>

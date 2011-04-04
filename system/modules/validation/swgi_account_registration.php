@@ -58,28 +58,28 @@ if (!isset ($direct_settings['users_registration_credits_onetime'])) { $direct_s
 if (!isset ($direct_settings['users_registration_credits_periodically'])) { $direct_settings['users_registration_credits_periodically'] = 0; }
 $direct_settings['additional_copyright'][] = array ("Module basic #echo(sWGbasicVersion)# - (C) ","http://www.direct-netware.de/redirect.php?swg","direct Netware Group"," - All rights reserved");
 
-$direct_classes['basic_functions']->settings_get ($direct_settings['path_data']."/settings/swg_account.php",true);
-$direct_classes['basic_functions']->require_file ($direct_settings['path_system']."/functions/swg_mods_support.php");
-$direct_classes['basic_functions']->require_file ($direct_settings['path_system']."/functions/swg_log_storager.php");
-$direct_classes['basic_functions']->require_file ($direct_settings['path_system']."/functions/swg_credits_manager.php");
+$direct_globals['basic_functions']->settings_get ($direct_settings['path_data']."/settings/swg_account.php",true);
+$direct_globals['basic_functions']->require_file ($direct_settings['path_system']."/functions/swg_mods_support.php");
+$direct_globals['basic_functions']->require_file ($direct_settings['path_system']."/functions/swg_log_storager.php");
+$direct_globals['basic_functions']->require_file ($direct_settings['path_system']."/functions/swg_credits_manager.php");
 
 if (USE_debug_reporting) { direct_debug (2,"sWG/#echo(__FILEPATH__)# _main_ (#echo(__LINE__)#)"); }
 
 if (direct_local_integration ("account"))
 {
-	$direct_classes['db']->init_select ($direct_settings['users_table']);
-	$direct_classes['db']->define_attributes (array ($direct_settings['users_table'].".ddbusers_email"));
+	$direct_globals['db']->init_select ($direct_settings['users_table']);
+	$direct_globals['db']->define_attributes (array ($direct_settings['users_table'].".ddbusers_email"));
 
 $g_select_criteria = ("<sqlconditions>
-".($direct_classes['db']->define_row_conditions_encode ($direct_settings['users_table'].".ddbusers_email",$direct_cachedata['validation_data']['account_email'],"string"))."
+".($direct_globals['db']->define_row_conditions_encode ($direct_settings['users_table'].".ddbusers_email",$direct_cachedata['validation_data']['account_email'],"string"))."
 <element1 attribute='{$direct_settings['users_table']}.ddbusers_deleted' value='0' type='string' />
 </sqlconditions>");
 
-	$direct_classes['db']->define_row_conditions ($g_select_criteria);
-	$direct_classes['db']->define_limit (1);
+	$direct_globals['db']->define_row_conditions ($g_select_criteria);
+	$direct_globals['db']->define_limit (1);
 
-	if ($direct_classes['db']->query_exec ("nr")) { $direct_cachedata['validation_error'] = array ("validation_email_exists","sWG/#echo(__FILEPATH__)# _main_ (#echo(__LINE__)#)"); }
-	elseif ($direct_classes['kernel']->v_user_check ("",$direct_cachedata['validation_data']['account_username'],true)) { $direct_cachedata['validation_error'] = array ("validation_username_exists","SERVICE ERROR:<br />&quot;{$direct_cachedata['validation_data']['account_username']}&quot; has already been registered in the meantime<br />sWG/#echo(__FILEPATH__)# _main_ (#echo(__LINE__)#)"); }
+	if ($direct_globals['db']->query_exec ("nr")) { $direct_cachedata['validation_error'] = array ("validation_email_exists","","sWG/#echo(__FILEPATH__)# _main_ (#echo(__LINE__)#)"); }
+	elseif ($direct_globals['kernel']->v_user_check ("",$direct_cachedata['validation_data']['account_username'],true)) { $direct_cachedata['validation_error'] = array ("validation_username_exists","SERVICE ERROR: &quot;{$direct_cachedata['validation_data']['account_username']}&quot; has already been registered in the meantime","sWG/#echo(__FILEPATH__)# _main_ (#echo(__LINE__)#)"); }
 	else
 	{
 		$g_uid = uniqid ("");
@@ -103,16 +103,17 @@ $g_user_array = array (
 "ddbusers_timezone" => 0
 );
 
-		if ($direct_classes['kernel']->v_user_insert ($g_uid,$g_user_array))
+		if ($direct_globals['kernel']->v_user_insert ($g_uid,$g_user_array))
 		{
 			if ($direct_settings['users_registration_credits_periodically']) { direct_credits_payment_exec ("account","account",$g_uid,$g_uid,0,$direct_settings['users_registration_credits_periodically']); }
 
 $g_log_array = array (
-"source_user_id" => $g_uid,
-"source_user_ip" => $direct_settings['user_ip'],
-"sid" => "e268443e43d93dab7ebef303bbe9642f",
+"ddblog_source_user_id" => $g_uid,
+"ddblog_source_user_ip" => $direct_settings['user_ip'],
+"ddblog_sid" => "e268443e43d93dab7ebef303bbe9642f",
 // md5 ("account")
-"identifier" => "account_registered"
+"ddblog_identifier" => "account_registered",
+"ddblog_maintained" => 1
 );
 
 			direct_log_write ($g_log_array);
@@ -121,14 +122,14 @@ $g_log_array = array (
 		}
 		else
 		{
-			$direct_cachedata['validation_error'] = array ("core_database_error","FATAL ERROR:<br />The system was unable to create the new account for ID &quot;$g_uid&quot;<br />sWG/#echo(__FILEPATH__)# _main_ (#echo(__LINE__)#)");
+			$direct_cachedata['validation_error'] = array ("core_database_error","FATAL ERROR: The system was unable to create the new account for ID &quot;$g_uid&quot;","sWG/#echo(__FILEPATH__)# _main_ (#echo(__LINE__)#)");
 			$direct_cachedata['validation_remove_vid'] = false;
 		}
 	}
 }
 else
 {
-	$direct_cachedata['validation_error'] = array ("error" => true);
+	$direct_cachedata['validation_error'] = true;
 	$direct_cachedata['validation_remove_vid'] = false;
 }
 

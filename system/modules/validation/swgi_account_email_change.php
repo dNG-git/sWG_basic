@@ -57,34 +57,34 @@ $direct_settings['additional_copyright'][] = array ("Module basic #echo(sWGbasic
 
 if (USE_debug_reporting) { direct_debug (2,"sWG/#echo(__FILEPATH__)# _main_ (#echo(__LINE__)#)"); }
 
-$g_user_array = $direct_classes['kernel']->v_user_get ($direct_cachedata['validation_data']['account_userid']);
+$g_user_array = $direct_globals['kernel']->v_user_get ($direct_cachedata['validation_data']['account_userid']);
 
 if ($g_user_array)
 {
-	$direct_classes['db']->init_select ($direct_settings['users_table']);
-	$direct_classes['db']->define_attributes (array ($direct_settings['users_table'].".ddbusers_email"));
+	$direct_globals['db']->init_select ($direct_settings['users_table']);
+	$direct_globals['db']->define_attributes (array ($direct_settings['users_table'].".ddbusers_email"));
 
 $g_select_criteria = ("<sqlconditions>
-".($direct_classes['db']->define_row_conditions_encode ($direct_settings['users_table'].".ddbusers_email",$direct_cachedata['validation_data']['account_email'],"string"))."
+".($direct_globals['db']->define_row_conditions_encode ($direct_settings['users_table'].".ddbusers_email",$direct_cachedata['validation_data']['account_email'],"string"))."
 <element1 attribute='{$direct_settings['users_table']}.ddbusers_deleted' value='0' type='string' />
 </sqlconditions>");
 
-	$direct_classes['db']->define_row_conditions ($g_select_criteria);
-	$direct_classes['db']->define_limit (1);
+	$direct_globals['db']->define_row_conditions ($g_select_criteria);
+	$direct_globals['db']->define_limit (1);
 
-	if ($direct_classes['db']->query_exec ("nr")) { $direct_cachedata['validation_error'] = array ("validation_email_exists","sWG/#echo(__FILEPATH__)# _main_ (#echo(__LINE__)#)"); }
+	if ($direct_globals['db']->query_exec ("nr")) { $direct_cachedata['validation_error'] = array ("validation_email_exists","","sWG/#echo(__FILEPATH__)# _main_ (#echo(__LINE__)#)"); }
 	elseif ($direct_cachedata['validation_data']['account_email'] != $g_user_array['ddbusers_email'])
 	{
 		$g_user_array['ddbusers_email'] = $direct_cachedata['validation_data']['account_email'];
 
-		if (!$direct_classes['kernel']->v_user_update ($direct_cachedata['validation_data']['account_userid'],$g_user_array))
+		if (!$direct_globals['kernel']->v_user_update ($direct_cachedata['validation_data']['account_userid'],$g_user_array))
 		{
-			$direct_cachedata['validation_error'] = array ("core_database_error","sWG/#echo(__FILEPATH__)# _main_ (#echo(__LINE__)#)");
+			$direct_cachedata['validation_error'] = array ("core_database_error","","sWG/#echo(__FILEPATH__)# _main_ (#echo(__LINE__)#)");
 			$direct_cachedata['validation_remove_vid'] = false;
 		}
 	}
 }
-else { $direct_cachedata['validation_error'] = array ("core_username_unknown","sWG/#echo(__FILEPATH__)# _main_ (#echo(__LINE__)#)"); }
+else { $direct_cachedata['validation_error'] = array ("core_username_unknown","","sWG/#echo(__FILEPATH__)# _main_ (#echo(__LINE__)#)"); }
 
 //j// EOF
 ?>

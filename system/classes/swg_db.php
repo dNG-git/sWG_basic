@@ -94,23 +94,23 @@ class direct_db extends direct_data_handler
 */
 	/*#ifndef(PHP4) */protected/* #*//*#ifdef(PHP4):var:#*/ $query_joins;
 /**
-	* @var array $query_limit SQL query LIMIT
+	* @var integer $query_limit SQL query LIMIT
 */
 	/*#ifndef(PHP4) */protected/* #*//*#ifdef(PHP4):var:#*/ $query_limit;
 /**
-	* @var array $query_offset SQL query OFFSET
+	* @var integer $query_offset SQL query OFFSET
 */
 	/*#ifndef(PHP4) */protected/* #*//*#ifdef(PHP4):var:#*/ $query_offset;
 /**
-	* @var array $query_ordering SQL query ORDER BY
+	* @var string $query_ordering SQL query ORDER BY
 */
 	/*#ifndef(PHP4) */protected/* #*//*#ifdef(PHP4):var:#*/ $query_ordering;
 /**
-	* @var array $query_row_conditions SQL query WHERE
+	* @var string $query_row_conditions SQL query WHERE
 */
 	/*#ifndef(PHP4) */protected/* #*//*#ifdef(PHP4):var:#*/ $query_row_conditions;
 /**
-	* @var array $query_search_conditions SQL query search conditions
+	* @var string $query_search_conditions SQL query search conditions
 */
 	/*#ifndef(PHP4) */protected/* #*//*#ifdef(PHP4):var:#*/ $query_search_conditions;
 /**
@@ -118,15 +118,15 @@ class direct_db extends direct_data_handler
 */
 	/*#ifndef(PHP4) */protected/* #*//*#ifdef(PHP4):var:#*/ $query_set_attributes;
 /**
-	* @var array $query_table SQL query FROM
+	* @var string $query_table SQL query FROM
 */
 	/*#ifndef(PHP4) */protected/* #*//*#ifdef(PHP4):var:#*/ $query_table;
 /**
-	* @var array $query_type SQL query type
+	* @var string $query_type SQL query type
 */
 	/*#ifndef(PHP4) */protected/* #*//*#ifdef(PHP4):var:#*/ $query_type;
 /**
-	* @var array $query_values SQL query VALUES
+	* @var string $query_values SQL query VALUES
 */
 	/*#ifndef(PHP4) */protected/* #*//*#ifdef(PHP4):var:#*/ $query_values;
 /**
@@ -152,7 +152,7 @@ Extend the class using old and new behavior
 */
 	/*#ifndef(PHP4) */public /* #*/function __construct ($f_peristent = false)
 	{
-		global $direct_cachedata,$direct_classes,$direct_settings;
+		global $direct_cachedata,$direct_globals,$direct_settings;
 		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -db_class->__construct (direct_db)- (#echo(__LINE__)#)"); }
 
 /* -------------------------------------------------------------------------
@@ -198,7 +198,7 @@ Informing the system about available functions
 
 		if (file_exists ($direct_settings['path_data']."/settings/swg_db.php"))
 		{
-			$direct_classes['basic_functions']->settings_get ($direct_settings['path_data']."/settings/swg_db.php");
+			$direct_globals['basic_functions']->settings_get ($direct_settings['path_data']."/settings/swg_db.php");
 
 			$this->db_driver_name = ((isset ($direct_settings['db_driver'])) ? $direct_settings['db_driver'] : "mysql");
 			if (!isset ($direct_settings['db_dbprefix'])) { $direct_settings['db_dbprefix'] = "swg_"; }
@@ -207,7 +207,7 @@ Informing the system about available functions
 			elseif (!isset ($direct_settings['db_peristent'])) { $direct_settings['db_peristent'] = $f_peristent; }
 			else { $direct_settings['db_peristent'] = false; }
 
-			if ($direct_classes['basic_functions']->include_file ($direct_settings['path_system']."/classes/swg_dbraw_".$this->db_driver_name.".php",1))
+			if ($direct_globals['basic_functions']->include_file ($direct_settings['path_system']."/classes/swg_dbraw_".$this->db_driver_name.".php",1))
 			{
 				$f_dbraw_class = "direct_dbraw_".$this->db_driver_name;
 				if (class_exists ($f_dbraw_class,/*#ifndef(PHP4) */false/* #*/)) { $this->db_driver = new $f_dbraw_class (); }
@@ -248,15 +248,15 @@ Connect to the database abstraction layer
 Set up some variables
 ------------------------------------------------------------------------- */
 
-		$this->query_attributes = "";
+		$this->query_attributes = array ("*");
 		$this->query_element = 0;
-		$this->query_grouping = "";
+		$this->query_grouping = array ();
 		$this->query_joins = array ();
 		$this->query_limit = 0;
 		$this->query_offset = 0;
 		$this->query_ordering = "";
 		$this->query_row_conditions = "";
-		$this->query_search_conditions = array ();
+		$this->query_search_conditions = "";
 		$this->query_set_attributes = array ();
 		$this->query_table = "";
 		$this->query_type = "";
@@ -328,7 +328,7 @@ Set up some variables
 		else { return /*#ifdef(DEBUG):direct_debug (7,"sWG/#echo(__FILEPATH__)# -direct_db->define_grouping ()- (#echo(__LINE__)#)",:#*/false/*#ifdef(DEBUG):,true):#*/; }
 	}
 
-	//f// direct_db->define_join ($f_requirements)
+	//f// direct_db->define_join ($f_type,$f_table,$f_requirements)
 /**
 	* Defines the SQL JOIN clause. (Only supported for SQL SELECT)
 	*
@@ -343,18 +343,13 @@ Set up some variables
 	/*#ifndef(PHP4) */public /* #*/function define_join ($f_type,$f_table,$f_requirements)
 	{
 		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -db_class->define_join ($f_type,$f_table,+f_requirements)- (#echo(__LINE__)#)"); }
-		$f_return = false;
 
-		if ($this->query_type == "select")
+		if (($this->query_type == "select")&&((is_string ($f_requirements))||($f_type == "cross-join")))
 		{
-			if ((is_string ($f_requirements))||($f_type == "cross-join"))
-			{
-				$this->query_joins[] = array ("type" => $f_type,"table" => $f_table,"requirements" => $f_requirements);
-				$f_return = true;
-			}
+			$this->query_joins[] = array ("type" => $f_type,"table" => $f_table,"requirements" => $f_requirements);
+			return /*#ifdef(DEBUG):direct_debug (7,"sWG/#echo(__FILEPATH__)# -direct_db->define_join ()- (#echo(__LINE__)#)",:#*/true/*#ifdef(DEBUG):,true):#*/;
 		}
-
-		return /*#ifdef(DEBUG):direct_debug (7,"sWG/#echo(__FILEPATH__)# -direct_db->define_join ()- (#echo(__LINE__)#)",:#*/$f_return/*#ifdef(DEBUG):,true):#*/;
+		else { return /*#ifdef(DEBUG):direct_debug (7,"sWG/#echo(__FILEPATH__)# -direct_db->define_join ()- (#echo(__LINE__)#)",:#*/false/*#ifdef(DEBUG):,true):#*/; }
 	}
 
 	//f// direct_db->define_limit ($f_limit)
@@ -414,18 +409,13 @@ Set up some variables
 	/*#ifndef(PHP4) */public /* #*/function define_ordering ($f_ordering_list)
 	{
 		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -db_class->define_ordering (+f_ordering_list)- (#echo(__LINE__)#)"); }
-		$f_return = false;
 
-		if ($this->query_type == "select")
+		if (($this->query_type == "select")&&(is_string ($f_ordering_list)))
 		{
-			if (is_string ($f_ordering_list))
-			{
-				$this->query_ordering = $f_ordering_list;
-				$f_return = true;
-			}
+			$this->query_ordering = $f_ordering_list;
+			return /*#ifdef(DEBUG):direct_debug (7,"sWG/#echo(__FILEPATH__)# -direct_db->define_ordering ()- (#echo(__LINE__)#)",:#*/true/*#ifdef(DEBUG):,true):#*/;
 		}
-
-		return /*#ifdef(DEBUG):direct_debug (7,"sWG/#echo(__FILEPATH__)# -direct_db->define_ordering ()- (#echo(__LINE__)#)",:#*/$f_return/*#ifdef(DEBUG):,true):#*/;
+		else { return /*#ifdef(DEBUG):direct_debug (7,"sWG/#echo(__FILEPATH__)# -direct_db->define_ordering ()- (#echo(__LINE__)#)",:#*/false/*#ifdef(DEBUG):,true):#*/; }
 	}
 
 	//f// direct_db->define_row_conditions ($f_requirements)
@@ -441,18 +431,13 @@ Set up some variables
 	/*#ifndef(PHP4) */public /* #*/function define_row_conditions ($f_requirements)
 	{
 		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -db_class->define_row_conditions (+f_requirements)- (#echo(__LINE__)#)"); }
-		$f_return = false;
 
-		if (($this->query_type == "delete")||($this->query_type == "select")||($this->query_type == "update"))
+		if ((($this->query_type == "delete")||($this->query_type == "select")||($this->query_type == "update"))&&(is_string ($f_requirements)))
 		{
-			if (is_string ($f_requirements))
-			{
-				$this->query_row_conditions = $f_requirements;
-				$f_return = true;
-			}
+			$this->query_row_conditions = $f_requirements;
+			return /*#ifdef(DEBUG):direct_debug (7,"sWG/#echo(__FILEPATH__)# -direct_db->define_row_conditions ()- (#echo(__LINE__)#)",:#*/true/*#ifdef(DEBUG):,true):#*/;
 		}
-
-		return /*#ifdef(DEBUG):direct_debug (7,"sWG/#echo(__FILEPATH__)# -direct_db->define_row_conditions ()- (#echo(__LINE__)#)",:#*/$f_return/*#ifdef(DEBUG):,true):#*/;
+		else { return /*#ifdef(DEBUG):direct_debug (7,"sWG/#echo(__FILEPATH__)# -direct_db->define_row_conditions ()- (#echo(__LINE__)#)",:#*/false/*#ifdef(DEBUG):,true):#*/; }
 	}
 
 	//f// direct_db->define_row_conditions_encode ($f_attribute,$f_value,$f_type,$f_logical_operator = "==",$f_condition_mode = "and")
@@ -474,12 +459,12 @@ Set up some variables
 */
 	/*#ifndef(PHP4) */public /* #*/function define_row_conditions_encode ($f_attribute,$f_value,$f_type,$f_logical_operator = "==",$f_condition_mode = "and")
 	{
-		global $direct_classes,$direct_settings;
+		global $direct_globals,$direct_settings;
 		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -db_class->define_row_conditions_encode ($f_attribute,$f_value,$f_type,$f_logical_operator,$f_condition_mode)- (#echo(__LINE__)#)"); }
 
-		$f_return = "";
+		$f_return = false;
 
-		if (isset ($direct_classes['xml_bridge']))
+		if (isset ($direct_globals['xml_bridge']))
 		{
 			switch ($f_type)
 			{
@@ -490,9 +475,7 @@ Set up some variables
 			}
 			case "number":
 			{
-				preg_match ("#^(-|)(\d+)$#i",$f_value,$f_result_array);
-				if (!empty ($f_result_array)) { $f_value = $f_result_array[0]; }
-
+				$f_value = ((is_numeric ($f_value)) ? (float)$f_value : NULL);
 				break 1;
 			}
 			case "sublevel": { break 1; }
@@ -528,7 +511,7 @@ $f_xml_node_array = array (
 			else { $f_xml_node_array['value'] = $f_value; }
 
 			$this->query_element++;
-			$f_return = $direct_classes['xml_bridge']->array2xml_item_encoder ($f_xml_node_array,true,false);
+			$f_return = $direct_globals['xml_bridge']->array2xml_item_encoder ($f_xml_node_array,true,false);
 		}
 
 		return /*#ifdef(DEBUG):direct_debug (7,"sWG/#echo(__FILEPATH__)# -direct_db->define_row_conditions_encode ()- (#echo(__LINE__)#)",:#*/$f_return/*#ifdef(DEBUG):,true):#*/;
@@ -547,18 +530,13 @@ $f_xml_node_array = array (
 	/*#ifndef(PHP4) */public /* #*/function define_search_conditions ($f_conditions)
 	{
 		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -db_class->define_search_conditions (+f_conditions)- (#echo(__LINE__)#)"); }
-		$f_return = false;
 
-		if ($this->query_type == "select")
+		if (($this->query_type == "select")&&(is_string ($f_conditions)))
 		{
-			if (is_string ($f_conditions))
-			{
-				$this->query_search_conditions = $f_conditions;
-				$f_return = true;
-			}
+			$this->query_search_conditions = $f_conditions;
+			return /*#ifdef(DEBUG):direct_debug (7,"sWG/#echo(__FILEPATH__)# -direct_db->define_search_conditions ()- (#echo(__LINE__)#)",:#*/true/*#ifdef(DEBUG):,true):#*/;
 		}
-
-		return /*#ifdef(DEBUG):direct_debug (7,"sWG/#echo(__FILEPATH__)# -direct_db->define_search_conditions ()- (#echo(__LINE__)#)",:#*/$f_return/*#ifdef(DEBUG):,true):#*/;
+		else { return /*#ifdef(DEBUG):direct_debug (7,"sWG/#echo(__FILEPATH__)# -direct_db->define_search_conditions ()- (#echo(__LINE__)#)",:#*/false/*#ifdef(DEBUG):,true):#*/; }
 	}
 
 	//f// direct_db->define_search_conditions_term ($f_term)
@@ -575,21 +553,10 @@ $f_xml_node_array = array (
 */
 	/*#ifndef(PHP4) */public /* #*/function define_search_conditions_term ($f_term)
 	{
-		global $direct_classes;
+		global $direct_globals;
 		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -db_class->define_search_conditions_term (+f_term)- (#echo(__LINE__)#)"); }
 
-		$f_return = "";
-
-		if (isset ($direct_classes['xml_bridge']))
-		{
-$f_xml_node_array = array (
-"tag" => "searchterm",
-"value" => $f_term
-);
-
-			$f_return = $direct_classes['xml_bridge']->array2xml_item_encoder ($f_xml_node_array,true,false);
-		}
-
+		$f_return = ((isset ($direct_globals['xml_bridge'])) ? $direct_globals['xml_bridge']->array2xml_item_encoder (array ("tag" => "searchterm","value" => $f_term),true,false) : false);
 		return /*#ifdef(DEBUG):direct_debug (7,"sWG/#echo(__FILEPATH__)# -direct_db->define_search_conditions_term ()- (#echo(__LINE__)#)",:#*/$f_return/*#ifdef(DEBUG):,true):#*/;
 	}
 
@@ -608,21 +575,15 @@ $f_xml_node_array = array (
 		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -db_class->define_set_attributes (+f_attribute_list)- (#echo(__LINE__)#)"); }
 
 		$f_continue_check = true;
-		$f_return = false;
-
 		if (($this->query_type != "insert")&&($this->query_type != "replace")&&($this->query_type != "update")) { $f_continue_check = false; }
 		if (!empty ($this->query_values)) { $f_continue_check = false; }
 
-		if ($f_continue_check)
+		if (($f_continue_check)&&(is_string ($f_attribute_list)))
 		{
-			if (is_string ($f_attribute_list))
-			{
-				$this->query_set_attributes = $f_attribute_list;
-				$f_return = true;
-			}
+			$this->query_set_attributes = $f_attribute_list;
+			return /*#ifdef(DEBUG):direct_debug (7,"sWG/#echo(__FILEPATH__)# -direct_db->define_set_attributes ()- (#echo(__LINE__)#)",:#*/true/*#ifdef(DEBUG):,true):#*/;
 		}
-
-		return /*#ifdef(DEBUG):direct_debug (7,"sWG/#echo(__FILEPATH__)# -direct_db->define_set_attributes ()- (#echo(__LINE__)#)",:#*/$f_return/*#ifdef(DEBUG):,true):#*/;
+		else { return /*#ifdef(DEBUG):direct_debug (7,"sWG/#echo(__FILEPATH__)# -direct_db->define_set_attributes ()- (#echo(__LINE__)#)",:#*/false/*#ifdef(DEBUG):,true):#*/; }
 	}
 
 	//f// direct_db->define_set_attributes_encode ($f_attribute,$f_value,$f_type)
@@ -642,12 +603,12 @@ $f_xml_node_array = array (
 */
 	/*#ifndef(PHP4) */public /* #*/function define_set_attributes_encode ($f_attribute,$f_value,$f_type)
 	{
-		global $direct_classes,$direct_settings;
+		global $direct_globals,$direct_settings;
 		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -db_class->define_set_attributes_encode ($f_attribute,$f_value,$f_type)- (#echo(__LINE__)#)"); }
 
-		$f_return = "";
+		$f_return = False;
 
-		if (isset ($direct_classes['xml_bridge']))
+		if (isset ($direct_globals['xml_bridge']))
 		{
 			switch ($f_type)
 			{
@@ -658,9 +619,7 @@ $f_xml_node_array = array (
 			}
 			case "number":
 			{
-				preg_match ("#^(-|)(\d+)$#i",$f_value,$f_result_array);
-				if (!empty ($f_result_array)) { $f_value = $f_result_array[0]; }
-
+				$f_value = ((is_numeric ($f_value)) ? (float)$f_value : NULL);
 				break 1;
 			}
 			default:
@@ -683,7 +642,7 @@ $f_xml_node_array = array (
 			else { $f_xml_node_array['value'] = $f_value; }
 
 			$this->query_element++;
-			$f_return = $direct_classes['xml_bridge']->array2xml_item_encoder ($f_xml_node_array,true,false);
+			$f_return = $direct_globals['xml_bridge']->array2xml_item_encoder ($f_xml_node_array,true,false);
 		}
 
 		return /*#ifdef(DEBUG):direct_debug (7,"sWG/#echo(__FILEPATH__)# -direct_db->define_set_attributes_encode ()- (#echo(__LINE__)#)",:#*/$f_return/*#ifdef(DEBUG):,true):#*/;
@@ -703,22 +662,16 @@ $f_xml_node_array = array (
 	{
 		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -db_class->define_values (+f_values)- (#echo(__LINE__)#)"); }
 
-		$f_return = false;
 		$f_continue_check = true;
-
 		if (($this->query_type != "insert")&&($this->query_type != "replace")) { $f_continue_check = false; }
 		if (!empty ($this->query_set_attributes)) { $f_continue_check = false; }
 
-		if ($f_continue_check)
+		if (($f_continue_check)&&(is_string ($f_values)))
 		{
-			if (is_string ($f_values))
-			{
-				$this->query_values = $f_values;
-				$f_return = true;
-			}
+			$this->query_values = $f_values;
+			return /*#ifdef(DEBUG):direct_debug (7,"sWG/#echo(__FILEPATH__)# -direct_db->define_values ()- (#echo(__LINE__)#)",:#*/true/*#ifdef(DEBUG):,true):#*/;
 		}
-
-		return /*#ifdef(DEBUG):direct_debug (7,"sWG/#echo(__FILEPATH__)# -direct_db->define_values ()- (#echo(__LINE__)#)",:#*/$f_return/*#ifdef(DEBUG):,true):#*/;
+		else { return /*#ifdef(DEBUG):direct_debug (7,"sWG/#echo(__FILEPATH__)# -direct_db->define_values ()- (#echo(__LINE__)#)",:#*/false/*#ifdef(DEBUG):,true):#*/; }
 	}
 
 	//f// direct_db->define_values_encode ($f_value,$f_type)
@@ -737,12 +690,12 @@ $f_xml_node_array = array (
 */
 	/*#ifndef(PHP4) */public /* #*/function define_values_encode ($f_value,$f_type)
 	{
-		global $direct_classes,$direct_settings;
+		global $direct_globals,$direct_settings;
 		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -db_class->define_values_encode ($f_value,$f_type)- (#echo(__LINE__)#)"); }
 
-		$f_return = "";
+		$f_return = false;
 
-		if (isset ($direct_classes['xml_bridge']))
+		if (isset ($direct_globals['xml_bridge']))
 		{
 			switch ($f_type)
 			{
@@ -753,9 +706,7 @@ $f_xml_node_array = array (
 			}
 			case "number":
 			{
-				preg_match ("#^(-|)(\d+)$#i",$f_value,$f_result_array);
-				if (!empty ($f_result_array)) { $f_value = $f_result_array[0]; }
-
+				$f_value = ((is_numeric ($f_value)) ? (float)$f_value : NULL);
 				break 1;
 			}
 			case "newrow": { break 1; }
@@ -779,7 +730,7 @@ $f_xml_node_array = array (
 			else { $f_xml_node_array['value'] = $f_value; }
 
 			$this->query_element++;
-			$f_return = $direct_classes['xml_bridge']->array2xml_item_encoder ($f_xml_node_array,true,false);
+			$f_return = $direct_globals['xml_bridge']->array2xml_item_encoder ($f_xml_node_array,true,false);
 		}
 
 		return /*#ifdef(DEBUG):direct_debug (7,"sWG/#echo(__FILEPATH__)# -direct_db->define_values_encode ()- (#echo(__LINE__)#)",:#*/$f_return/*#ifdef(DEBUG):,true):#*/;
@@ -800,16 +751,12 @@ $f_xml_node_array = array (
 		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -db_class->define_values_keys (+f_keys_list)- (#echo(__LINE__)#)"); }
 		$f_return = false;
 
-		if (($this->query_type == "insert")||($this->query_type == "replace"))
+		if ((($this->query_type == "insert")||($this->query_type == "replace"))&&(is_array ($f_keys_list)))
 		{
-			if (is_array ($f_keys_list))
-			{
-				$this->query_values_keys = $f_keys_list;
-				$f_return = true;
-			}
+			$this->query_values_keys = $f_keys_list;
+			return /*#ifdef(DEBUG):direct_debug (7,"sWG/#echo(__FILEPATH__)# -direct_db->define_values_keys ()- (#echo(__LINE__)#)",:#*/true/*#ifdef(DEBUG):,true):#*/;
 		}
-
-		return /*#ifdef(DEBUG):direct_debug (7,"sWG/#echo(__FILEPATH__)# -direct_db->define_values_keys ()- (#echo(__LINE__)#)",:#*/$f_return/*#ifdef(DEBUG):,true):#*/;
+		else { return /*#ifdef(DEBUG):direct_debug (7,"sWG/#echo(__FILEPATH__)# -direct_db->define_values_keys ()- (#echo(__LINE__)#)",:#*/false/*#ifdef(DEBUG):,true):#*/; }
 	}
 
 	//f// direct_db->init_delete ($f_table)
@@ -825,20 +772,20 @@ $f_xml_node_array = array (
 */
 	/*#ifndef(PHP4) */public /* #*/function init_delete ($f_table)
 	{
-		global $direct_classes;
+		global $direct_globals;
 		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -db_class->init_delete ($f_table)- (#echo(__LINE__)#)"); }
 
-		if ((direct_class_function_check ($direct_classes['db'],"v_query_build"))&&(!$this->query_type))
+		if ((direct_class_function_check ($direct_globals['db'],"v_query_build"))&&(!$this->query_type))
 		{
 			$this->data = "";
 			$this->query_attributes = array ("*");
-			$this->query_grouping = "";
+			$this->query_grouping = array ();
 			$this->query_joins = array ();
 			$this->query_limit = 0;
 			$this->query_offset = 0;
 			$this->query_ordering = "";
 			$this->query_row_conditions = "";
-			$this->query_search_conditions = array ();
+			$this->query_search_conditions = "";
 			$this->query_set_attributes = array ();
 			$this->query_table = $f_table;
 			$this->query_type = "delete";
@@ -863,20 +810,20 @@ $f_xml_node_array = array (
 */
 	/*#ifndef(PHP4) */public /* #*/function init_insert ($f_table)
 	{
-		global $direct_classes;
+		global $direct_globals;
 		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -db_class->init_insert ($f_table)- (#echo(__LINE__)#)"); }
 
-		if ((direct_class_function_check ($direct_classes['db'],"v_query_build"))&&(!$this->query_type))
+		if ((direct_class_function_check ($direct_globals['db'],"v_query_build"))&&(!$this->query_type))
 		{
 			$this->data = "";
 			$this->query_attributes = array ("*");
-			$this->query_grouping = "";
+			$this->query_grouping = array ();
 			$this->query_joins = array ();
 			$this->query_limit = 0;
 			$this->query_offset = 0;
 			$this->query_ordering = "";
 			$this->query_row_conditions = "";
-			$this->query_search_conditions = array ();
+			$this->query_search_conditions = "";
 			$this->query_set_attributes = array ();
 			$this->query_table = $f_table;
 			$this->query_type = "insert";
@@ -901,20 +848,20 @@ $f_xml_node_array = array (
 */
 	/*#ifndef(PHP4) */public /* #*/function init_replace ($f_table)
 	{
-		global $direct_classes;
+		global $direct_globals;
 		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -db_class->init_replace ($f_table)- (#echo(__LINE__)#)"); }
 
-		if ((direct_class_function_check ($direct_classes['db'],"v_query_build"))&&(!$this->query_type))
+		if ((direct_class_function_check ($direct_globals['db'],"v_query_build"))&&(!$this->query_type))
 		{
 			$this->data = "";
 			$this->query_attributes = array ("*");
-			$this->query_grouping = "";
+			$this->query_grouping = array ();
 			$this->query_joins = array ();
 			$this->query_limit = 0;
 			$this->query_offset = 0;
 			$this->query_ordering = "";
 			$this->query_row_conditions = "";
-			$this->query_search_conditions = array ();
+			$this->query_search_conditions = "";
 			$this->query_set_attributes = array ();
 			$this->query_table = $f_table;
 			$this->query_type = "replace";
@@ -939,20 +886,20 @@ $f_xml_node_array = array (
 */
 	/*#ifndef(PHP4) */public /* #*/function init_select ($f_table)
 	{
-		global $direct_classes;
+		global $direct_globals;
 		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -db_class->init_select ($f_table)- (#echo(__LINE__)#)"); }
 
-		if ((direct_class_function_check ($direct_classes['db'],"v_query_build"))&&(!$this->query_type))
+		if ((direct_class_function_check ($direct_globals['db'],"v_query_build"))&&(!$this->query_type))
 		{
 			$this->data = "";
 			$this->query_attributes = array ("*");
-			$this->query_grouping = "";
+			$this->query_grouping = array ();
 			$this->query_joins = array ();
 			$this->query_limit = 0;
 			$this->query_offset = 0;
 			$this->query_ordering = "";
 			$this->query_row_conditions = "";
-			$this->query_search_conditions = array ();
+			$this->query_search_conditions = "";
 			$this->query_set_attributes = array ();
 			$this->query_table = $f_table;
 			$this->query_type = "select";
@@ -977,20 +924,20 @@ $f_xml_node_array = array (
 */
 	/*#ifndef(PHP4) */public /* #*/function init_update ($f_table)
 	{
-		global $direct_classes;
+		global $direct_globals;
 		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -db_class->init_update ($f_table)- (#echo(__LINE__)#)"); }
 
-		if ((direct_class_function_check ($direct_classes['db'],"v_query_build"))&&(!$this->query_type))
+		if ((direct_class_function_check ($direct_globals['db'],"v_query_build"))&&(!$this->query_type))
 		{
 			$this->data = "";
 			$this->query_attributes = array ("*");
-			$this->query_grouping = "";
+			$this->query_grouping = array ();
 			$this->query_joins = array ();
 			$this->query_limit = 0;
 			$this->query_offset = 0;
 			$this->query_ordering = "";
 			$this->query_row_conditions = "";
-			$this->query_search_conditions = array ();
+			$this->query_search_conditions = "";
 			$this->query_set_attributes = array ();
 			$this->query_table = $f_table;
 			$this->query_type = "update";
@@ -1017,7 +964,7 @@ $f_xml_node_array = array (
 	{
 		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -db_class->optimize_random ($f_table)- (#echo(__LINE__)#)"); }
 
-		if ((mt_rand (0,30)) > 20) { return /*#ifdef(DEBUG):direct_debug (7,"sWG/#echo(__FILEPATH__)# -direct_db->optimize_random ()- (#echo(__LINE__)#)",(:#*/$this->v_optimize ($f_table)/*#ifdef(DEBUG):),true):#*/; }
+		if (mt_rand (0,30) > 20) { return /*#ifdef(DEBUG):direct_debug (7,"sWG/#echo(__FILEPATH__)# -direct_db->optimize_random ()- (#echo(__LINE__)#)",(:#*/$this->v_optimize ($f_table)/*#ifdef(DEBUG):),true):#*/; }
 		else { return /*#ifdef(DEBUG):direct_debug (7,"sWG/#echo(__FILEPATH__)# -direct_db->optimize_random ()- (#echo(__LINE__)#)",:#*/true/*#ifdef(DEBUG):,true):#*/; }
 	}
 
@@ -1027,8 +974,8 @@ $f_xml_node_array = array (
 	* developer specified format via $f_answer.
 	*
 	* @param  string $f_answer Defines the requested type that should be returned
-    *         The following types are supported: "ar", "co", "ma", "ms", "nr",
-    *         "sa" or "ss".
+	*         The following types are supported: "ar", "co", "ma", "ms", "nr",
+	*         "sa" or "ss".
 	* @uses   direct_class_function_check()
 	* @uses   direct_dbraw_*::query_build()
 	* @uses   direct_debug()
@@ -1038,39 +985,39 @@ $f_xml_node_array = array (
 */
 	/*#ifndef(PHP4) */public /* #*/function query_exec ($f_answer = "sa")
 	{
-		global $direct_classes;
+		global $direct_globals;
 		if (USE_debug_reporting) { direct_debug (8,"sWG/#echo(__FILEPATH__)# -db_class->query_exec ($f_answer)- (#echo(__LINE__)#)"); }
 
 		$f_return = false;
 
-		if (direct_class_function_check ($direct_classes['db'],"v_query_build"))
+		if (direct_class_function_check ($direct_globals['db'],"v_query_build"))
 		{
 			$f_data = array ();
 			$f_data['answer'] = $f_answer;
 
 			$f_data['attributes'] = $this->query_attributes;
-			$this->query_attributes = "";
+			$this->query_attributes = array ("*");
 
 			$f_data['grouping'] = $this->query_grouping;
-			$this->query_grouping = "";
-
-			$f_data['limit'] = $this->query_limit;
-			$this->query_limit = "";
-
-			$f_data['offset'] = $this->query_offset;
-			$this->query_offset = "";
-
-			$f_data['ordering'] = $this->query_ordering;
-			$this->query_ordering = "";
+			$this->query_grouping = array ();
 
 			$f_data['joins'] = $this->query_joins;
 			$this->query_joins = array ();
+
+			$f_data['limit'] = $this->query_limit;
+			$this->query_limit = 0;
+
+			$f_data['offset'] = $this->query_offset;
+			$this->query_offset = 0;
+
+			$f_data['ordering'] = $this->query_ordering;
+			$this->query_ordering = "";
 
 			$f_data['row_conditions'] = $this->query_row_conditions;
 			$this->query_row_conditions = "";
 
 			$f_data['search_conditions'] = $this->query_search_conditions;
-			$this->query_search_conditions = array ();
+			$this->query_search_conditions = "";
 
 			$f_data['set_attributes'] = $this->query_set_attributes;
 			$this->query_set_attributes = array ();
@@ -1175,8 +1122,8 @@ $f_xml_node_array = array (
 	* format via $f_answer.
 	*
 	* @param  string $f_answer Defines the requested type that should be returned
-    *         The following types are supported: "ar", "co", "ma", "ms", "nr",
-    *         "sa" or "ss".
+	*         The following types are supported: "ar", "co", "ma", "ms", "nr",
+	*         "sa" or "ss".
 	* @param  string $f_query Valid SQL query
 	* @uses   direct_debug()
 	* @uses   direct_virtual_class::v_call_get()
@@ -1217,6 +1164,7 @@ $f_xml_node_array = array (
 	* @uses   direct_debug()
 	* @uses   direct_virtual_class::v_call_get()
 	* @uses   USE_debug_reporting
+	* @return boolean True on success
 	* @since  v0.1.00
 */
 	/*#ifndef(PHP4) */public /* #*/function v_transaction_begin ()
@@ -1234,6 +1182,7 @@ $f_xml_node_array = array (
 	* @uses   direct_debug()
 	* @uses   direct_virtual_class::v_call_get()
 	* @uses   USE_debug_reporting
+	* @return boolean True on success
 	* @since  v0.1.00
 */
 	/*#ifndef(PHP4) */public /* #*/function v_transaction_commit ()
@@ -1251,6 +1200,7 @@ $f_xml_node_array = array (
 	* @uses   direct_debug()
 	* @uses   direct_virtual_class::v_call_get()
 	* @uses   USE_debug_reporting
+	* @return boolean True on success
 	* @since  v0.1.00
 */
 	/*#ifndef(PHP4) */public /* #*/function v_transaction_rollback ()
@@ -1266,7 +1216,7 @@ $f_xml_node_array = array (
 Mark this class as the most up-to-date one
 ------------------------------------------------------------------------- */
 
-$direct_classes['@names']['db'] = "direct_db";
+$direct_globals['@names']['db'] = "direct_db";
 define ("CLASS_direct_db",true);
 }
 

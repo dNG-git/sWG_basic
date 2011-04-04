@@ -61,18 +61,18 @@ all development packets)
 */
 function direct_output_block_htmsblock ($f_options)
 {
-	global $direct_classes,$direct_settings;
+	global $direct_globals,$direct_settings;
 	if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -direct_output_block_htmsblock (+f_options)- (#echo(__LINE__)#)"); }
 
-	$f_continue_check = $direct_classes['basic_functions']->include_file ($direct_settings['path_system']."/classes/swg_formtags.php");
-	if (($f_continue_check)&&(!isset ($direct_classes['formtags']))) { $f_continue_check = direct_class_init ("formtags"); }
+	$f_continue_check = $direct_globals['basic_functions']->include_file ($direct_settings['path_system']."/classes/swg_formtags.php");
+	if (($f_continue_check)&&(!isset ($direct_globals['formtags']))) { $f_continue_check = direct_class_init ("formtags"); }
 	$f_return = "";
 
 	if ($f_continue_check)
 	{
-		if (file_exists ($direct_settings['path_data']."/settings/swg_{$f_options[0]}.htmsblock.$direct_settings[lang].php")) { $f_return = $direct_classes['formtags']->decode (direct_file_get ("s",$direct_settings['path_data']."/settings/swg_{$f_options[0]}.htmsblock.$direct_settings[lang].php")); }
-		elseif (file_exists ($direct_settings['path_data']."/settings/swg_{$f_options[0]}.htmsblock.$direct_settings[swg_lang].php")) { $f_return = $direct_classes['formtags']->decode (direct_file_get ("s",$direct_settings['path_data']."/settings/swg_{$f_options[0]}.htmsblock.$direct_settings[swg_lang].php")); }
-		elseif (file_exists ($direct_settings['path_data']."/settings/swg_{$f_options[0]}.htmsblock.php")) { $f_return = $direct_classes['formtags']->decode (direct_file_get ("s",$direct_settings['path_data']."/settings/swg_{$f_options[0]}.htmsblock.php")); }
+		if (file_exists ($direct_settings['path_data']."/settings/swg_{$f_options[0]}.htmsblock.$direct_settings[lang].php")) { $f_return = $direct_globals['formtags']->decode (direct_file_get ("s",$direct_settings['path_data']."/settings/swg_{$f_options[0]}.htmsblock.$direct_settings[lang].php")); }
+		elseif (file_exists ($direct_settings['path_data']."/settings/swg_{$f_options[0]}.htmsblock.$direct_settings[swg_lang].php")) { $f_return = $direct_globals['formtags']->decode (direct_file_get ("s",$direct_settings['path_data']."/settings/swg_{$f_options[0]}.htmsblock.$direct_settings[swg_lang].php")); }
+		elseif (file_exists ($direct_settings['path_data']."/settings/swg_{$f_options[0]}.htmsblock.php")) { $f_return = $direct_globals['formtags']->decode (direct_file_get ("s",$direct_settings['path_data']."/settings/swg_{$f_options[0]}.htmsblock.php")); }
 	}
 
 	return /*#ifdef(DEBUG):direct_debug (7,"sWG/#echo(__FILEPATH__)# -direct_output_block_htmsblock ()- (#echo(__LINE__)#)",:#*/$f_return/*#ifdef(DEBUG):,true):#*/;

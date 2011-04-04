@@ -65,35 +65,36 @@ case "services":
 {
 	if (USE_debug_reporting) { direct_debug (1,"sWG/#echo(__FILEPATH__)# _a=services_ (#echo(__LINE__)#)"); }
 
-	$direct_cachedata['output_page'] = (isset ($direct_settings['dsd']['page']) ? ($direct_classes['basic_functions']->inputfilter_number ($direct_settings['dsd']['page'])) : 1);
+	$direct_cachedata['output_page'] = (isset ($direct_settings['dsd']['page']) ? ($direct_globals['basic_functions']->inputfilter_number ($direct_settings['dsd']['page'])) : 1);
 
-	$direct_cachedata['page_this'] = "m=cp&a=services&dsd=page+".$direct_cachedata['output_page'];
+	$direct_cachedata['page_this'] = "m=cp;a=services;dsd=page+".$direct_cachedata['output_page'];
 	$direct_cachedata['page_backlink'] = "";
 	$direct_cachedata['page_homelink'] = "";
 
-	if ($direct_classes['kernel']->service_init_default ())
+	if ($direct_globals['kernel']->service_init_default ())
 	{
 	//j// BOA
-	direct_output_related_manager ("cp_index_services","pre_module_service_action");
-	$direct_classes['kernel']->service_https ($direct_settings['cp_https'],$direct_cachedata['page_this']);
-	$direct_classes['basic_functions']->require_file ($direct_settings['path_system']."/classes/swg_formtags.php");
-	$direct_classes['basic_functions']->require_file ($direct_settings['path_system']."/functions/swg_service_list.php");
-	$direct_classes['basic_functions']->require_file ($direct_settings['path_system']."/functions/swg_tmp_storager.php");
+	$direct_globals['output']->related_manager ("cp_index_services","pre_module_service_action");
+	$direct_globals['kernel']->service_https ($direct_settings['cp_https'],$direct_cachedata['page_this']);
+	$direct_globals['basic_functions']->require_file ($direct_settings['path_system']."/classes/swg_formtags.php");
+	$direct_globals['basic_functions']->require_file ($direct_settings['path_system']."/functions/swg_service_list.php");
+	$direct_globals['basic_functions']->require_file ($direct_settings['path_system']."/functions/swg_tmp_storager.php");
 	direct_local_integration ("cp_core");
 
 	direct_class_init ("formtags");
-	direct_class_init ("output");
+
+	$g_uuid = $direct_globals['input']->uuid_get ();
 
 	$direct_cachedata['output_filter_fid'] = "cp_services";
 	$direct_cachedata['output_filter_source'] = urlencode (base64_encode ($direct_cachedata['page_this']));
 	$direct_cachedata['output_filter_text'] = "";
-	$direct_cachedata['output_filter_tid'] = (($direct_settings['user']['type'] == "gt") ? "" : $direct_settings['uuid']);
+	$direct_cachedata['output_filter_tid'] = (($direct_settings['user']['type'] == "gt") ? "" : $g_uuid);
 
-	$g_task_array = direct_tmp_storage_get ("evars",$direct_settings['uuid'],"","task_cache");
+	$g_task_array = direct_tmp_storage_get ("evars",$g_uuid,"","task_cache");
 
-	if (($g_task_array)&&(isset ($g_task_array['core_filter_cp_services']))&&($g_task_array['uuid'] == $direct_settings['uuid']))
+	if (($g_task_array)&&(isset ($g_task_array['core_filter_cp_services']))&&($g_task_array['uuid'] == $g_uuid))
 	{
-		$direct_cachedata['output_filter_text'] = $direct_classes['formtags']->decode ($g_task_array['core_filter_cp_services']);
+		$direct_cachedata['output_filter_text'] = $direct_globals['formtags']->decode ($g_task_array['core_filter_cp_services']);
 		$g_services_array = direct_service_list_search ("cp",$direct_cachedata['output_filter_text'],"title-desc_preg",$direct_cachedata['output_page']);
 	}
 	else { $g_services_array = direct_service_list ("cp",$direct_cachedata['output_page']); }
@@ -101,15 +102,14 @@ case "services":
 	$direct_cachedata['output_services'] = $g_services_array['list'];
 
 	$direct_cachedata['output_page'] = $g_services_array['data']['page'];
-	$direct_cachedata['output_page_url'] = "m=cp&a=services&dsd=";
+	$direct_cachedata['output_page_url'] = "m=cp;a=services;dsd=";
 	$direct_cachedata['output_pages'] = $g_services_array['data']['pages'];
 	$direct_cachedata['output_services_title'] = direct_local_get ("cp_core_service_list");
 
-	direct_output_related_manager ("cp_index_services","post_module_service_action");
-	$direct_classes['output']->oset ("default","service_list");
-	$direct_classes['output']->header (false,true,$direct_settings['p3p_url'],$direct_settings['p3p_cp']);
-	$direct_classes['output']->header_elements ("<script language='JavaScript' src='".(direct_linker_dynamic ("url0","s=cache&dsd=dfile+$direct_settings[path_mmedia]/swg_formbuilder.php.js++dbid+".$direct_settings['product_buildid'],true,false))."' type='text/javascript'><!-- // FormBuilder javascript functions // --></script>");
-	$direct_classes['output']->page_show (direct_local_get ("cp_core_control_panel"));
+	$direct_globals['output']->header (false,true,$direct_settings['p3p_url'],$direct_settings['p3p_cp']);
+	$direct_globals['output']->related_manager ("cp_index_services","post_module_service_action");
+	$direct_globals['output']->oset ("default","service_list");
+	$direct_globals['output']->output_send (direct_local_get ("cp_core_control_panel"));
 	//j// EOA
 	}
 

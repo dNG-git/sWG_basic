@@ -57,7 +57,7 @@ all development packets)
 */
 function direct_oset_mods_include ($f_modname,$f_modlist)
 {
-	global $direct_classes,$direct_settings;
+	global $direct_globals,$direct_settings;
 	if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -direct_oset_mods_include ($f_modname,+f_modlist)- (#echo(__LINE__)#)"); }
 
 	$f_return = "";
@@ -68,7 +68,7 @@ function direct_oset_mods_include ($f_modname,$f_modlist)
 		{
 			if (file_exists ($direct_settings['path_system']."/osets/$direct_settings[theme_oset]/mods/$f_modname/swgi_$f_mod.php"))
 			{
-				$direct_classes['basic_functions']->include_file ($direct_settings['path_system']."/osets/$direct_settings[theme_oset]/mods/$f_modname/swgi_$f_mod.php");
+				$direct_globals['basic_functions']->include_file ($direct_settings['path_system']."/osets/$direct_settings[theme_oset]/mods/$f_modname/swgi_$f_mod.php");
 
 				$f_function = "direct_oset_mods_{$f_modname}_".$f_mod;
 				if (function_exists ($f_function)) { $f_return .= $f_function (); }

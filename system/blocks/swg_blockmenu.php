@@ -58,8 +58,8 @@ all development packets)
 * @uses   direct_file_get()
 * @uses   direct_kernel_system::v_group_user_check_right()
 * @uses   direct_kernel_system::v_usertype_get_int()
-* @uses   direct_output_control::options_generator()
-* @uses   direct_output_control::options_insert()
+* @uses   direct_output::options_generator()
+* @uses   direct_output::options_insert()
 * @uses   direct_xml_bridge::xml2array()
 * @uses   USE_debug_reporting
 * @return boolean True on success
@@ -67,19 +67,17 @@ all development packets)
 */
 function direct_output_block_blockmenu ($f_options)
 {
-	global $direct_cachedata,$direct_classes,$direct_settings;
+	global $direct_cachedata,$direct_globals,$direct_settings;
 	if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -direct_output_block_blockmenu (+f_options)- (#echo(__LINE__)#)"); }
-
-	if (!isset ($direct_cachedata['output_block_blockmenu_element'])) { $direct_cachedata['output_block_blockmenu_element'] = 0; }
 
 	$f_type = $f_options[0];
 	$f_menu = $f_options[1];
 	$f_seperator = $f_options[2];
 	$f_return = false;
 
-	if (isset ($direct_classes['output']))
+	if (isset ($direct_globals['output']))
 	{
-		$f_blocks_array = ((file_exists ($direct_settings['path_data']."/settings/swg_{$f_menu}.blockmenu.xml")) ? $direct_classes['basic_functions']->memcache_get_file_merged_xml ($direct_settings['path_data']."/settings/swg_{$f_menu}.blockmenu.xml") : array ());
+		$f_blocks_array = ((file_exists ($direct_settings['path_data']."/settings/swg_{$f_menu}.blockmenu.xml")) ? $direct_globals['basic_functions']->memcache_get_file_merged_xml ($direct_settings['path_data']."/settings/swg_{$f_menu}.blockmenu.xml") : array ());
 
 		if ((is_array ($f_blocks_array))&&(!empty ($f_blocks_array)))
 		{
@@ -108,7 +106,7 @@ function direct_output_block_blockmenu ($f_options)
 
 					$f_right_check = false;
 					if (($f_blocks_array[$f_key."_guests"])&&($f_blocks_array[$f_key."_guests"]['value'])&&(($direct_settings['user']['type'] == "ex")||($direct_settings['user']['type'] == "gt"))) { $f_right_check = true; }
-					if (($f_blocks_array[$f_key."_members"])&&($f_blocks_array[$f_key."_members"]['value'])&&(direct_class_function_check ($direct_classes['kernel'],"v_usertype_get_int"))&&($direct_classes['kernel']->v_usertype_get_int ($direct_settings['user']['type']))) { $f_right_check = true; }
+					if (($f_blocks_array[$f_key."_members"])&&($f_blocks_array[$f_key."_members"]['value'])&&(direct_class_function_check ($direct_globals['kernel'],"v_usertype_get_int"))&&($direct_globals['kernel']->v_usertype_get_int ($direct_settings['user']['type']))) { $f_right_check = true; }
 
 /*i// LICENSE_WARNING
 ----------------------------------------------------------------------------
@@ -116,11 +114,11 @@ The sWG Group Class has been published under the General Public License.
 ----------------------------------------------------------------------------
 LICENSE_WARNING_END //i*/
 
-					if ((!$f_right_check)&&($f_blocks_array[$f_key."_group_right"])&&(direct_class_function_check ($direct_classes['kernel'],"v_group_user_check_right")))
+					if ((!$f_right_check)&&($f_blocks_array[$f_key."_group_right"])&&(direct_class_function_check ($direct_globals['kernel'],"v_group_user_check_right")))
 					{
 						if (isset ($f_blocks_array[$f_key."_group_right"]['value']))
 						{
-							if ($f_blocks_array[$f_key."_group_right"]['value']) { $f_right_check = $direct_classes['kernel']->v_group_user_check_right ($f_blocks_array[$f_key."_group_right"]['value']); }
+							if ($f_blocks_array[$f_key."_group_right"]['value']) { $f_right_check = $direct_globals['kernel']->v_group_user_check_right ($f_blocks_array[$f_key."_group_right"]['value']); }
 						}
 						elseif (is_array ($f_blocks_array[$f_key."_group_right"]))
 						{
@@ -131,20 +129,19 @@ LICENSE_WARNING_END //i*/
 								if (strlen ($f_group_right_array['value'])) { $f_group_rights_array[] = $f_group_right_array['value']; }
 							}
 
-							$f_right_check = $direct_classes['kernel']->v_group_user_check_right ($f_group_rights_array);
+							$f_right_check = $direct_globals['kernel']->v_group_user_check_right ($f_group_rights_array);
 						}
 					}
 
 					if (($f_continue_check)&&($f_right_check))
 					{
-						if (isset ($f_block_array['attributes']['level'])) { $direct_classes['output']->options_insert ($f_block_array['attributes']['level'],"output_block_blockmenu_".$direct_cachedata['output_block_blockmenu_element'],$f_block_array['attributes']['link']['value'],$f_block_array['value'],$f_block_array['attributes']['image'],$f_block_array['attributes']['link']['type']); }
-						else { $direct_classes['output']->options_insert (6,"output_block_blockmenu_".$direct_cachedata['output_block_blockmenu_element'],$f_block_array['attributes']['link']['value'],$f_block_array['value'],$f_block_array['attributes']['image'],$f_block_array['attributes']['link']['type']); }
+						if (isset ($f_block_array['attributes']['level'])) { $direct_globals['output']->options_insert ($f_block_array['attributes']['level'],"output_block_blockmenu_".$f_menu,$f_block_array['attributes']['link']['value'],$f_block_array['value'],$f_block_array['attributes']['image'],$f_block_array['attributes']['link']['type']); }
+						else { $direct_globals['output']->options_insert (6,"output_block_blockmenu_".$f_menu,$f_block_array['attributes']['link']['value'],$f_block_array['value'],$f_block_array['attributes']['image'],$f_block_array['attributes']['link']['type']); }
 					}
 				}
 			}
 
-			$f_return = $direct_classes['output']->options_generator ($f_type,"output_block_blockmenu_".$direct_cachedata['output_block_blockmenu_element'],$f_seperator);
-			$direct_cachedata['output_block_blockmenu_element']++;
+			$f_return = $direct_globals['output']->options_generator ($f_type,"output_block_blockmenu_".$f_menu,$f_seperator);
 		}
 	}
 

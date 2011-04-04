@@ -54,12 +54,12 @@ if (!defined ("direct_product_iversion")) { exit (); }
 //j// Functions and classes
 
 $g_continue_check = true;
-if (defined ("CLASS_direct_output_theme_emptybody")) { $g_continue_check = false; }
-if (!defined ("CLASS_direct_output_theme")) { $g_continue_check = false; }
+if (defined ("CLASS_direct_oxhtml_theme_emptybody")) { $g_continue_check = false; }
+if (!defined ("CLASS_direct_oxhtml_theme")) { $g_continue_check = false; }
 
 if ($g_continue_check)
 {
-//c// direct_output_theme
+//c// direct_oxhtml_theme
 /**
 * The theme support is "incremental". Our inline theme will be overwritten by
 * this class. An additional subtype will overwrite this class.
@@ -68,20 +68,20 @@ if ($g_continue_check)
 * @copyright  (C) direct Netware Group - All rights reserved
 * @package    sWG_basic
 * @subpackage output_theme
-* @uses       CLASS_direct_output_control
+* @uses       CLASS_direct_output_inline
 * @since      v0.1.00
 * @license    http://www.direct-netware.de/redirect.php?licenses;w3c
 *             W3C (R) Software License
 */
-class direct_output_theme_emptybody extends direct_output_theme
+class direct_oxhtml_theme_emptybody extends direct_oxhtml_theme
 {
 /* -------------------------------------------------------------------------
 Extend the class using old and new behavior
 ------------------------------------------------------------------------- */
 
-	//f// direct_output_theme->__construct () and direct_output_theme->direct_output_theme ()
+	//f// direct_oxhtml_theme_emptybody->__construct () and direct_oxhtml_theme_emptybody->direct_oxhtml_theme_emptybody ()
 /**
-	* Constructor (PHP5) __construct (direct_output_theme)
+	* Constructor (PHP5) __construct (direct_oxhtml_theme_emptybody)
 	*
 	* @uses  direct_debug()
 	* @uses  USE_debug_reporting
@@ -89,7 +89,7 @@ Extend the class using old and new behavior
 */
 	/*#ifndef(PHP4) */public /* #*/function __construct ()
 	{
-		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -output_theme_class->__construct (direct_output_theme)- (#echo(__LINE__)#)"); }
+		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -output_theme_class->__construct (direct_oxhtml_theme_emptybody)- (#echo(__LINE__)#)"); }
 
 /* -------------------------------------------------------------------------
 My parent should be on my side to get the work done
@@ -105,13 +105,13 @@ Check the blocker support and inform the system about available functions
 	}
 /*#ifdef(PHP4):
 /**
-	* Constructor (PHP4) direct_output_theme (direct_output_theme)
+	* Constructor (PHP4) direct_oxhtml_theme_emptybody (direct_oxhtml_theme_emptybody)
 	*
 	* @since v0.1.00
 *\/
-	function direct_output_theme () { $this->__construct (); }
+	function direct_oxhtml_theme_emptybody () { $this->__construct (); }
 :#*/
-	//f// direct_output_theme->theme_page ($f_title)
+	//f// direct_oxhtml_theme_emptybody->theme_page ($f_title)
 /**
 	* This function will be activated to show the content in default mode.
 	*
@@ -121,21 +121,21 @@ Check the blocker support and inform the system about available functions
 */
 	/*#ifndef(PHP4) */public /* #*/function theme_page ($f_title)
 	{
-		global $direct_cachedata,$direct_classes,$direct_local,$direct_settings;
+		global $direct_cachedata,$direct_globals,$direct_local,$direct_settings;
 		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -output_theme_class->theme_page ($f_title)- (#echo(__LINE__)#)"); }
 
 		$direct_settings['theme_xhtml_type'] = "application/xhtml+xml; charset=".$direct_local['lang_charset'];
 		header ("Content-Type: ".$direct_settings['theme_xhtml_type'],true);
 
-$this->page = ("<?xml version='1.0' encoding='$direct_local[lang_charset]' ?><!DOCTYPE html SYSTEM \"about:legacy-compat\">
+$this->output_data = ("<?xml version='1.0' encoding='$direct_local[lang_charset]' ?><!DOCTYPE html SYSTEM \"about:legacy-compat\">
 <html xmlns='http://www.w3.org/1999/xhtml' xml:lang='$direct_local[lang_iso_domain]'>
 
 <head>
 <title>$f_title</title>");
 
-		if (strlen ($direct_cachedata['output_p3purl'])) { $this->page .= "\n<link rel='P3Pv1' href='{$direct_cachedata['output_p3purl']}'>"; }
+		if (strlen ($direct_cachedata['output_p3purl'])) { $this->output_data .= "\n<link rel='P3Pv1' href='{$direct_cachedata['output_p3purl']}'>"; }
 
-$this->page .= ("\n<meta http-equiv='Content-Type' content='$direct_settings[theme_xhtml_type]' />
+$this->output_data .= ("\n<meta http-equiv='Content-Type' content='$direct_settings[theme_xhtml_type]' />
 <meta name='author' content='direct Netware Group' />
 <meta name='creator' content='$direct_settings[product_lcode_txt] by the direct Netware Group' />
 <meta name='description' content='$direct_settings[product_lcode_subtitle_txt]' />
@@ -157,17 +157,17 @@ img { border:none }
 table { margin:0px;table-layout:fixed;border:none;border-collapse:collapse;border-spacing:0px }
 td { padding:0px }
 ]]></style>
-".($direct_classes['output']->header_elements ())."
+".($direct_globals['output']->header_elements ())."
 </head>
 
-<body onload='djs_run_onload ();'>".$direct_classes['output']->page_content."</body>
+<body onload='djs_run_onload ();'>".$direct_globals['output']->output_content."</body>
 
 </html>");
 	}
 }
 
-$direct_classes['@names']['output_theme'] = "direct_output_theme_emptybody";
-define ("CLASS_direct_output_theme_emptybody",true);
+$direct_globals['@names']['output_theme'] = "direct_oxhtml_theme_emptybody";
+define ("CLASS_direct_oxhtml_theme_emptybody",true);
 }
 
 //j// EOF

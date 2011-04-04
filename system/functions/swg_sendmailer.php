@@ -99,7 +99,7 @@ function direct_sendmail ($f_type,$f_from,$f_target,$f_subject,$f_msg)
 
 //j// Script specific commands
 
-$direct_classes['basic_functions']->require_file ($direct_settings['path_system']."/classes/swg_sendmailer.php");
+$direct_globals['basic_functions']->require_file ($direct_settings['path_system']."/classes/swg_sendmailer.php");
 
 //j// EOF
 ?>

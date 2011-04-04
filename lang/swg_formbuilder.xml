@@ -8,6 +8,7 @@
   </unsupported></embed>
 
   <error>
+   <input input="string" />
    <required><element><input input="string" /></element></required>
 
    <file><not><found>
@@ -46,9 +47,23 @@
 
   <field>
    <input input="string" />
+   <accepted><input input="string" /></accepted>
    <content><input input="string" /></content>
   </field>
 
   <form><password><repetition><input input="string" /></repetition></password></form>
+
+  <section>
+   <administrative><input input="string" /></administrative>
+   <advanced><input input="string" /></advanced>
+   <general><input input="string" /></general>
+   <publishing><input input="string" /></publishing>
+  </section>
+
+  <size>
+   <large><input input="string" /></large>
+   <medium><input input="string" /></medium>
+   <small><input input="string" /></small>
+  </size>
  </formbuilder>
 </swg_lang_file_v1>

@@ -50,8 +50,7 @@ Testing for required classes
 ------------------------------------------------------------------------- */
 
 $g_continue_check = ((defined ("CLASS_direct_web_functions")) ? false : true);
-if (!defined ("CLASS_direct_basic_rfc_functions")) { $direct_classes['basic_functions']->include_file ($direct_settings['path_system']."/classes/swg_basic_rfc_functions.php"); }
-if (!defined ("CLASS_direct_basic_rfc_functions")) { $g_continue_check = false; }
+if (($g_continue_check)&&(!defined ("CLASS_direct_basic_rfc_functions"))) { $g_continue_check = ($direct_globals['basic_functions']->include_file ($direct_settings['path_system']."/classes/swg_basic_rfc_functions.php") ? defined ("CLASS_direct_basic_rfc_functions") : false); }
 
 if ($g_continue_check)
 {
@@ -1209,7 +1208,7 @@ The behaviour above might change for images in the future.
 Mark this class as the most up-to-date one
 ------------------------------------------------------------------------- */
 
-$direct_classes['@names']['web_functions'] = "direct_web_functions";
+$direct_globals['@names']['web_functions'] = "direct_web_functions";
 define ("CLASS_direct_web_functions",true);
 
 if (!isset ($direct_settings['swg_web_socket_timeout'])) { $direct_settings['swg_web_socket_timeout'] = $direct_settings['timeout_core']; }

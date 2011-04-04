@@ -121,34 +121,38 @@ Informing the system about the available function
 */
 	/*#ifndef(PHP4) */public /* #*/function subkernel_init ($f_threshold_id = "")
 	{
-		global $direct_classes,$direct_settings;
+		global $direct_globals,$direct_settings;
 		if (USE_debug_reporting) { direct_debug (2,"sWG/#echo(__FILEPATH__)# -kernel_class->subkernel_init ($f_threshold_id)- (#echo(__LINE__)#)"); }
 
-		if ($direct_classes['basic_functions']->include_file ($direct_settings['path_system']."/classes/swg_output.php")) { $f_return = array (); }
-		else { $f_return = array ("core_required_object_not_found","FATAL ERROR:<br />&quot;$direct_settings[path_system]/classes/swg_output.php&quot; was not found<br /><br />sWG/#echo(__FILEPATH__)# -kernel_class->subkernel_init ()- (#echo(__LINE__)#)"); }
+		$f_return = array ();
 
 		if (file_exists ($direct_settings['path_data']."/settings/nim/swg_nim_runonce.xml"))
 		{
 			if (strpos ($direct_settings['s'],"nim/") === 0) { $direct_settings['user']['type'] = "ad"; }
-			else { $f_return = array ("core_unconfigured","sWG/#echo(__FILEPATH__)# -kernel_class->subkernel_init ()- (#echo(__LINE__)#)"); }
+			else { $f_return = array ("core_unconfigured","","sWG/#echo(__FILEPATH__)# -kernel_class->subkernel_init ()- (#echo(__LINE__)#)"); }
 		}
-		elseif (empty ($f_return))
+		else
 		{
-			if (empty ($f_return))
+			if ((!$direct_globals['basic_functions']->include_file ($direct_settings['path_system']."/classes/swg_db.php"))||(!direct_class_init ("db"))) { $f_return = array ("errors_core_unknown_error","FATAL ERROR: Unable to instantiate &quot;db&quot;.","sWG/#echo(__FILEPATH__)# -kernel_class->subkernel_init ()- (#echo(__LINE__)#)"); }
+			else
 			{
-				if ($direct_classes['basic_functions']->include_file ($direct_settings['path_system']."/classes/swg_db.php"))
+				if ($direct_globals['db']->v_connect ())
 				{
-					if (!direct_class_init ("db")) { $f_return = array ("errors_core_unknown_error","FATAL ERROR:<br />Unable to instantiate &quot;db&quot;.<br /><br />sWG/#echo(__FILEPATH__)# -kernel_class->subkernel_init ()- (#echo(__LINE__)#)"); }
-				}
-				else { $f_return = array ("core_required_object_not_found","FATAL ERROR:<br />&quot;$direct_settings[path_system]/classes/swg_db.php&quot; was not found<br /><br />sWG/#echo(__FILEPATH__)# -kernel_class->subkernel_init ()- (#echo(__LINE__)#)"); }
-			}
+					$direct_globals['kernel']->v_user_init ($f_threshold_id);
 
-			if (empty ($f_return))
-			{
-				if ($direct_classes['db']->v_connect ())
-				{
-					$direct_classes['kernel']->v_user_init ($f_threshold_id);
+					if (($direct_settings['ohandler'] == "atom")||($direct_settings['ohandler'] == "json")||($direct_settings['ohandler'] == "xmlrpc"))
+					{
+						$g_continue_check = $direct_globals['basic_functions']->include_file ($direct_settings['path_system']."/functions/web_services/swg_http_auth.php");
 
+						if ($g_continue_check) { $g_continue_check = ((($direct_settings['swg_pyhelper'])&&((!isset ($direct_settings['swg_pyhelper_client']))||($direct_settings['user_ip'] == $direct_settings['swg_pyhelper_client']))&&(direct_web_http_auth_pw_basic_check ($direct_settings['swg_pyhelper_password']))) ? false : true); }
+						else { $f_return = array ("core_required_object_not_found","FATAL ERROR: &quot;$direct_settings[path_system]/functions/web_services/swg_http_auth.php&quot; was not found","sWG/#echo(__FILEPATH__)# -kernel_class->subkernel_init ()- (#echo(__LINE__)#)"); }
+
+						if ($g_continue_check) { direct_web_http_auth_check (); }
+					}
+					else { $g_continue_check = true; }
+
+					if ($g_continue_check)
+					{
 /* -------------------------------------------------------------------------
 Checking up basic rights
 ------------------------------------------------------------------------- */
@@ -159,23 +163,23 @@ The sWG Group Class has been published under the General Public License.
 ----------------------------------------------------------------------------
 LICENSE_WARNING_END //i*/
 
-					if (class_exists ("direct_kernel_group",/*#ifndef(PHP4) */false/* #*/))
-					{
-						$direct_classes['kernel']->v_group_init ();
-						if (($direct_classes['kernel']->v_usertype_get_int ($direct_settings['user']['type']) < 3)&&(!$direct_classes['kernel']->v_group_user_check_right ("cp_access"))) { $f_return = array ("core_access_denied","sWG/#echo(__FILEPATH__)# _main_ (#echo(__LINE__)#)"); }
-					}
-					else
-					{
-						if ($direct_settings['user']['type'] != "ad") { $f_return = array ("core_access_denied","sWG/#echo(__FILEPATH__)# _main_ (#echo(__LINE__)#)"); }
+						if (class_exists ("direct_kernel_group",/*#ifndef(PHP4) */false/* #*/))
+						{
+							$direct_globals['kernel']->v_group_init ();
+							if (($direct_globals['kernel']->v_usertype_get_int ($direct_settings['user']['type']) < 3)&&(!$direct_globals['kernel']->v_group_user_check_right ("cp_access"))) { $f_return = array ("core_access_denied","sWG/#echo(__FILEPATH__)# _main_ (#echo(__LINE__)#)"); }
+						}
+						else
+						{
+							if ($direct_settings['user']['type'] != "ad") { $f_return = array ("core_access_denied","","sWG/#echo(__FILEPATH__)# _main_ (#echo(__LINE__)#)"); }
+						}
 					}
 				}
-				else { $f_return = array ("core_database_error","FATAL ERROR:<br />Error while setting up a database connection<br />sWG/#echo(__FILEPATH__)# -kernel_class->subkernel_init ()- (#echo(__LINE__)#)"); }
+				else { $f_return = array ("core_database_error","FATAL ERROR: Error while setting up a database connection","sWG/#echo(__FILEPATH__)# -kernel_class->subkernel_init ()- (#echo(__LINE__)#)"); }
 			}
 
-			if ((empty ($f_return))&&(!$direct_classes['basic_functions']->settings_get ($direct_settings['path_data']."/settings/swg_cp.php"))) { $f_return = array ("core_required_object_not_found","FATAL ERROR:<br />&quot;$direct_settings[path_data]/settings/swg_cp.php&quot; was not found<br /><br />sWG/#echo(__FILEPATH__)# -kernel_class->subkernel_init ()- (#echo(__LINE__)#)"); }
+			if ((empty ($f_return))&&(!$direct_globals['basic_functions']->settings_get ($direct_settings['path_data']."/settings/swg_cp.php"))) { $f_return = array ("core_required_object_not_found","FATAL ERROR: &quot;$direct_settings[path_data]/settings/swg_cp.php&quot; was not found","sWG/#echo(__FILEPATH__)# -kernel_class->subkernel_init ()- (#echo(__LINE__)#)"); }
 		}
 
-		if (defined ("CLASS_direct_output_control")) { direct_output_theme ($direct_settings['theme']); }
 		return /*#ifdef(DEBUG):direct_debug (7,"sWG/#echo(__FILEPATH__)# -kernel_class->subkernel_init ()- (#echo(__LINE__)#)",:#*/$f_return/*#ifdef(DEBUG):,true):#*/;
 	}
 }
@@ -184,13 +188,13 @@ LICENSE_WARNING_END //i*/
 Mark this class as the most up-to-date one
 ------------------------------------------------------------------------- */
 
-$direct_classes['@names']['subkernel_cp'] = "direct_subkernel_cp";
+$direct_globals['@names']['subkernel_cp'] = "direct_subkernel_cp";
 define ("CLASS_direct_subkernel_cp",true);
 
 //j// Script specific commands
 
 direct_class_init ("subkernel_cp");
-$direct_classes['kernel']->v_call_set ("v_subkernel_init",$direct_classes['subkernel_cp'],"subkernel_init");
+$direct_globals['kernel']->v_call_set ("v_subkernel_init",$direct_globals['subkernel_cp'],"subkernel_init");
 }
 
 //j// EOF

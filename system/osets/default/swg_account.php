@@ -55,17 +55,17 @@ all development packets)
 */
 function direct_output_oset_account_actives ()
 {
-	global $direct_cachedata,$direct_classes,$direct_settings;
+	global $direct_cachedata,$direct_globals,$direct_settings;
 	if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -direct_output_oset_account_actives ()- (#echo(__LINE__)#)"); }
 
-	$direct_classes['basic_functions']->require_file ($direct_settings['path_system']."/osets/$direct_settings[theme_oset]/swgi_account_profile.php");
+	$direct_globals['basic_functions']->require_file ($direct_settings['path_system']."/osets/$direct_settings[theme_oset]/swgi_account_profile.php");
 
-	if (empty ($direct_cachedata['output_users'])) { $f_return = "<p class='pagecontenttitle'>".(direct_local_get ("account_actives_1")).$direct_cachedata['output_minutes'].(direct_local_get ("account_actives_2"))."</p>\n<p class='pagecontent'>".(direct_local_get ("account_actives_empty"))."</p>"; }
+	if (empty ($direct_cachedata['output_users'])) { $f_return = "<p class='pagecontenttitle{$direct_settings['theme_css_corners']}'>".(direct_local_get ("account_actives_1")).$direct_cachedata['output_minutes'].(direct_local_get ("account_actives_2"))."</p>\n<p class='pagecontent'>".(direct_local_get ("account_actives_empty"))."</p>"; }
 	else
 	{
-$f_return = ("<table cellspacing='1' summary='' class='pageborder1' style='width:100%;table-layout:auto'>
+$f_return = ("<table class='pageborder1' style='width:100%;table-layout:auto'>
 <thead><tr>
-<td colspan='2' align='left' class='pagetitlecellbg' style='padding:$direct_settings[theme_td_padding]'><span class='pagetitlecellcontent'>".(direct_local_get ("account_actives_1")).$direct_cachedata['output_minutes'].(direct_local_get ("account_actives_2"))."</span></td>
+<td colspan='2' class='pagetitlecellbg' style='padding:$direct_settings[theme_td_padding];text-align:left'><span class='pagetitlecellcontent'>".(direct_local_get ("account_actives_1")).$direct_cachedata['output_minutes'].(direct_local_get ("account_actives_2"))."</span></td>
 </tr></thead><tbody>");
 
 		foreach ($direct_cachedata['output_users'] as $f_user_array)
@@ -74,18 +74,18 @@ $f_return = ("<table cellspacing='1' summary='' class='pageborder1' style='width
 			{
 				if ($f_right_switch)
 				{
-					$f_return .= "</td>\n<td valign='middle' align='left' class='pagebg' style='width:50%;padding:$direct_settings[theme_td_padding]'>";
+					$f_return .= "</td>\n<td class='pagebg' style='width:50%;padding:$direct_settings[theme_td_padding];text-align:left;vertical-align:middle'>";
 					$f_right_switch = false;
 				}
 				else
 				{
-					$f_return .= "</td>\n</tr><tr>\n<td valign='middle' align='left' class='pagebg' style='width:50%;padding:$direct_settings[theme_td_padding]'>";
+					$f_return .= "</td>\n</tr><tr>\n<td class='pagebg' style='width:50%;padding:$direct_settings[theme_td_padding];text-align:left;vertical-align:middle'>";
 					$f_right_switch = true;
 				}
 			}
 			else
 			{
-				$f_return .= "<tr>\n<td valign='middle' align='left' class='pagebg' style='width:50%;padding:$direct_settings[theme_td_padding]'>";
+				$f_return .= "<tr>\n<td class='pagebg' style='width:50%;padding:$direct_settings[theme_td_padding];text-align:left;vertical-align:middle'>";
 				$f_right_switch = true;
 			}
 
@@ -98,7 +98,7 @@ $f_return = ("<table cellspacing='1' summary='' class='pageborder1' style='width
 	return $f_return;
 }
 
-if ($direct_classes['@names']['output_formbuilder'])
+if ($direct_globals['@names']['output_formbuilder'])
 {
 	//f// direct_output_oset_account_login ()
 /**
@@ -111,20 +111,27 @@ if ($direct_classes['@names']['output_formbuilder'])
 */
 	function direct_output_oset_account_login ()
 	{
-		global $direct_cachedata,$direct_classes,$direct_settings;
+		global $direct_cachedata,$direct_globals,$direct_settings;
 		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -direct_output_oset_account_login ()- (#echo(__LINE__)#)"); }
 
-		if (!isset ($direct_classes['output_oset_formbuilder'])) { direct_class_init ("output_formbuilder"); }
+		if (!isset ($direct_globals['output_oset_formbuilder'])) { direct_class_init ("output_formbuilder"); }
 		$f_form_id = uniqid ("swg");
 
-$f_return = ($direct_settings['iscript_form']." name='swgForm' id='swgForm' onsubmit=\"return djs_formbuilder_submit('swgForm');\">".(direct_linker ("form",$direct_cachedata['output_formtarget']))."<table cellspacing='1' summary='' class='pageborder1' style='width:100%;table-layout:auto'>
-<thead><tr>
-<td colspan='2' align='left' class='pagetitlecellbg' style='padding:$direct_settings[theme_td_padding]'><span class='pagetitlecellcontent'>{$direct_cachedata['output_formtitle']}</span></td>
-</tr></thead><tbody>".($direct_classes['output_formbuilder']->form_get ($direct_cachedata['output_formelements']))."</tbody>
-</table>
-<p class='pagecontent' style='text-align:center'><input type='submit' id='$f_form_id' value='{$direct_cachedata['output_formbutton']}' class='pagecontentinputbutton' onfocus=\"djs_formbuilder_focused('$f_form_id')\" /><script language='JavaScript1.5' type='text/javascript'><![CDATA[
-djs_formbuilder_tabindex ('$f_form_id');
-]]></script></p></form>");
+		$f_return = $direct_settings['iscript_form']." name='swg_form' id='swg_form'>".(direct_linker ("form",$direct_cachedata['output_formtarget']));
+
+		if (isset ($direct_cachedata['i_atimeoffset']))
+		{
+$f_return .= ("<script type='text/javascript'><![CDATA[
+djs_var.core_run_onload.push ({ func:'djs_swgDOM_insert_append',params: { data:\"<input type='hidden' name='atimeoffset' value=\\\"\" + (new Date().getTimezoneOffset () / -60) + \"\\\" />\",hide:true,id:'swg_form' } });
+]]></script>");
+		}
+
+$f_return .= ($direct_globals['output_formbuilder']->form_get ($direct_cachedata['output_formelements'])."
+<p class='pagecontent' style='text-align:center'><input type='submit' id='$f_form_id' value='{$direct_cachedata['output_formbutton']}' class='pagecontentinputbutton' /><script type='text/javascript'><![CDATA[
+djs_var.core_run_onload.push ({ func:'djs_formbuilder_init',params: { id:'$f_form_id',type:'button' } });\n");
+
+		if (isset ($direct_cachedata['output_formsupport_ajax_dialog'])) { $f_return .= "djs_var.core_run_onload.push ({ func:'djs_formbuilder_init',params: { id:'swg_form',id_button:'$f_form_id',type:'form' } });\n"; }
+		$f_return .= "]]></script></p></form>";
 
 		return $f_return;
 	}
@@ -144,9 +151,9 @@ function direct_output_oset_account_otp_list ()
 	global $direct_cachedata,$direct_settings;
 	if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -direct_output_oset_account_otp_list ()- (#echo(__LINE__)#)"); }
 
-$f_return = ("<table cellspacing='1' summary='' class='pageborder1' style='width:100%;table-layout:auto'>
+$f_return = ("<table class='pageborder1' style='width:100%;table-layout:auto'>
 <thead><tr>
-<td colspan='2' align='left' class='pagetitlecellbg' style='padding:$direct_settings[theme_td_padding]'><span class='pagetitlecellcontent'>".(direct_local_get ("account_otp_list"))."</span></td>
+<td colspan='2' class='pagetitlecellbg' style='padding:$direct_settings[theme_td_padding];text-align:left'><span class='pagetitlecellcontent'>".(direct_local_get ("account_otp_list"))."</span></td>
 </tr></thead><tbody>");
 
 	foreach ($direct_cachedata['output_otp_list'] as $f_position => $f_password)
@@ -155,18 +162,18 @@ $f_return = ("<table cellspacing='1' summary='' class='pageborder1' style='width
 		{
 			if ($f_right_switch)
 			{
-				$f_return .= "</td>\n<td valign='middle' align='center' class='pagebg' style='width:50%;padding:$direct_settings[theme_td_padding]'>";
+				$f_return .= "</td>\n<td class='pagebg' style='width:50%;padding:$direct_settings[theme_td_padding];text-align:center;vertical-align:middle'>";
 				$f_right_switch = false;
 			}
 			else
 			{
-				$f_return .= "</td>\n</tr><tr>\n<td valign='middle' align='center' class='pagebg' style='width:50%;padding:$direct_settings[theme_td_padding]'>";
+				$f_return .= "</td>\n</tr><tr>\n<td class='pagebg' style='width:50%;padding:$direct_settings[theme_td_padding];text-align:center;vertical-align:middle'>";
 				$f_right_switch = true;
 			}
 		}
 		else
 		{
-			$f_return .= "<tr>\n<td valign='middle' align='center' class='pagebg' style='width:50%;padding:$direct_settings[theme_td_padding]'>";
+			$f_return .= "<tr>\n<td class='pagebg' style='width:50%;padding:$direct_settings[theme_td_padding];text-align:center;vertical-align:middle'>";
 			$f_right_switch = true;
 		}
 
@@ -174,7 +181,7 @@ $f_return = ("<table cellspacing='1' summary='' class='pageborder1' style='width
 	}
 
 	$f_return .= ($f_right_switch ? "</td>\n<td class='pagebg' style='width:50%'><span style='font-size:8px'>&#0160;</span></td>\n</tr></tbody>\n</table>" : "</td>\n</tr></tbody>\n</table>");
-	$f_return .= "\n<p class='pagehighlightborder2' style='text-align:left'><span class='pageextracontent' style='font-weight:bold'>".(direct_local_get ("account_otp_list_not_viewable_again"))."</span></p>";
+	$f_return .= "\n<p class='pagehighlightborder2{$direct_settings['theme_css_corners']} pagecontent' style='text-align:left;font-weight:bold'>".(direct_local_get ("account_otp_list_not_viewable_again"))."</p>";
 
 	return $f_return;
 }
@@ -190,39 +197,46 @@ $f_return = ("<table cellspacing='1' summary='' class='pageborder1' style='width
 */
 function direct_output_oset_account_selector ()
 {
-	global $direct_cachedata,$direct_classes,$direct_settings;
+	global $direct_cachedata,$direct_globals,$direct_settings;
 	if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -direct_output_oset_account_selector ()- (#echo(__LINE__)#)"); }
 
-	$direct_classes['basic_functions']->require_file ($direct_settings['path_system']."/osets/$direct_settings[theme_oset]/swgi_account.php");
-	$direct_classes['basic_functions']->require_file ($direct_settings['path_system']."/osets/$direct_settings[theme_oset]/swgi_default_filter.php");
+	$direct_globals['basic_functions']->require_file ($direct_settings['path_system']."/osets/$direct_settings[theme_oset]/swgi_account.php");
+	$direct_globals['basic_functions']->require_file ($direct_settings['path_system']."/osets/$direct_settings[theme_oset]/swgi_default_filter.php");
 
-$f_return = ("<table cellspacing='1' summary='' class='pageborder1' style='width:100%;table-layout:auto'>
+$f_return = ("<table class='pageborder1' style='width:100%;table-layout:auto'>
 <thead><tr>
-<td colspan='2' align='left' class='pagetitlecellbg' style='padding:$direct_settings[theme_td_padding]'><span class='pagetitlecellcontent'>".(direct_local_get ("account_user_selector"))."</span></td>
+<td colspan='2' class='pagetitlecellbg' style='padding:$direct_settings[theme_td_padding];text-align:left'><span class='pagetitlecellcontent'>{$direct_cachedata['output_selection_title']}</span></td>
 </tr></thead>");
 
 	if ($direct_cachedata['output_pages'] > 1)
 	{
 $f_return .= ("\n<tbody><tr>
-<td colspan='2' align='center' class='pageextrabg' style='padding:$direct_settings[theme_td_padding]'><span class='pageextracontent' style='font-size:10px'>".(direct_output_pages_generator ($direct_cachedata['output_page_url'],$direct_cachedata['output_pages'],$direct_cachedata['output_page']))."</span></td>
+<td colspan='2' class='pageextrabg' style='padding:$direct_settings[theme_td_padding];text-align:center'><span class='pageextracontent' style='font-size:10px'>".($direct_globals['output']->pages_generator ($direct_cachedata['output_page_url'],$direct_cachedata['output_pages'],$direct_cachedata['output_page']))."</span></td>
 </tr></tbody>");
 	}
 
-$f_return .= ("\n</table><span id='swg_account_selector_filter_point' style='display:none'><!-- iPoint // --></span><script language='JavaScript1.5' type='text/javascript'><![CDATA[
-if (djs_swgDOM)
+$f_return .= ("\n</table><span id='swg_account_selector_filter_point' style='display:none'><!-- iPoint // --></span><script type='text/javascript'><![CDATA[
+function djs_account_selector_filter_init (f_params)
 {
-	function djs_account_selector_filter_process () { self.location.replace ('".(direct_linker ("url1","m=dataport&s=swgap;default;filter&dsd=dtheme+1++dfid+account_selector++dftext+[f_text]++tid+{$direct_cachedata['output_tid']}++source+{$direct_cachedata['output_filter_source']}",false))."'.replace (/\[f_text\]/g,(encodeURIComponent (self.document.getElementById('swg_account_selector_filter_point_f').value)))); }
-	djs_swgDOM_replace (\"<div style='font-size:8px'>&#0160;<br />\\n<span id='swg_account_selector_filter_point' style='display:none'><!-- iPoint // --></span></div>\",'swg_account_selector_filter_point');
+	\$('#swg_account_selector_filter_point').addClass ('pageborder1');
+	\$('#swg_account_selector_filter_pointb').bind ('click',function () { djs_account_selector_filter_process (encodeURIComponent (\$('#swg_account_selector_filter_pointi').val ())); });
 
-".(direct_output_oset_default_filter_table (true,"swg_account_selector_filter_point",(direct_local_get ("core_filter_search","text")),"djs_account_selector_filter_process ()",$direct_cachedata['output_filter_text']))."
+	djs_formbuilder_init ({ id:'swg_account_selector_filter_pointi' });
+	djs_formbuilder_init ({ id:'swg_account_selector_filter_pointb',type:'button' });
 }
+
+function djs_account_selector_filter_process (f_text) { self.location.replace ('".(direct_linker ("url1","s=filter;dsd=dfid+account_selector++dftext+[text]++tid+{$direct_cachedata['output_tid']}++source+".$direct_cachedata['output_filter_source'],false))."'.replace (/\[text\]/g,f_text)); }
+
+djs_var.core_run_onload.push ({ func:'djs_swgDOM_replace',params:{ id:'swg_account_selector_filter_point',id_replaced:'swg_account_selector_filter_box',
+data:(\"<div style='font-size:8px'>&#0160;<br />\\n\" + ".(direct_output_oset_default_filter_table (true,"swg_account_selector_filter_point",(direct_local_get ("core_filter_search","text")),$direct_cachedata['output_filter_text']))." + '</div>'),
+onReplace:{ func:'djs_account_selector_filter_init',params: { } } } });
 ]]></script>");
 
 	if (empty ($direct_cachedata['output_users_list'])) { $f_return .= "\n<p class='pagecontent' style='font-weight:bold'>".(direct_local_get ("account_user_selector_empty"))."</p>"; }
 	else
 	{
 		$f_return .= "<span style='font-size:8px'>&#0160;</span>".(direct_account_oset_selector_users_parse ($direct_cachedata['output_users_list']));
-		if ($direct_cachedata['output_pages'] > 1) { $f_return .= "\n<p class='pageborder2' style='text-align:center'><span class='pageextracontent' style='font-size:10px'>".(direct_output_pages_generator ($direct_cachedata['output_page_url'],$direct_cachedata['output_pages'],$direct_cachedata['output_page']))."</span></p>"; }
+		if ($direct_cachedata['output_pages'] > 1) { $f_return .= "\n<p class='pageborder2{$direct_settings['theme_css_corners']} pageextracontent' style='text-align:center;font-size:10px'>".($direct_globals['output']->pages_generator ($direct_cachedata['output_page_url'],$direct_cachedata['output_pages'],$direct_cachedata['output_page']))."</p>"; }
 	}
 
 	return $f_return;
@@ -239,14 +253,14 @@ if (djs_swgDOM)
 */
 function direct_output_oset_account_status_ex ()
 {
-	global $direct_cachedata,$direct_classes,$direct_settings;
+	global $direct_cachedata,$direct_globals,$direct_settings;
 	if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -direct_output_oset_account_status_ex ()- (#echo(__LINE__)#)"); }
 
-	$direct_classes['basic_functions']->require_file ($direct_settings['path_system']."/osets/$direct_settings[theme_oset]/swgi_account.php");
+	$direct_globals['basic_functions']->require_file ($direct_settings['path_system']."/osets/$direct_settings[theme_oset]/swgi_account.php");
 
-return ("<table cellspacing='1' summary='' class='pageborder1' style='width:100%;table-layout:auto'>
+return ("<table class='pageborder1' style='width:100%;table-layout:auto'>
 <thead><tr>
-<td colspan='2' align='left' class='pagetitlecellbg' style='padding:$direct_settings[theme_td_padding]'><span class='pagetitlecellcontent'>".(direct_local_get ("account_status_ex"))."</span></td>
+<td colspan='2' class='pagetitlecellbg' style='padding:$direct_settings[theme_td_padding];text-align:left'><span class='pagetitlecellcontent'>".(direct_local_get ("account_status_ex"))."</span></td>
 </tr></thead><tbody>".(direct_account_oset_status_ex_view ())."</tbody>
 </table>");
 }
@@ -262,20 +276,20 @@ return ("<table cellspacing='1' summary='' class='pageborder1' style='width:100%
 */
 function direct_output_oset_account_view ()
 {
-	global $direct_cachedata,$direct_classes,$direct_settings;
+	global $direct_cachedata,$direct_globals,$direct_settings;
 	if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -direct_output_oset_account_view ()- (#echo(__LINE__)#)"); }
 
-	if ($direct_settings['account_profile_mods_support']) { $direct_classes['basic_functions']->require_file ($direct_settings['path_system']."/osets/$direct_settings[theme_oset]/mods/swgi_mods_support.php"); }
+	if ($direct_settings['account_profile_mods_support']) { $direct_globals['basic_functions']->require_file ($direct_settings['path_system']."/osets/$direct_settings[theme_oset]/mods/swgi_mods_support.php"); }
 
-$f_return = ("<p class='pagecontenttitle'>".(direct_local_get ("account_profile_view"))."</p>
-<table cellspacing='1' summary='' class='pageborder1' style='width:100%;table-layout:auto'>
+$f_return = ("<p class='pagecontenttitle{$direct_settings['theme_css_corners']}'>".(direct_local_get ("account_profile_view"))."</p>
+<table class='pageborder1' style='width:100%;table-layout:auto'>
 <thead><tr>
-<td colspan='2' align='center' class='pagetitlecellbg' style='padding:$direct_settings[theme_td_padding]'><span class='pagetitlecellcontent'>{$direct_cachedata['output_username']}</span></td>
+<td colspan='2' class='pagetitlecellbg' style='padding:$direct_settings[theme_td_padding];text-align:center'><span class='pagetitlecellcontent'>{$direct_cachedata['output_username']}</span></td>
 </tr></thead><tbody><tr>
-<td colspan='2' align='left' class='pagebg' style='padding:$direct_settings[theme_td_padding]'>");
+<td colspan='2' class='pagebg' style='padding:$direct_settings[theme_td_padding];text-align:left'>");
 
-	if ($direct_cachedata['output_useravatar_large']) { $f_return .= "<div class='pageborder2' style='margin-left:$direct_settings[theme_td_padding];float:right;clear:right'><img src='{$direct_cachedata['output_useravatar_large']}' border='0' alt='' title='' /></div>"; }
-	elseif ($direct_cachedata['output_useravatar_small']) { $f_return .= "<div class='pageborder2' style='margin-left:$direct_settings[theme_td_padding];float:right;clear:right'><img src='{$direct_cachedata['output_useravatar_small']}' border='0' alt='' title='' /></div>"; }
+	if ($direct_cachedata['output_useravatar_large']) { $f_return .= "<div class='pageborder2{$direct_settings['theme_css_corners']}' style='margin-left:$direct_settings[theme_td_padding];float:right;clear:right'><img src='{$direct_cachedata['output_useravatar_large']}' border='0' alt='' title='' /></div>"; }
+	elseif ($direct_cachedata['output_useravatar_small']) { $f_return .= "<div class='pageborder2{$direct_settings['theme_css_corners']}' style='margin-left:$direct_settings[theme_td_padding];float:right;clear:right'><img src='{$direct_cachedata['output_useravatar_small']}' border='0' alt='' title='' /></div>"; }
 
 	$f_return .= "<div class='pageborder1' style='padding:1px'><div class='pagebg' style='padding:$direct_settings[theme_td_padding]'><p class='pagecontent'><span style='font-weight:bold'>".(direct_local_get ("core_usertype")).":</span> ".$direct_cachedata['output_usertype'];
 	if ($direct_cachedata['output_usertitle']) { $f_return .= "<br />\n".$direct_cachedata['output_usertitle']; }
@@ -291,8 +305,8 @@ $f_return .= ("</p>
 	if ($direct_cachedata['output_pageurl_email'])
 	{
 $f_return .= ("\n<tr>
-<td valign='middle' align='right' class='pageextrabg' style='width:25%;padding:$direct_settings[theme_form_td_padding]'><span class='pageextracontent' style='font-weight:bold'>".(direct_local_get ("account_email")).":</span></td>
-<td valign='middle' align='center' class='pagebg' style='width:75%;padding:$direct_settings[theme_form_td_padding]'><span class='pagecontent'><a href='{$direct_cachedata['output_pageurl_email']}' target='_self'>");
+<td class='pageextrabg' style='width:25%;padding:$direct_settings[theme_form_td_padding];text-align:right;vertical-align:middle'><span class='pageextracontent' style='font-weight:bold'>".(direct_local_get ("account_email")).":</span></td>
+<td class='pagebg' style='width:75%;padding:$direct_settings[theme_form_td_padding];text-align:center;vertical-align:middle'><span class='pagecontent'><a href='{$direct_cachedata['output_pageurl_email']}' target='_self'>");
 
 		$f_return .= ($direct_cachedata['output_email'] ? $direct_cachedata['output_email'] : direct_local_get ("account_email_user"));
 		$f_return .= "</a></span></td>\n</tr>";
@@ -301,14 +315,14 @@ $f_return .= ("\n<tr>
 	if ($direct_cachedata['output_signature'])
 	{
 $f_return .= ("\n<tr>
-<td valign='top' align='right' class='pageextrabg' style='width:25%;padding:$direct_settings[theme_form_td_padding]'><span class='pageextracontent' style='font-weight:bold'>".(direct_local_get ("account_signature")).":</span></td>
-<td valign='middle' align='center' class='pagebg' style='width:75%;padding:$direct_settings[theme_form_td_padding]'><span class='pagecontent'>{$direct_cachedata['output_signature']}</span></td>
+<td class='pageextrabg' style='width:25%;padding:$direct_settings[theme_form_td_padding];text-align:right;vertical-align:top'><span class='pageextracontent' style='font-weight:bold'>".(direct_local_get ("account_signature")).":</span></td>
+<td class='pagebg' style='width:75%;padding:$direct_settings[theme_form_td_padding];text-align:center;vertical-align:middle'><span class='pagecontent'>{$direct_cachedata['output_signature']}</span></td>
 </tr>");
 	}
 
 $f_return .= ("\n<tr>
-<td valign='middle' align='right' class='pageextrabg' style='width:25%;padding:$direct_settings[theme_form_td_padding]'><span class='pageextracontent' style='font-weight:bold'>".(direct_local_get ("account_rating")).":</span></td>
-<td valign='middle' align='center' class='pagebg' style='width:75%;padding:$direct_settings[theme_form_td_padding]'><span class='pagecontent'>{$direct_cachedata['output_rating']}</span></td>
+<td class='pageextrabg' style='width:25%;padding:$direct_settings[theme_form_td_padding];text-align:right;vertical-align:middle'><span class='pageextracontent' style='font-weight:bold'>".(direct_local_get ("account_rating")).":</span></td>
+<td class='pagebg' style='width:75%;padding:$direct_settings[theme_form_td_padding];text-align:center;vertical-align:middle'><span class='pagecontent'>{$direct_cachedata['output_rating']}</span></td>
 </tr></tbody>
 </table>");
 
@@ -319,6 +333,7 @@ $f_return .= ("\n<tr>
 
 //j// Script specific commands
 
+$direct_settings['theme_css_corners'] = ((isset ($direct_settings['theme_css_corners_class'])) ? " ".$direct_settings['theme_css_corners_class'] : " ui-corner-all");
 if (!isset ($direct_settings['theme_td_padding'])) { $direct_settings['theme_td_padding'] = "5px"; }
 if (!isset ($direct_settings['theme_form_td_padding'])) { $direct_settings['theme_form_td_padding'] = "3px"; }
 

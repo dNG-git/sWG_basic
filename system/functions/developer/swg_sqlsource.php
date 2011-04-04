@@ -70,7 +70,7 @@ function direct_developer_sqlsource_get_row_conditions (&$f_array,&$f_position)
 
 	do
 	{
-		if ($f_return) { $f_return .= "\n"; 	}
+		if ($f_return) { $f_return .= "\n";	}
 
 		if ($f_array[$f_position] == "(")
 		{
@@ -90,7 +90,7 @@ function direct_developer_sqlsource_get_row_conditions (&$f_array,&$f_position)
 
 		$f_position++;
 
-		if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($f_array[$f_position],"\$") !== false) { $f_return .= "\".(\$direct_classes['db']->define_row_conditions_encode (\"$f_key\",\"{$f_array[$f_position]}\",\"string\",\"$f_logical_operator\",\"$f_condition\")).\""; }
+		if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($f_array[$f_position],"\$") !== false) { $f_return .= "\".(\$direct_globals['db']->define_row_conditions_encode (\"$f_key\",\"{$f_array[$f_position]}\",\"string\",\"$f_logical_operator\",\"$f_condition\")).\""; }
 		else
 		{
 			$f_element_counter++;
@@ -169,7 +169,7 @@ function direct_developer_sqlsource_get_set_attributes (&$f_array,&$f_position)
 			$f_element_counter++;
 			$f_return .= "<element$f_element_counter attribute='$f_attribute' value='$f_array[$f_position]' type='string' />";
 		}
-		else { $f_return .= "\".(\$direct_classes['db']->define_set_attributes_encode (\"$f_attribute\",\"{$f_array[$f_position]}\",\"string\")).\""; }
+		else { $f_return .= "\".(\$direct_globals['db']->define_set_attributes_encode (\"$f_attribute\",\"{$f_array[$f_position]}\",\"string\")).\""; }
 
 		$f_position++;
 
@@ -202,7 +202,7 @@ function direct_developer_sqlsource_get_ordering (&$f_array,&$f_position)
 
 	do
 	{
-		if ($f_return) { $f_return .= "\n"; 	}
+		if ($f_return) { $f_return .= "\n";	}
 
 		$f_attribute = $f_array[$f_position];
 		$f_position++;
@@ -248,14 +248,14 @@ function direct_developer_sqlsource_get_values (&$f_array,&$f_position)
 
 	do
 	{
-		if ($f_result) { $f_result .= "\n"; 	}
+		if ($f_result) { $f_result .= "\n";	}
 
 		if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($f_array[$f_position],"\$") === false)
 		{
 			$f_element_counter++;
 			$f_result .= "<element$f_element_counter value='$f_array[$f_position]' type='string' />";
 		}
-		else { $f_result .= "\".(\$direct_classes['db']->define_values_encode ({$f_array[$f_position]},\"string\")).\""; }
+		else { $f_result .= "\".(\$direct_globals['db']->define_values_encode ({$f_array[$f_position]},\"string\")).\""; }
 
 		$f_position++;
 

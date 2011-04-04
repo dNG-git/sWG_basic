@@ -117,7 +117,7 @@ Extend the class using old and new behavior
 */
 	/*#ifndef(PHP4) */public /* #*/function __construct ()
 	{
-		global $direct_classes,$direct_settings;
+		global $direct_globals,$direct_settings;
 		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -subkernel_uuids->__construct (direct_kernel_uuids)- (#echo(__LINE__)#)"); }
 
 /* -------------------------------------------------------------------------
@@ -142,13 +142,13 @@ Informing the system about available functions
 Set up the unique user ID system
 ------------------------------------------------------------------------- */
 
-		if (!direct_class_function_check ($direct_classes['kernel'],"v_uuid_init"))
+		if (!direct_class_function_check ($direct_globals['kernel'],"v_uuid_init"))
 		{
-			$direct_classes['kernel']->v_call_set ("v_uuid_init",$this,"uuid_init");
+			$direct_globals['kernel']->v_call_set ("v_uuid_init",$this,"uuid_init");
 			$this->functions['uuid_init'] = true;
 		}
 
-		$direct_classes['kernel']->v_uuid_init ($direct_settings['uuid']);
+		$direct_globals['kernel']->v_uuid_init ();
 	}
 /*#ifdef(PHP4):
 /**
@@ -189,7 +189,7 @@ Set up the unique user ID system
 */
 	/*#ifndef(PHP4) */public /* #*/function uuid_cookie_load ()
 	{
-		global $direct_cachedata,$direct_settings;
+		global $direct_cachedata,$direct_globals,$direct_settings;
 		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -subkernel_uuids->uuid_cookie_load ()- (#echo(__LINE__)#)"); }
 
 		$f_return = false;
@@ -216,6 +216,8 @@ Set up the unique user ID system
 				$this->uuid_passcode = $uuid_passcode;
 				$this->uuid_status = "unverified";
 				$this->uuid_cookie_mode = true;
+
+				$direct_globals['input']->uuid_set ($this->uuid);
 			}
 		}
 
@@ -238,30 +240,36 @@ Set up the unique user ID system
 
 		$f_return = false;
 
-		if (($direct_settings['uuids_setcookie'])&&($this->uuid_status == "verified")&&($this->uuid_cookie_mode))
+		if (($direct_settings['uuids_setcookie'])&&($this->uuid_status == "verified"))
 		{
-			if (($this->uuid)&&($this->uuid_data))
+			$f_cookie_expires = "Sat, 01-Jan-00 01:00:00 GMT";
+
+			if ($this->uuid_cookie_mode)
 			{
-				$f_uuid_maxage_inactivity = ($direct_cachedata['core_time'] + $direct_settings['uuids_maxage_inactivity']);
-				$f_uuid_maxage_timeout = ($direct_cachedata['core_time'] + $direct_settings['uuids_maxage_timeout']);
+				if (($this->uuid)&&($this->uuid_data))
+				{
+					$f_uuid_maxage_inactivity = ($direct_cachedata['core_time'] + $direct_settings['uuids_maxage_inactivity']);
+					$f_uuid_maxage_timeout = ($direct_cachedata['core_time'] + $direct_settings['uuids_maxage_timeout']);
 
-				$this->uuid_cookie = ("uuid_name=".$this->uuid."&uuid_timeout=$f_uuid_maxage_timeout&uuid_passcode=".$this->uuid_passcode);
-				$f_uuid_verification = md5 ($this->uuid_cookie);
-				$this->uuid_cookie = urlencode ($this->uuid_cookie."&uuid_verification=".$f_uuid_verification);
+					$this->uuid_cookie = ("uuid_name=".$this->uuid."&uuid_timeout=$f_uuid_maxage_timeout&uuid_passcode=".$this->uuid_passcode);
+					$f_uuid_verification = md5 ($this->uuid_cookie);
+					$this->uuid_cookie = urlencode ($this->uuid_cookie."&uuid_verification=".$f_uuid_verification);
 
-				$f_cookie_expires = (gmdate ("D, d-M-y H:i:s",$f_uuid_maxage_inactivity))." GMT";
+					$f_cookie_expires = (gmdate ("D, d-M-y H:i:s",$f_uuid_maxage_inactivity))." GMT";
+				}
+				else { $this->uuid_cookie = ""; }
 			}
-			else
+			elseif ((isset ($_COOKIE[$direct_settings['uuids_cookie']]))&&(trim ($_COOKIE[$direct_settings['uuids_cookie']]))) { $this->uuid_cookie = ""; }
+			else { $f_cookie_expires = ""; }
+
+			if ($f_cookie_expires)
 			{
-				$this->uuid_cookie = "";
-				$f_cookie_expires = "Sat, 01-Jan-00 01:00:00 GMT";
+				$f_cookie_options = "";
+				if ($direct_settings['uuids_path']) { $f_cookie_options .= " PATH=$direct_settings[uuids_path];"; }
+				if ($direct_settings['uuids_server']) { $f_cookie_options .= " DOMAIN=$direct_settings[uuids_server];"; }
+
+				$direct_cachedata['core_cookies'][$direct_settings['uuids_cookie']] = $direct_settings['uuids_cookie']."=".$this->uuid_cookie.";$f_cookie_options EXPIRES=$f_cookie_expires; HTTPONLY";
 			}
-
-			$f_cookie_options = "";
-			if ($direct_settings['uuids_path']) { $f_cookie_options .= " PATH=$direct_settings[uuids_path];"; }
-			if ($direct_settings['uuids_server']) { $f_cookie_options .= " DOMAIN=$direct_settings[uuids_server];"; }
-
-			$direct_cachedata['core_cookies'][$direct_settings['uuids_cookie']] = $direct_settings['uuids_cookie']."=".$this->uuid_cookie.";$f_cookie_options EXPIRES=$f_cookie_expires; HTTPONLY";
 
 			$f_return = true;
 		}
@@ -277,7 +285,7 @@ Set up the unique user ID system
 	* @param  mixed $f_cookie_mode Boolean for (de)activation - empty string to
 	*         use system setting
 	* @uses   direct_basic_functions::set_debug_result()
- 	* @uses   direct_basic_functions::tmd5()
+	* @uses   direct_basic_functions::tmd5()
 	* @uses   direct_db::define_attributes()
 	* @uses   direct_db::define_limit()
 	* @uses   direct_db::define_row_conditions()
@@ -294,7 +302,7 @@ Set up the unique user ID system
 */
 	/*#ifndef(PHP4) */public /* #*/function uuid_get ($f_type,$f_cookie_mode = false)
 	{
-		global $direct_cachedata,$direct_classes,$direct_settings;
+		global $direct_cachedata,$direct_globals,$direct_settings;
 		if (USE_debug_reporting) { direct_debug (3,"sWG/#echo(__FILEPATH__)# -subkernel_uuids->uuid_get ($f_type,+f_cookie_mode)- (#echo(__LINE__)#)"); }
 
 		$f_return = false;
@@ -302,28 +310,28 @@ Set up the unique user ID system
 
 		if ((((mt_rand (0,30)) > 20))&&(!$direct_settings['uuids_auto_maintenance']))
 		{
-			$direct_classes['db']->init_delete ($direct_settings['uuids_table']);
+			$direct_globals['db']->init_delete ($direct_settings['uuids_table']);
 
-			$f_select_criteria = "<sqlconditions>".($direct_classes['db']->define_row_conditions_encode ($direct_settings['uuids_table'].".ddbuuids_list_maxage_inactivity",$direct_cachedata['core_time'],"number","<"))."</sqlconditions>";
-			$direct_classes['db']->define_row_conditions ($f_select_criteria);
+			$f_select_criteria = "<sqlconditions>".($direct_globals['db']->define_row_conditions_encode ($direct_settings['uuids_table'].".ddbuuids_list_maxage_inactivity",$direct_cachedata['core_time'],"number","<"))."</sqlconditions>";
+			$direct_globals['db']->define_row_conditions ($f_select_criteria);
 
-			if ($direct_classes['db']->query_exec ("co")) { $direct_classes['db']->optimize_random ($direct_settings['uuids_table']); }
+			if ($direct_globals['db']->query_exec ("co")) { $direct_globals['db']->optimize_random ($direct_settings['uuids_table']); }
 		}
 
 		if (($this->uuid_status != "verified")&&($this->uuid))
 		{
-			$direct_classes['db']->init_select ($direct_settings['uuids_table']);
-			$direct_classes['db']->define_attributes ($direct_settings['uuids_table'].".*");
+			$direct_globals['db']->init_select ($direct_settings['uuids_table']);
+			$direct_globals['db']->define_attributes ($direct_settings['uuids_table'].".*");
 
 $f_select_criteria = ("<sqlconditions>
-".($direct_classes['db']->define_row_conditions_encode ($direct_settings['uuids_table'].".ddbuuids_list_id",$this->uuid,"string"))."
-".($direct_classes['db']->define_row_conditions_encode ($direct_settings['uuids_table'].".ddbuuids_list_maxage_inactivity",$direct_cachedata['core_time'],"number",">"))."
+".($direct_globals['db']->define_row_conditions_encode ($direct_settings['uuids_table'].".ddbuuids_list_id",$this->uuid,"string"))."
+".($direct_globals['db']->define_row_conditions_encode ($direct_settings['uuids_table'].".ddbuuids_list_maxage_inactivity",$direct_cachedata['core_time'],"number",">"))."
 </sqlconditions>");
 
-			$direct_classes['db']->define_row_conditions ($f_select_criteria);
-			$direct_classes['db']->define_limit (1);
+			$direct_globals['db']->define_row_conditions ($f_select_criteria);
+			$direct_globals['db']->define_limit (1);
 
-			$f_uuid_array = $direct_classes['db']->query_exec ("sa");
+			$f_uuid_array = $direct_globals['db']->query_exec ("sa");
 		}
 
 		if (!trim ($this->uuid)) { $this->uuid_status = "invalid"; }
@@ -334,7 +342,7 @@ $f_select_criteria = ("<sqlconditions>
 			$f_return = "";
 
 			mt_srand (/*#ifdef(PHP4):((double)microtime ()) * 1000000:#*/);
-			if ($f_cookie_mode) { $this->uuid_passcode = $direct_classes['basic_functions']->tmd5 (uniqid (mt_rand ())); }
+			if ($f_cookie_mode) { $this->uuid_passcode = $direct_globals['basic_functions']->tmd5 (uniqid (mt_rand ())); }
 		}
 		elseif ($this->uuid_status == "verified")
 		{
@@ -384,7 +392,7 @@ both the old and new passcode.
 					{
 						mt_srand (/*#ifdef(PHP4):((double)microtime ()) * 1000000:#*/);
 						$this->uuid_passcode_prev = $this->uuid_passcode;
-						$this->uuid_passcode = $direct_classes['basic_functions']->tmd5 (uniqid (mt_rand ()));
+						$this->uuid_passcode = $direct_globals['basic_functions']->tmd5 (uniqid (mt_rand ()));
 					}
 				}
 				else { $this->uuid_cookie_mode = false; }
@@ -392,7 +400,7 @@ both the old and new passcode.
 				if ($f_uuid_array['ddbuuids_list_ip'] == $direct_settings['user_ip']) { $direct_settings['user_ipcwarn'] = false; }
 				else
 				{
-					direct_output_warning (direct_local_get ("core_user_warning"),(direct_local_get ("core_user_warning_ip")));
+					$direct_globals['output']->warning (direct_local_get ("core_user_warning"),(direct_local_get ("core_user_warning_ip")));
 					$direct_settings['user_ipcwarn'] = true;
 				}
 
@@ -405,31 +413,33 @@ both the old and new passcode.
 
 		if ($this->uuid_status == "invalid")
 		{
-			$direct_classes['db']->init_delete ($direct_settings['uuids_table']);
+			$direct_globals['db']->init_delete ($direct_settings['uuids_table']);
 
-			$f_select_criteria = "<sqlconditions>".($direct_classes['db']->define_row_conditions_encode ($direct_settings['uuids_table'].".ddbuuids_list_id",$this->uuid,"string"))."</sqlconditions>";
-			$direct_classes['db']->define_row_conditions ($f_select_criteria);
+			$f_select_criteria = "<sqlconditions>".($direct_globals['db']->define_row_conditions_encode ($direct_settings['uuids_table'].".ddbuuids_list_id",$this->uuid,"string"))."</sqlconditions>";
+			$direct_globals['db']->define_row_conditions ($f_select_criteria);
 
-			$direct_classes['db']->define_limit (1);
-			if (($direct_classes['db']->query_exec ("co"))&&(!$direct_settings['uuids_auto_maintenance'])) { $direct_classes['db']->v_optimize ($direct_settings['uuids_table']); }
+			$direct_globals['db']->define_limit (1);
+			if (($direct_globals['db']->query_exec ("co"))&&(!$direct_settings['uuids_auto_maintenance'])) { $direct_globals['db']->v_optimize ($direct_settings['uuids_table']); }
 
 			$this->uuid = md5 (uniqid ($direct_settings['user_ip']."_".(mt_rand ())."_"));
 			$this->uuid_status = "verified";
 			$this->uuid_data = "";
+
+			$direct_globals['input']->uuid_set ($this->uuid);
 			$f_return = "";
 
 			mt_srand (/*#ifdef(PHP4):((double)microtime ()) * 1000000:#*/);
-			if ($f_cookie_mode) { $this->uuid_passcode = $direct_classes['basic_functions']->tmd5 (uniqid (mt_rand ())); }
+			if ($f_cookie_mode) { $this->uuid_passcode = $direct_globals['basic_functions']->tmd5 (uniqid (mt_rand ())); }
 		}
 
 		return /*#ifdef(DEBUG):direct_debug (7,"sWG/#echo(__FILEPATH__)# -subkernel_uuids->uuid_get ()- (#echo(__LINE__)#)",:#*/$f_return/*#ifdef(DEBUG):,true):#*/;
 	}
 
-	//f// direct_kernel_uuids->uuid_init (&$f_uuid)
+	//f// direct_kernel_uuids->uuid_init ($f_uuid = NULL)
 /**
 	* Getting the uuIDs up and running at kernel time.
 	*
-	* @param  string &$f_uuid uuID of the current session
+	* @param  string $f_uuid uuID of the current session
 	* @uses   direct_basic_functions::include_file()
 	* @uses   direct_db::connect()
 	* @uses   direct_debug()
@@ -439,28 +449,39 @@ both the old and new passcode.
 	* @return boolean True on success
 	* @since  v0.1.00
 */
-	/*#ifndef(PHP4) */public /* #*/function uuid_init (&$f_uuid)
+	/*#ifndef(PHP4) */public /* #*/function uuid_init ($f_uuid = NULL)
 	{
-		global $direct_cachedata,$direct_classes,$direct_settings;
+		global $direct_cachedata,$direct_globals,$direct_settings;
 		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -subkernel_uuids->uuid_init ($f_uuid)- (#echo(__LINE__)#)"); }
 
-		if (!isset ($direct_classes['db']))
+		if (!isset ($direct_globals['db']))
 		{
 			$f_return = false;
 
-			if ($direct_classes['basic_functions']->include_file ($direct_settings['path_system']."/classes/swg_db.php",1))
+			if ($direct_globals['basic_functions']->include_file ($direct_settings['path_system']."/classes/swg_db.php",1))
 			{
-				if (direct_class_init ("db")) { $f_return = $direct_classes['db']->v_connect (); }
+				if (direct_class_init ("db")) { $f_return = $direct_globals['db']->v_connect (); }
 			}
 		}
 		else { $f_return = true; }
 
 		if ($f_return)
 		{
+/* -------------------------------------------------------------------------
+Set the uuID for this session and activate other uuIDs specific functions.
+------------------------------------------------------------------------- */
+
+			if (isset ($f_uuid)) { $this->uuid = $f_uuid; }
+			else { $this->uuid = $direct_globals['input']->uuid_get (); }
+
 			$this->uuid_cookie_timeout = "";
 
-			if (trim ($f_uuid)) { $this->uuid_status = "unverified"; }
-			else { $f_uuid = md5 (uniqid ($direct_settings['user_ip']."_".(mt_rand ())."_")); }
+			if (trim ($this->uuid)) { $this->uuid_status = "unverified"; }
+			else
+			{
+				$this->uuid = md5 (uniqid ($direct_settings['user_ip']."_".(mt_rand ())."_"));
+				$direct_globals['input']->uuid_set ($this->uuid);
+			}
 
 			$this->uuid_cookie = "";
 			$this->uuid_cookie_mode = false;
@@ -468,20 +489,14 @@ both the old and new passcode.
 			$this->uuid_passcode = "";
 			$this->uuid_passcode_prev = "";
 
-/* -------------------------------------------------------------------------
-Set the uuID for this session and activate other uuIDs specific functions.
-------------------------------------------------------------------------- */
-
-			$this->uuid =& $f_uuid;
-
-			if (!direct_class_function_check ($direct_classes['kernel'],"v_uuid_check_usage"))
+			if (!direct_class_function_check ($direct_globals['kernel'],"v_uuid_check_usage"))
 			{
-				$direct_classes['kernel']->v_call_set ("v_uuid_check_usage",$this,"uuid_check_usage");
-				$direct_classes['kernel']->v_call_set ("v_uuid_cookie_load",$this,"uuid_cookie_load");
-				$direct_classes['kernel']->v_call_set ("v_uuid_cookie_save",$this,"uuid_cookie_save");
-				$direct_classes['kernel']->v_call_set ("v_uuid_get",$this,"uuid_get");
-				$direct_classes['kernel']->v_call_set ("v_uuid_is_cookied",$this,"uuid_is_cookied");
-				$direct_classes['kernel']->v_call_set ("v_uuid_write",$this,"uuid_write");
+				$direct_globals['kernel']->v_call_set ("v_uuid_check_usage",$this,"uuid_check_usage");
+				$direct_globals['kernel']->v_call_set ("v_uuid_cookie_load",$this,"uuid_cookie_load");
+				$direct_globals['kernel']->v_call_set ("v_uuid_cookie_save",$this,"uuid_cookie_save");
+				$direct_globals['kernel']->v_call_set ("v_uuid_get",$this,"uuid_get");
+				$direct_globals['kernel']->v_call_set ("v_uuid_is_cookied",$this,"uuid_is_cookied");
+				$direct_globals['kernel']->v_call_set ("v_uuid_write",$this,"uuid_write");
 				$this->functions['uuid_check_usage'] = true;
 				$this->functions['uuid_cookie_load'] = true;
 				$this->functions['uuid_cookie_save'] = true;
@@ -490,7 +505,7 @@ Set the uuID for this session and activate other uuIDs specific functions.
 				$this->functions['uuid_write'] = true;
 			}
 
-			$direct_classes['kernel']->v_uuid_cookie_load ();
+			$direct_globals['kernel']->v_uuid_cookie_load ();
 		}
 
 		return /*#ifdef(DEBUG):direct_debug (7,"sWG/#echo(__FILEPATH__)# -subkernel_uuids->uuid_init ()- (#echo(__LINE__)#)",:#*/$f_return/*#ifdef(DEBUG):,true):#*/;
@@ -535,7 +550,7 @@ Set the uuID for this session and activate other uuIDs specific functions.
 */
 	/*#ifndef(PHP4) */public /* #*/function uuid_write ($f_data,$f_cookie_mode = "")
 	{
-		global $direct_cachedata,$direct_classes,$direct_settings;
+		global $direct_cachedata,$direct_globals,$direct_settings;
 		if (USE_debug_reporting) { direct_debug (3,"sWG/#echo(__FILEPATH__)# -subkernel_uuids->uuid_write ($f_data,+f_cookie_mode)- (#echo(__LINE__)#)"); }
 
 		$f_return = false;
@@ -543,7 +558,7 @@ Set the uuID for this session and activate other uuIDs specific functions.
 		if (is_bool ($f_cookie_mode)) { $this->uuid_cookie_mode = $f_cookie_mode; }
 		else { $f_cookie_mode = $this->uuid_cookie_mode; }
 
-		if ($this->uuid_status != "verified") { $direct_classes['kernel']->v_uuid_get ("s",$f_cookie_mode); }
+		if ($this->uuid_status != "verified") { $direct_globals['kernel']->v_uuid_get ("s",$f_cookie_mode); }
 		else
 		{
 			$f_uuid_data = ((is_array ($f_data)) ? trim (implode ("\n",$f_data)) : trim ($f_data));
@@ -561,7 +576,7 @@ Set the uuID for this session and activate other uuIDs specific functions.
 					if (!$this->uuid_passcode)
 					{
 						mt_srand (/*#ifdef(PHP4):((double)microtime ()) * 1000000:#*/);
-						$this->uuid_passcode = $direct_classes['basic_functions']->tmd5 (uniqid (mt_rand ()));
+						$this->uuid_passcode = $direct_globals['basic_functions']->tmd5 (uniqid (mt_rand ()));
 					}
 				}
 				else
@@ -572,34 +587,34 @@ Set the uuID for this session and activate other uuIDs specific functions.
 					if ($this->uuid_passcode) { $this->uuid_passcode = ""; }
 				}
 
-				$direct_classes['db']->init_replace ($direct_settings['uuids_table']);
+				$direct_globals['db']->init_replace ($direct_settings['uuids_table']);
 
 				$f_replace_attributes = array ($direct_settings['uuids_table'].".ddbuuids_list_id",$direct_settings['uuids_table'].".ddbuuids_list_passcode_timeout",$direct_settings['uuids_table'].".ddbuuids_list_maxage_timeout",$direct_settings['uuids_table'].".ddbuuids_list_maxage_inactivity",$direct_settings['uuids_table'].".ddbuuids_list_ip",$direct_settings['uuids_table'].".ddbuuids_list_passcode",$direct_settings['uuids_table'].".ddbuuids_list_passcode_prev",$direct_settings['uuids_table'].".ddbuuids_list_data");
-				$direct_classes['db']->define_values_keys ($f_replace_attributes);
+				$direct_globals['db']->define_values_keys ($f_replace_attributes);
 
 $f_replace_values = ("<sqlvalues>
-".($direct_classes['db']->define_values_encode ($this->uuid,"string"))."
-".($direct_classes['db']->define_values_encode ($f_passcode_timeout,"number"))."
-".($direct_classes['db']->define_values_encode ($f_maxage_timeout,"number"))."
-".($direct_classes['db']->define_values_encode ($f_maxage_inactivity,"number"))."
-".($direct_classes['db']->define_values_encode ($direct_settings['user_ip'],"string"))."
-".($direct_classes['db']->define_values_encode ($this->uuid_passcode,"string"))."
-".($direct_classes['db']->define_values_encode ($this->uuid_passcode_prev,"string"))."
-".($direct_classes['db']->define_values_encode ($f_uuid_data,"string"))."
+".($direct_globals['db']->define_values_encode ($this->uuid,"string"))."
+".($direct_globals['db']->define_values_encode ($f_passcode_timeout,"number"))."
+".($direct_globals['db']->define_values_encode ($f_maxage_timeout,"number"))."
+".($direct_globals['db']->define_values_encode ($f_maxage_inactivity,"number"))."
+".($direct_globals['db']->define_values_encode ($direct_settings['user_ip'],"string"))."
+".($direct_globals['db']->define_values_encode ($this->uuid_passcode,"string"))."
+".($direct_globals['db']->define_values_encode ($this->uuid_passcode_prev,"string"))."
+".($direct_globals['db']->define_values_encode ($f_uuid_data,"string"))."
 </sqlvalues>");
 
-				$direct_classes['db']->define_values ($f_replace_values);
-				$f_return = $direct_classes['db']->query_exec ("co");
+				$direct_globals['db']->define_values ($f_replace_values);
+				$f_return = $direct_globals['db']->query_exec ("co");
 				if ($f_return) { $this->uuid_data = $f_uuid_data; }
 			}
 			else
 			{
-				$direct_classes['db']->init_delete ($direct_settings['uuids_table']);
+				$direct_globals['db']->init_delete ($direct_settings['uuids_table']);
 
-				$f_select_criteria = "<sqlconditions>".($direct_classes['db']->define_row_conditions_encode ($direct_settings['uuids_table'].".ddbuuids_list_id",$this->uuid,"string"))."</sqlconditions>";
-				$direct_classes['db']->define_row_conditions ($f_select_criteria);
+				$f_select_criteria = "<sqlconditions>".($direct_globals['db']->define_row_conditions_encode ($direct_settings['uuids_table'].".ddbuuids_list_id",$this->uuid,"string"))."</sqlconditions>";
+				$direct_globals['db']->define_row_conditions ($f_select_criteria);
 
-				if (($direct_classes['db']->query_exec ("co"))&&(!$direct_settings['uuids_auto_maintenance'])) { $direct_classes['db']->optimize_random ($direct_settings['uuids_table']); }
+				if (($direct_globals['db']->query_exec ("co"))&&(!$direct_settings['uuids_auto_maintenance'])) { $direct_globals['db']->optimize_random ($direct_settings['uuids_table']); }
 				$this->uuid = "";
 			}
 		}
@@ -612,7 +627,7 @@ $f_replace_values = ("<sqlvalues>
 Mark this class as the most up-to-date one
 ------------------------------------------------------------------------- */
 
-$direct_classes['@names']['kernel_uuids'] = "direct_kernel_uuids";
+$direct_globals['@names']['kernel_uuids'] = "direct_kernel_uuids";
 define ("CLASS_direct_kernel_uuids",true);
 
 //j// Script specific functions
@@ -623,7 +638,7 @@ if (!isset ($direct_settings['uuids_cookie'])) { $direct_settings['uuids_cookie'
 if (!isset ($direct_settings['uuids_maxage_inactivity'])) { $direct_settings['uuids_maxage_inactivity'] = 604800; }
 if (!isset ($direct_settings['uuids_maxage_timeout'])) { $direct_settings['uuids_maxage_timeout'] = 900; }
 if (!isset ($direct_settings['uuids_passcode_timeout'])) { $direct_settings['uuids_passcode_timeout'] = 300; }
-if (!isset ($direct_settings['uuids_passcode_timeout_prev'])) { $direct_settings['uuids_passcode_timeout_prev'] = 3; }
+if (!isset ($direct_settings['uuids_passcode_timeout_prev'])) { $direct_settings['uuids_passcode_timeout_prev'] = 30; }
 if (!isset ($direct_settings['uuids_path'])) { $direct_settings['uuids_path'] = ""; }
 if (!isset ($direct_settings['uuids_server'])) { $direct_settings['uuids_server'] = ""; }
 if (!isset ($direct_settings['uuids_setcookie'])) { $direct_settings['uuids_setcookie'] = true; }

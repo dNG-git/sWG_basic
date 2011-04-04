@@ -43,6 +43,18 @@
    <register><input input="string" /></register>
   </done>
 
+  <group>
+   <desc><input input="string" /></desc>
+   <input input="string" />
+
+   <selector>
+    <empty><input input="string" /></empty>
+    <input input="string" />
+    <mark><input input="string" /></mark>
+    <unmark><input input="string" /></unmark>
+   </selector>
+  </group>
+
   <helper>
    <email><input input="string" /></email>
    <secid><input input="string" /></secid>
@@ -157,6 +169,22 @@
   <service><list><input input="string" /></list></service>
   <signature><input input="string" /></signature>
 
+  <status><ex>
+   <input input="string" />
+
+   <login>
+    <unverified><input input="string" /></unverified>
+    <verified><input input="string" /></verified>
+   </login>
+
+   <validation><input input="string" /></validation>
+
+   <verification>
+    <status><input input="string" /></status>
+    <type><input input="string" /></type>
+   </verification>
+  </ex></status>
+
   <title>
    <cp><password><change><input input="string" /></change></password></cp>
 
@@ -169,6 +197,7 @@
    </registration>
 
    <secid><input input="string" /></secid>
+   <status><ex><input input="string" /></ex></status>
   </title>
 
   <use><cookie><input input="string" /></cookie></use>
@@ -201,8 +230,15 @@
    <exists><input input="string" /></exists>
   </email>
 
+  <gid><invalid><input input="string" /></invalid></gid>
   <password><invalid><input input="string" /></invalid></password>
   <secid><invalid><input input="string" /></invalid></secid>
+
+  <status><ex>
+   <login><first><input input="string" /></first></login>
+   <verification><expired><input input="string" /></expired></verification>
+   <verify><first><input input="string" /></first></verify>
+  </ex></status>
 
   <tou><required><input input="string" /></required></tou>
 

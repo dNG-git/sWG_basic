@@ -83,15 +83,10 @@ if (!defined ("direct_product_iversion")) { exit (); }
 */
 function direct_mods_account_status_ex_email_login ($f_data)
 {
-	global $direct_cachedata,$direct_classes;
+	global $direct_cachedata,$direct_globals;
 	if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -direct_mods_account_status_ex_email_login (+f_data)- (#echo(__LINE__)#)"); }
 
-	if ($f_data[1] == "email")
-	{
-		$direct_cachedata['i_amods_account_status_ex_email'] = "";
-		$direct_classes['formbuilder']->entry_add_email ("amods_account_status_ex_email",(direct_local_get ("account_email")),true,"l",5,255,(direct_local_get ("account_helper_email")),"",true);
-	}
-
+	if ($f_data[1] == "email") { $direct_globals['formbuilder']->entry_add_email (array ("name" => "amods_account_status_ex_email","title" => (direct_local_get ("account_email")),"content" => "","required" => true,"size" => "l","min" => 5,"max" => 255,"helper_text" => (direct_local_get ("account_helper_email")))); }
 	return /*#ifdef(DEBUG):direct_debug (7,"sWG/#echo(__FILEPATH__)# -direct_mods_account_status_ex_email_login ()- (#echo(__LINE__)#)",:#*/$f_return/*#ifdef(DEBUG):,true):#*/;
 }
 
@@ -112,15 +107,15 @@ function direct_mods_account_status_ex_email_login ($f_data)
 */
 function direct_mods_account_status_ex_email_login_check ($f_data)
 {
-	global $direct_cachedata,$direct_classes,$direct_settings;
+	global $direct_cachedata,$direct_globals,$direct_settings;
 	if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -direct_mods_account_status_ex_email_login_check (+f_data)- (#echo(__LINE__)#)"); }
 
 	$f_return = ($f_data[0] ? $f_data[0] : false);
 
 	if ($f_data[1] == "email")
 	{
-		$direct_cachedata['i_amods_account_status_ex_email'] = (isset ($GLOBALS['i_amods_account_status_ex_email']) ? ($direct_classes['basic_functions']->inputfilter_basic ($GLOBALS['i_amods_account_status_ex_email'])) : "");
-		$direct_classes['formbuilder']->entry_add_email ("amods_account_status_ex_email",(direct_local_get ("account_email")),true,"l",5,255,(direct_local_get ("account_helper_email")),"",true);
+		$direct_cachedata['i_amods_account_status_ex_email'] = (isset ($GLOBALS['i_amods_account_status_ex_email']) ? ($direct_globals['basic_functions']->inputfilter_basic ($GLOBALS['i_amods_account_status_ex_email'])) : "");
+		$direct_globals['formbuilder']->entry_add_email (array ("name" => "amods_account_status_ex_email","title" => (direct_local_get ("account_email")),"required" => true,"size" => "l","min" => 5,"max" => 255,"helper_text" => (direct_local_get ("account_helper_email"))));
 		$f_return = true;
 	}
 
@@ -142,7 +137,7 @@ function direct_mods_account_status_ex_email_login_check ($f_data)
 */
 function direct_mods_account_status_ex_email_login_process ($f_data)
 {
-	global $direct_cachedata,$direct_classes,$direct_settings;
+	global $direct_cachedata,$direct_globals,$direct_settings;
 	if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -direct_mods_account_status_ex_email_login_process (+f_data)- (#echo(__LINE__)#)"); }
 
 	$f_return = ($f_data[0] ? $f_data[0] : -1);
@@ -156,14 +151,12 @@ function direct_mods_account_status_ex_email_login_process ($f_data)
 		{
 			if ($f_data[2]['ddbusers_type'] != "ex")
 			{
-				$direct_cachedata['output_formelements']['6e50b8c9e332697b2f4299e46d305fb1']['error'] = direct_local_get ("errors_account_username_exists");
-				// md5 ("i_ausername")
+				$direct_globals['formbuilder']->entry_error_set ("ausername",(direct_local_get ("errors_account_username_exists")),NULL,$direct_cachedata['output_formelements']);
 				$f_return = -1;
 			}
 			elseif (($f_data[2]['ddbusers_type_ex'] != "email")||($f_data[2]['ddbusers_email'] != $direct_cachedata['i_amods_account_status_ex_email']))
 			{
-				$direct_cachedata['output_formelements']['fb726466b46d55f1648fa354bb89f0c8']['error'] = direct_local_get ("errors_core_access_denied");
-				// md5 ("i_amods_account_status_ex_email")
+				$direct_globals['formbuilder']->entry_error_set ("amods_account_status_ex_email",(direct_local_get ("errors_core_access_denied")),NULL,$direct_cachedata['output_formelements']);
 				$f_return = -1;
 			}
 			else { $f_user_array = $f_data[2]; }
@@ -206,42 +199,38 @@ $f_user_array = array (
 
 				if ($f_user_array['ddbusers_type'] != "ex")
 				{
-					$direct_cachedata['output_formelements']['6e50b8c9e332697b2f4299e46d305fb1']['error'] = direct_local_get ("errors_account_username_exists");
-					// md5 ("i_ausername")
+					$direct_globals['formbuilder']->entry_error_set ("ausername",(direct_local_get ("errors_core_access_denied")),NULL,$direct_cachedata['output_formelements']);
 					$f_return = -1;
 				}
 				elseif ($f_user_array['ddbusers_type_ex'] != "email")
 				{
-					$direct_cachedata['output_formelements']['fb726466b46d55f1648fa354bb89f0c8']['error'] = direct_local_get ("errors_core_access_denied");
-					// md5 ("i_amods_account_status_ex_email")
+					$direct_globals['formbuilder']->entry_error_set ("amods_account_status_ex_email",(direct_local_get ("errors_core_access_denied")),NULL,$direct_cachedata['output_formelements']);
 					$f_return = -1;
 				}
 				elseif ($f_user_array['ddbusers_deleted']) { $f_user_array['ddbusers_deleted'] = 0; }
 			}
 			else
 			{
-				$direct_cachedata['output_formelements']['fb726466b46d55f1648fa354bb89f0c8']['error'] = direct_local_get ("errors_core_unknown_error");
-				// md5 ("i_amods_account_status_ex_email")
+				$direct_globals['formbuilder']->entry_error_set ("amods_account_status_ex_email",(direct_local_get ("errors_core_unknown_error")),NULL,$direct_cachedata['output_formelements']);
 				$f_return = -1;
 			}
 		}
 
 		if ($f_return > 0)
 		{
-			if ($f_user_insert) { $f_return = $direct_classes['kernel']->v_user_insert ($f_user_array['ddbusers_id'],$f_user_array); }
+			if ($f_user_insert) { $f_return = $direct_globals['kernel']->v_user_insert ($f_user_array['ddbusers_id'],$f_user_array); }
 			else
 			{
 				if ($direct_cachedata['i_ausername'] != $f_user_array['ddbusers_name']) { $f_user_array['ddbusers_name'] = $direct_cachedata['i_ausername']; }
 				$f_user_array['ddbusers_lastvisit_ip'] = $direct_settings['user_ip'];
 				$f_user_array['ddbusers_lastvisit_time'] = $direct_cachedata['core_time'];
-				$f_return = $direct_classes['kernel']->v_user_update ($f_user_array['ddbusers_id'],$f_user_array);
+				$f_return = $direct_globals['kernel']->v_user_update ($f_user_array['ddbusers_id'],$f_user_array);
 			}
 
 			if ($f_return) { $f_return = 1; }
 			else
 			{
-				$direct_cachedata['output_formelements']['fb726466b46d55f1648fa354bb89f0c8']['error'] = direct_local_get ("errors_core_unknown_error");
-				// md5 ("i_amods_account_status_ex_email")
+				$direct_globals['formbuilder']->entry_error_set ("amods_account_status_ex_email",(direct_local_get ("errors_core_unknown_error")),NULL,$direct_cachedata['output_formelements']);
 				$f_return = -1;
 			}
 		}
@@ -265,25 +254,33 @@ $f_user_array = array (
 */
 function direct_mods_account_status_ex_email_login_save ($f_data)
 {
-	global $direct_cachedata,$direct_classes,$direct_settings;
+	global $direct_cachedata,$direct_globals,$direct_settings;
 	if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -direct_mods_account_status_ex_email_login_save (+f_data)- (#echo(__LINE__)#)"); }
 
 	$f_return = ((is_array ($f_data[0])) ? $f_data[0] : $f_data[3]);
 
-	if (!$direct_classes['basic_functions']->include_file ($direct_settings['path_system']."/classes/swg_sendmailer_formtags.php")) { $f_return = array (); }
+	if (!$direct_globals['basic_functions']->include_file ($direct_settings['path_system']."/classes/swg_sendmailer_formtags.php")) { $f_return = array (); }
+
+	if ($direct_settings['swg_pyhelper'])
+	{
+		if (!$direct_globals['basic_functions']->include_file ($direct_settings['path_system']."/classes/web_services/swg_pyHelper.php")) { $f_return = array (); }
+	}
+	elseif (!$direct_globals['basic_functions']->include_file ($direct_settings['path_system']."/functions/swg_tmp_storager.php")) { $f_return = array (); }
 
 	if (($f_data[1] == "email")&&(isset ($f_return['userid'])))
 	{
-		$f_uuid_storage_array = direct_tmp_storage_get ("evars",$direct_settings['uuid'],"","task_cache");
+		$f_uuid = $direct_globals['input']->uuid_get ();
+
+		$f_uuid_storage_array = direct_tmp_storage_get ("evars",$f_uuid,"","task_cache");
 		if (!$f_uuid_storage_array) { $f_uuid_storage_array = array (); }
 
 		$f_uuid_storage_array['account_status_ex_type'] = "email";
 		$f_uuid_storage_array['account_status_ex_verified'] = 0;
 		if (!isset ($f_uuid_storage_array['core_sid'])) { $f_uuid_storage_array['core_sid'] = "e268443e43d93dab7ebef303bbe9642f"; }
 		// md5 ("account")
-		if (!isset ($f_uuid_storage_array['uuid'])) { $f_uuid_storage_array['uuid'] = $direct_settings['uuid']; }
+		if (!isset ($f_uuid_storage_array['uuid'])) { $f_uuid_storage_array['uuid'] = $f_uuid; }
 
-		if (direct_tmp_storage_write ($f_uuid_storage_array,$direct_settings['uuid'],$f_uuid_storage_array['core_sid'],"task_cache","evars",$direct_cachedata['core_time'],($direct_cachedata['core_time'] + $direct_settings['uuids_maxage_inactivity'])))
+		if (direct_tmp_storage_write ($f_uuid_storage_array,$f_uuid,$f_uuid_storage_array['core_sid'],"task_cache","evars",$direct_cachedata['core_time'],($direct_cachedata['core_time'] + $direct_settings['uuids_maxage_inactivity'])))
 		{
 			$f_vid = md5 (uniqid (""));
 			$f_vid_timeout = ($direct_cachedata['core_time'] + $direct_settings['account_status_ex_email_validation_timeout']);
@@ -292,7 +289,7 @@ $f_vid_array = array (
 "core_vid_module" => "account_status_ex_verification",
 "account_username" => $direct_cachedata['i_ausername'],
 "account_email" => $direct_cachedata['i_amods_account_status_ex_email'],
-"account_uuid" => $direct_settings['uuid']
+"account_uuid" => $f_uuid
 );
 
 			$direct_cachedata['i_ausername'] = addslashes ($direct_cachedata['i_ausername']);
@@ -300,18 +297,17 @@ $f_vid_array = array (
 			if (direct_tmp_storage_write ($f_vid_array,$f_vid,"a617908b172c473cb8e8cda059e55bf0","status_ex","evars",0,$f_vid_timeout))
 			// md5 ("validation")
 			{
-				$f_redirect_url = ((isset ($direct_settings['swg_redirect_url'])) ? $direct_settings['swg_redirect_url'] : $direct_settings['home_url']."/swg_redirect.php");
-				$f_sendmailer_object = new direct_sendmailer_formtags ();
-				$f_sendmailer_object->recipients_define (array ($direct_cachedata['i_amods_account_status_ex_email'] => $direct_cachedata['i_ausername']));
+				$f_redirect_url = ((isset ($direct_settings['swg_redirect_url'])) ? $direct_settings['swg_redirect_url'] : $direct_settings['iscript_req']."?redirect;");
 
 $f_message = ("[contentform:highlight]".(direct_local_get ("core_message_by_request","text"))."
 
 [font:bold]".(direct_local_get ("core_message_to","text")).":[/font] $direct_cachedata[i_ausername] ($direct_cachedata[i_amods_account_status_ex_email])[/contentform]
+
 ".(direct_local_get ("core_validation_required","text"))."
 
 ".(direct_local_get ("account_status_ex_validation","text"))."
 
-[url]$f_redirect_url?validation;{$f_vid}[/url]
+[url]{$f_redirect_url}validation;{$f_vid}[/url]
 
 ".(direct_local_get ("core_one_line_link","text"))."
 
@@ -319,8 +315,36 @@ $f_message = ("[contentform:highlight]".(direct_local_get ("core_message_by_requ
 (C) $direct_settings[swg_title_txt] ([url]{$direct_settings['home_url']}[/url])
 All rights reserved");
 
-				$f_sendmailer_object->message_set ($f_message);
-				if (!$f_sendmailer_object->send ("single",$direct_settings['administration_email_out'],$direct_settings['swg_title_txt']." - ".(direct_local_get ("account_title_status_ex","text")))) { $f_return = array (); }
+				if ($direct_settings['swg_pyhelper'])
+				{
+					$f_daemon_object = new direct_web_pyHelper ();
+
+$f_entry_array = array (
+"id" => uniqid (""),
+"name" => "de.direct_netware.sWG.plugins.sendmail",
+"identifier" => $direct_cachedata['i_amods_account_status_ex_email'],
+"data" => direct_evars_write (array (
+ "core_lang" => $direct_settings['lang'],
+ "account_sendmail_message" => $f_message,
+ "account_sendmail_recipient_email" => $direct_cachedata['i_amods_account_status_ex_email'],
+ "account_sendmail_recipient_name" => $direct_cachedata['i_ausername'],
+ "account_sendmail_title" => direct_local_get ("account_title_status_ex","text")
+ ))
+);
+
+					$f_continue_check = ($f_daemon_object ? $f_daemon_object->resource_check () : false);
+					if ($f_continue_check) { $f_continue_check = $f_daemon_object->request ("de.direct_netware.psd.plugins.queue.addEntry",$f_entry_array); }
+				}
+				else
+				{
+					$f_sendmailer_object = new direct_sendmailer_formtags ();
+					$f_sendmailer_object->recipients_define (array ($direct_cachedata['i_amods_account_status_ex_email'] => $direct_cachedata['i_ausername']));
+
+					$f_sendmailer_object->message_set ($f_message);
+					$f_continue_check = $f_sendmailer_object->send ("single",$direct_settings['administration_email_out'],$direct_settings['swg_title_txt']." - ".(direct_local_get ("account_title_status_ex","text")));
+				}
+
+				if (!$f_continue_check) { $f_return = array (); }
 			}
 			else { $f_return = array (); }
 		}
@@ -333,6 +357,7 @@ All rights reserved");
 //j// Script specific functions
 
 if (!isset ($direct_settings['account_status_ex_email_validation_timeout'])) { $direct_settings['account_status_ex_email_validation_timeout'] = 18000; }
+if (!isset ($direct_settings['swg_pyhelper'])) { $direct_settings['swg_pyhelper'] = false; }
 if (!isset ($direct_settings['uuids_maxage_inactivity'])) { $direct_settings['uuids_maxage_inactivity'] = 604800; }
 
 //j// EOF

@@ -71,7 +71,7 @@ if (!defined ("direct_product_iversion")) { exit (); }
 */
 function direct_credits_payment_check ($f_return_information = false,$f_credits_change = 0)
 {
-	global $direct_classes,$direct_settings;
+	global $direct_globals,$direct_settings;
 	if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -direct_credits_payment_check (+f_return_information,$f_credits_change)- (#echo(__LINE__)#)"); }
 
 	if ($direct_settings['account_credits'])
@@ -81,7 +81,7 @@ function direct_credits_payment_check ($f_return_information = false,$f_credits_
 
 		if ($direct_settings['user']['id'])
 		{
-			$f_user_array = $direct_classes['kernel']->v_user_get ($direct_settings['user']['id']);
+			$f_user_array = $direct_globals['kernel']->v_user_get ($direct_settings['user']['id']);
 
 			if (($f_user_array['ddbusers_credits'])||($f_credits_change >= 0))
 			{
@@ -142,7 +142,7 @@ function direct_credits_payment_check ($f_return_information = false,$f_credits_
 */
 function direct_credits_payment_exec ($f_controller,$f_identifier,$f_id,$f_userid,$f_credits_onetime = 0,$f_credits_periodically = 0,$f_counter = 0)
 {
-	global $direct_cachedata,$direct_classes,$direct_settings;
+	global $direct_cachedata,$direct_globals,$direct_settings;
 	if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -direct_credits_payment_exec ($f_controller,$f_identifier,$f_id,$f_userid,$f_credits_onetime,$f_credits_periodically)- (#echo(__LINE__)#)"); }
 
 	if ($direct_settings['account_credits'])
@@ -150,7 +150,7 @@ function direct_credits_payment_exec ($f_controller,$f_identifier,$f_id,$f_useri
 		$f_credits_onetime = ceil ($f_credits_onetime);
 		$f_credits_periodically = ceil ($f_credits_periodically);
 		$f_return = false;
-		$f_user_array = ($f_userid ? $direct_classes['kernel']->v_user_get ($f_userid) : $direct_classes['kernel']->v_user_get ($direct_settings['user']['id']));
+		$f_user_array = ($f_userid ? $direct_globals['kernel']->v_user_get ($f_userid) : $direct_globals['kernel']->v_user_get ($direct_settings['user']['id']));
 
 		if ($f_user_array)
 		{
@@ -162,14 +162,14 @@ function direct_credits_payment_exec ($f_controller,$f_identifier,$f_id,$f_useri
 				if ($f_user_array['ddbusers_credits'] < 0)
 				{
 $f_log_array = array (
-"source_user_id" => $direct_settings['user']['id'],
-"source_user_ip" => $direct_settings['user_ip'],
-"target_user_id" => $f_user_array['ddbusers_id'],
-"target_user_ip" => $f_user_array['ddbusers_lastvisit_ip'],
-"sid" => "4063a52147d1bc5c975d3caf2966274d",
+"ddblog_source_user_id" => $direct_settings['user']['id'],
+"ddblog_source_user_ip" => $direct_settings['user_ip'],
+"ddblog_target_user_id" => $f_user_array['ddbusers_id'],
+"ddblog_target_user_ip" => $f_user_array['ddbusers_lastvisit_ip'],
+"ddblog_sid" => "4063a52147d1bc5c975d3caf2966274d",
 // md5 ("account_credits")
-"identifier" => "account_credits_limit_zero_warning",
-"data" => array ("fee" => $f_credits_onetime,"old" => $f_credits_old,"new" => $f_user_array['ddbusers_credits'])
+"ddblog_identifier" => "account_credits_limit_zero_warning",
+"ddblog_data" => array ("fee" => $f_credits_onetime,"old" => $f_credits_old,"new" => $f_user_array['ddbusers_credits'])
 );
 
 					direct_log_write ($f_log_array);
@@ -179,31 +179,31 @@ $f_log_array = array (
 				if ($f_user_array['ddbusers_credits'] > $direct_settings['users_credits_max'])
 				{
 $f_log_array = array (
-"source_user_id" => $direct_settings['user']['id'],
-"source_user_ip" => $direct_settings['user_ip'],
-"target_user_id" => $f_user_array['ddbusers_id'],
-"target_user_ip" => $f_user_array['ddbusers_lastvisit_ip'],
-"sid" => "4063a52147d1bc5c975d3caf2966274d",
+"ddblog_source_user_id" => $direct_settings['user']['id'],
+"ddblog_source_user_ip" => $direct_settings['user_ip'],
+"ddblog_target_user_id" => $f_user_array['ddbusers_id'],
+"ddblog_target_user_ip" => $f_user_array['ddbusers_lastvisit_ip'],
+"ddblog_sid" => "4063a52147d1bc5c975d3caf2966274d",
 // md5 ("account_credits")
-"identifier" => "account_credits_limit_max_warning",
-"data" => array ("fee" => $f_credits_onetime,"old" => $f_credits_old,"new" => $f_user_array['ddbusers_credits'])
+"ddblog_identifier" => "account_credits_limit_max_warning",
+"ddblog_data" => array ("fee" => $f_credits_onetime,"old" => $f_credits_old,"new" => $f_user_array['ddbusers_credits'])
 );
 
 					direct_log_write ($f_log_array);
 					$f_user_array['ddbusers_credits'] = $direct_settings['users_credits_max'];
 				}
 
-				if ($direct_classes['kernel']->v_user_update ($f_user_array['ddbusers_id'],$f_user_array))
+				if ($direct_globals['kernel']->v_user_update ($f_user_array['ddbusers_id'],$f_user_array))
 				{
 $f_log_array = array (
-"source_user_id" => $direct_settings['user']['id'],
-"source_user_ip" => $direct_settings['user_ip'],
-"target_user_id" => $f_user_array['ddbusers_id'],
-"target_user_ip" => $f_user_array['ddbusers_lastvisit_ip'],
-"sid" => "4063a52147d1bc5c975d3caf2966274d",
+"ddblog_source_user_id" => $direct_settings['user']['id'],
+"ddblog_source_user_ip" => $direct_settings['user_ip'],
+"ddblog_target_user_id" => $f_user_array['ddbusers_id'],
+"ddblog_target_user_ip" => $f_user_array['ddbusers_lastvisit_ip'],
+"ddblog_sid" => "4063a52147d1bc5c975d3caf2966274d",
 // md5 ("account_credits")
-"identifier" => "account_credits_payment",
-"data" => array (
+"ddblog_identifier" => "account_credits_payment",
+"ddblog_data" => array (
 	"type" => "onetime",
 	"fee" => $f_credits_onetime,
 	"old" => $f_credits_old,
@@ -224,49 +224,49 @@ $f_log_array = array (
 			{
 				if (($f_credits_periodically)&&($f_return))
 				{
-					$direct_classes['db']->init_insert ($direct_settings['users_credits_table']);
+					$direct_globals['db']->init_insert ($direct_settings['users_credits_table']);
 
 					$f_insert_attributes = array ($direct_settings['users_credits_table'].".ddbcredits_id",$direct_settings['users_credits_table'].".ddbcredits_id_obj",$direct_settings['users_credits_table'].".ddbcredits_id_user",$direct_settings['users_credits_table'].".ddbcredits_controller",$direct_settings['users_credits_table'].".ddbcredits_identifier",$direct_settings['users_credits_table'].".ddbcredits_time",$direct_settings['users_credits_table'].".ddbcredits_amount",$direct_settings['users_credits_table'].".ddbcredits_counter");
-					$direct_classes['db']->define_values_keys ($f_insert_attributes);
+					$direct_globals['db']->define_values_keys ($f_insert_attributes);
 
 					$f_credits_task_id = uniqid ("");
 					$f_credits_task_time = ($direct_cachedata['core_time'] + ($direct_settings['users_credits_periodically_days'] * 86400));
 
 $f_insert_values = ("<sqlvalues>
-".($direct_classes['db']->define_values_encode ($f_credits_task_id,"string"))."
-".($direct_classes['db']->define_values_encode ($f_id,"string"))."
-".($direct_classes['db']->define_values_encode ($f_user_array['ddbusers_id'],"string"))."
-".($direct_classes['db']->define_values_encode ($f_controller,"string"))."
-".($direct_classes['db']->define_values_encode ($f_identifier,"string"))."
-".($direct_classes['db']->define_values_encode ($f_credits_task_time,"number"))."
-".($direct_classes['db']->define_values_encode ($f_credits_periodically,"number"))."
-".($direct_classes['db']->define_values_encode ($f_counter,"number"))."
+".($direct_globals['db']->define_values_encode ($f_credits_task_id,"string"))."
+".($direct_globals['db']->define_values_encode ($f_id,"string"))."
+".($direct_globals['db']->define_values_encode ($f_user_array['ddbusers_id'],"string"))."
+".($direct_globals['db']->define_values_encode ($f_controller,"string"))."
+".($direct_globals['db']->define_values_encode ($f_identifier,"string"))."
+".($direct_globals['db']->define_values_encode ($f_credits_task_time,"number"))."
+".($direct_globals['db']->define_values_encode ($f_credits_periodically,"number"))."
+".($direct_globals['db']->define_values_encode ($f_counter,"number"))."
 </sqlvalues>");
 
-					$direct_classes['db']->define_values ($f_insert_values);
-					$f_return = $direct_classes['db']->query_exec ("co");
+					$direct_globals['db']->define_values ($f_insert_values);
+					$f_return = $direct_globals['db']->query_exec ("co");
 
-					if (($f_return)&&(function_exists ("direct_dbsync_event"))) { direct_dbsync_event ($direct_settings['users_credits_table'],"insert",("<sqlconditions>".($direct_classes['db']->define_row_conditions_encode ("ddbcredits_id",$f_credits_task_id,"string"))."</sqlconditions>")); }
+					if (($f_return)&&(function_exists ("direct_dbsync_event"))) { direct_dbsync_event ($direct_settings['users_credits_table'],"insert",("<sqlconditions>".($direct_globals['db']->define_row_conditions_encode ("ddbcredits_id",$f_credits_task_id,"string"))."</sqlconditions>")); }
 				}
 			}
 			else { trigger_error ("sWG/#echo(__FILEPATH__)# -direct_credits_payment_exec ()- (#echo(__LINE__)#) reporting: sWG does not support periodically credits while running in non-auto-maintenance mode.",E_USER_WARNING); }
 
 			if ((!$f_credits_onetime)&&(!$f_credits_periodically)&&($f_return))
 			{
-				$direct_classes['db']->init_delete ($direct_settings['users_credits_table']);
+				$direct_globals['db']->init_delete ($direct_settings['users_credits_table']);
 
-				$f_delete_criteria = "<sqlconditions>".($direct_classes['db']->define_row_conditions_encode ($direct_settings['users_credits_table'].".ddbcredits_id_obj",$f_id,"string"));
-				if ($f_controller) { $f_delete_criteria .= $direct_classes['db']->define_row_conditions_encode ($direct_settings['users_credits_table'].".ddbcredits_controller",$f_controller,"string"); }
-				if ($f_identifier) { $f_delete_criteria .= $direct_classes['db']->define_row_conditions_encode ($direct_settings['users_credits_table'].".ddbcredits_identifier",$f_identifier,"string"); }
+				$f_delete_criteria = "<sqlconditions>".($direct_globals['db']->define_row_conditions_encode ($direct_settings['users_credits_table'].".ddbcredits_id_obj",$f_id,"string"));
+				if ($f_controller) { $f_delete_criteria .= $direct_globals['db']->define_row_conditions_encode ($direct_settings['users_credits_table'].".ddbcredits_controller",$f_controller,"string"); }
+				if ($f_identifier) { $f_delete_criteria .= $direct_globals['db']->define_row_conditions_encode ($direct_settings['users_credits_table'].".ddbcredits_identifier",$f_identifier,"string"); }
 				$f_delete_criteria .= "</sqlconditions>";
 
-				$direct_classes['db']->define_row_conditions ($f_delete_criteria);
-				$f_return = $direct_classes['db']->query_exec ("co");
+				$direct_globals['db']->define_row_conditions ($f_delete_criteria);
+				$f_return = $direct_globals['db']->query_exec ("co");
 
 				if ($f_return)
 				{
 					if (function_exists ("direct_dbsync_event")) { direct_dbsync_event ($direct_settings['users_credits_table'],"delete",$f_delete_criteria); }
-					if (!$direct_settings['swg_auto_maintenance']) { $direct_classes['db']->v_optimize ($direct_settings['users_credits_table']); }
+					if (!$direct_settings['swg_auto_maintenance']) { $direct_globals['db']->v_optimize ($direct_settings['users_credits_table']); }
 				}
 			}
 		}
@@ -299,7 +299,7 @@ $f_insert_values = ("<sqlvalues>
 */
 function direct_credits_payment_get_specials ($f_identifier,$f_object,&$f_default_onetime,&$f_default_periodically)
 {
-	global $direct_classes,$direct_settings;
+	global $direct_globals,$direct_settings;
 	if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -direct_credits_payment_get_specials ($f_identifier,$f_object,$f_default_onetime,$f_default_periodically)- (#echo(__LINE__)#)"); }
 
 	if (($direct_settings['user']['type'] == "ad")||(!$direct_settings['account_credits']))
@@ -307,25 +307,25 @@ function direct_credits_payment_get_specials ($f_identifier,$f_object,&$f_defaul
 		$f_default_onetime = 0;
 		$f_default_periodically = 0;
 	}
-	elseif (($direct_settings['user']['type'] != "gt")&&(direct_class_function_check ($direct_classes['kernel'],"v_group_user_get_groups")))
+	elseif (($direct_settings['user']['type'] != "gt")&&(direct_class_function_check ($direct_globals['kernel'],"v_group_user_get_groups")))
 	{
 		$f_id_identifier = md5 ($f_identifier);
 
-		$direct_classes['db']->init_select ($direct_settings['users_credits_specials_table']);
-		$direct_classes['db']->define_attributes ("*");
+		$direct_globals['db']->init_select ($direct_settings['users_credits_specials_table']);
+		$direct_globals['db']->define_attributes ("*");
 
-		$f_select_criteria = "<sqlconditions>".($direct_classes['db']->define_row_conditions_encode ($direct_settings['users_credits_table'].".ddbcredits_specials_id_obj",$f_id_identifier,"string","==","or"))."</sqlconditions>";
+		$f_select_criteria = "<sqlconditions>".($direct_globals['db']->define_row_conditions_encode ($direct_settings['users_credits_table'].".ddbcredits_specials_id_obj",$f_id_identifier,"string","==","or"))."</sqlconditions>";
 
 		if ($f_object)
 		{
 			$f_id_obj = md5 ($f_identifier."_".$f_object);
-			$f_select_criteria .= $direct_classes['db']->define_row_conditions_encode ($direct_settings['users_credits_table'].".ddbcredits_specials_id_obj",$f_id_obj,"string","==","or");
+			$f_select_criteria .= $direct_globals['db']->define_row_conditions_encode ($direct_settings['users_credits_table'].".ddbcredits_specials_id_obj",$f_id_obj,"string","==","or");
 		}
 
 		$f_select_criteria .= "</sqlconditions>";
-		$direct_classes['db']->define_row_conditions ($f_select_criteria);
+		$direct_globals['db']->define_row_conditions ($f_select_criteria);
 
-		$f_results_array = $direct_classes['db']->query_exec ("ma");
+		$f_results_array = $direct_globals['db']->query_exec ("ma");
 
 		if ($f_results_array)
 		{
@@ -358,7 +358,7 @@ function direct_credits_payment_get_specials ($f_identifier,$f_object,&$f_defaul
 
 				if (!empty ($f_credits_special_groups))
 				{
-					$f_groups_array = $direct_classes['kernel']->v_group_user_get_groups ();
+					$f_groups_array = $direct_globals['kernel']->v_group_user_get_groups ();
 
 					foreach ($f_credits_special_groups as $f_group => $f_result_array)
 					{
@@ -451,7 +451,7 @@ if (!isset ($direct_settings['swg_auto_maintenance'])) { $direct_settings['swg_a
 if (!isset ($direct_settings['users_credits_max'])) { $direct_settings['users_credits_max'] = 50000; }
 if (!isset ($direct_settings['users_credits_periodically_days'])) { $direct_settings['users_credits_periodically_days'] = 30; }
 
-$direct_classes['basic_functions']->require_file ($direct_settings['path_system']."/functions/swg_log_storager.php");
+$direct_globals['basic_functions']->require_file ($direct_settings['path_system']."/functions/swg_log_storager.php");
 direct_local_integration ("credits_manager");
 
 //j// EOF

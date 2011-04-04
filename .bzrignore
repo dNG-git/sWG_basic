@@ -1,5 +1,7 @@
 _extras
 .*
-data/settings/swg_build_targets.php
-system/classes/ext_ipk/*
+*.mo
+nbproject
 makefile.php
+sWG_basic.*
+system/classes/ext_ipk/*

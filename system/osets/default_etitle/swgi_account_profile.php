@@ -65,23 +65,23 @@ function direct_account_oset_parse_user_fullh ($f_data,$f_pageclass,$f_user_page
 
 	if ((is_array ($f_data))&&(!empty ($f_data)))
 	{
-		$f_return = "<table cellspacing='1' summary='' class='pageborder1' style='width:100%;table-layout:auto'>\n<thead class='pagehide'><tr>";
+		$f_return = "<table class='pageborder1' style='width:100%;table-layout:auto'>\n<thead class='pagehide'><tr>";
 
-		if ($f_data[$f_prefix."avatar_small"]) { $f_return .= "<td colspan='2' align='left' class='pagetitlecellbg' style='padding:$direct_settings[theme_td_padding]'><span class='pagetitlecellcontent'>".(direct_local_get ("core_username"))."</span></td>"; }
-		else { $f_return .= "<td align='left' class='pagetitlecellbg' style='padding:$direct_settings[theme_td_padding]'><span class='pagetitlecellcontent'>".(direct_local_get ("core_username"))."</span></td>"; }
+		if ($f_data[$f_prefix."avatar_small"]) { $f_return .= "<td colspan='2' class='pagetitlecellbg' style='padding:$direct_settings[theme_td_padding];text-align:left'><span class='pagetitlecellcontent'>".(direct_local_get ("core_username"))."</span></td>"; }
+		else { $f_return .= "<td class='pagetitlecellbg' style='padding:$direct_settings[theme_td_padding];text-align:left'><span class='pagetitlecellcontent'>".(direct_local_get ("core_username"))."</span></td>"; }
 
 		$f_return .= "\n</tr></thead><tbody><tr>\n";
 
-		if ($f_data[$f_prefix."avatar_small"]) { $f_return .= "<td valign='middle' align='left' class='pageextrabg' style='padding:5px'><img src='".$f_data[$f_prefix."avatar_small"]."' border='0' alt=\"".$f_data[$f_prefix."name"]."\" title=\"".$f_data[$f_prefix."name"]."\" /></td>\n<td align='left' valign='middle' class='{$f_pageclass}bg' style='width:100%;padding:5px'>"; }
-		else { $f_return .= "<td valign='middle' align='left' class='{$f_pageclass}bg' style='width:100%;padding:5px'>"; }
+		if ($f_data[$f_prefix."avatar_small"]) { $f_return .= "<td class='pageextrabg' style='padding:5px;text-align:left;vertical-align:middle'><img src='".$f_data[$f_prefix."avatar_small"]."' border='0' alt=\"".$f_data[$f_prefix."name"]."\" title=\"".$f_data[$f_prefix."name"]."\" /></td>\n<td class='{$f_pageclass}bg' style='width:100%;padding:5px;text-align:left;vertical-align:middle'>"; }
+		else { $f_return .= "<td class='{$f_pageclass}bg' style='width:100%;padding:5px;text-align:left;vertical-align:middle'>"; }
 
 		$f_return .= "<p class='{$f_pageclass}content'><span style='font-weight:bold'>";
 
-		if ($f_user_pageurl) { $f_return .= "<a href='$f_user_pageurl' target='_self'>".$f_data[$f_prefix."name"]."</a>"; }
-		elseif ($f_data[$f_prefix."pageurl"]) { $f_return .= "<a href='".$f_data[$f_prefix."pageurl"]."' target='_self'>".$f_data[$f_prefix."name"]."</a>"; }
+		if ($f_user_pageurl) { $f_return .= (((isset ($direct_settings['swg_clientsupport']['JSDOMManipulation']))||(substr ($direct_settings['ohandler'],0,5) == "ajax_")) ? "<a href=\"javascript:djs_dialog(null,{url:'".(str_replace ("?","?xhtml_embedded;",$f_user_pageurl))."'})\">".$f_data[$f_prefix."name"]."</a>" : "<a href='$f_user_pageurl' target='_self'>".$f_data[$f_prefix."name"]."</a>"); }
+		elseif ($f_data[$f_prefix."pageurl"]) { $f_return .= (((isset ($direct_settings['swg_clientsupport']['JSDOMManipulation']))||(substr ($direct_settings['ohandler'],0,5) == "ajax_")) ? "<a href=\"javascript:djs_dialog(null,{url:'".(str_replace ("?","?xhtml_embedded;",$f_data[$f_prefix."pageurl"]))."'})\">".$f_data[$f_prefix."name"]."</a>" : "<a href='".$f_data[$f_prefix."pageurl"]."' target='_self'>".$f_data[$f_prefix."name"]."</a>"); }
 		else { $f_return .= $f_data[$f_prefix."name"]; }
-		$f_return .= "</span>";
 
+		$f_return .= "</span>";
 		if ($f_data[$f_prefix."title"]) { $f_return .= "<br />\n".$f_data[$f_prefix."title"]; }
 
 		if ($f_user_ip) { $f_return .= "<br />\n<span style='font-size:10px'>($f_user_ip)</span>"; }
@@ -112,6 +112,7 @@ function direct_account_oset_parse_user_fullh ($f_data,$f_pageclass,$f_user_page
 */
 function direct_account_oset_parse_user_fullv ($f_data,$f_pageclass,$f_user_pageurl = "",$f_user_ip = "",$f_prefix = "")
 {
+	global $direct_settings;
 	if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -direct_account_oset_parse_user_fullv (+f_data,$f_pageclass,$f_user_pageurl,$f_user_ip,$f_prefix)- (#echo(__LINE__)#)"); }
 
 	if ((is_array ($f_data))&&(!empty ($f_data)))
@@ -120,11 +121,11 @@ function direct_account_oset_parse_user_fullv ($f_data,$f_pageclass,$f_user_page
 		if ($f_data[$f_prefix."avatar_small"]) { $f_return .= "<p><img src='".$f_data[$f_prefix."avatar_small"]."' border='0' alt=\"".$f_data[$f_prefix."name"]."\" title=\"".$f_data[$f_prefix."name"]."\" /></p>"; }
 		$f_return .= "<p class='$f_pageclass'><span style='font-weight:bold'>";
 
-		if ($f_user_pageurl) { $f_return .= "<a href='$f_user_pageurl' target='_self'>".$f_data[$f_prefix."name"]."</a>"; }
-		elseif ($f_data[$f_prefix."pageurl"]) { $f_return .= "<a href='".$f_data[$f_prefix."pageurl"]."' target='_self'>".$f_data[$f_prefix."name"]."</a>"; }
+		if ($f_user_pageurl) { $f_return .= (((isset ($direct_settings['swg_clientsupport']['JSDOMManipulation']))||(substr ($direct_settings['ohandler'],0,5) == "ajax_")) ? "<a href=\"javascript:djs_dialog(null,{url:'".(str_replace ("?","?xhtml_embedded;",$f_user_pageurl))."'})\">".$f_data[$f_prefix."name"]."</a>" : "<a href='$f_user_pageurl' target='_self'>".$f_data[$f_prefix."name"]."</a>"); }
+		elseif ($f_data[$f_prefix."pageurl"]) { $f_return .= (((isset ($direct_settings['swg_clientsupport']['JSDOMManipulation']))||(substr ($direct_settings['ohandler'],0,5) == "ajax_")) ? "<a href=\"javascript:djs_dialog(null,{url:'".(str_replace ("?","?xhtml_embedded;",$f_data[$f_prefix."pageurl"]))."'})\">".$f_data[$f_prefix."name"]."</a>" : "<a href='".$f_data[$f_prefix."pageurl"]."' target='_self'>".$f_data[$f_prefix."name"]."</a>"); }
 		else { $f_return .= $f_data[$f_prefix."name"]; }
-		$f_return .= "</span>";
 
+		$f_return .= "</span>";
 		if ($f_data[$f_prefix."title"]) { $f_return .= "<br />\n".$f_data[$f_prefix."title"]; }
 
 		if ($f_user_ip) { $f_return .= "<br />\n<span style='font-size:10px'>($f_user_ip)</span>"; }

@@ -53,9 +53,12 @@ if (!defined ("direct_product_iversion")) { exit (); }
 
 //j// Functions and classes
 
-if (!defined ("CLASS_direct_output_theme"))
+$g_continue_check = ((defined ("CLASS_direct_oxhtml_theme")) ? false : true);
+if (!defined ("CLASS_direct_output_inline")) { $g_continue_check = false; }
+
+if ($g_continue_check)
 {
-//c// direct_output_theme
+//c// direct_oxhtml_theme
 /**
 * The theme support is "incremental". Our inline theme will be overwritten by
 * this class. An additional subtype will overwrite this class.
@@ -64,20 +67,20 @@ if (!defined ("CLASS_direct_output_theme"))
 * @copyright  (C) direct Netware Group - All rights reserved
 * @package    sWG_basic
 * @subpackage output_theme
-* @uses       CLASS_direct_output_control
+* @uses       CLASS_direct_output_inline
 * @since      v0.1.00
 * @license    http://www.direct-netware.de/redirect.php?licenses;w3c
 *             W3C (R) Software License
 */
-class direct_output_theme extends direct_output_inline
+class direct_oxhtml_theme extends direct_output_inline
 {
 /* -------------------------------------------------------------------------
 Extend the class using old and new behavior
 ------------------------------------------------------------------------- */
 
-	//f// direct_output_theme->__construct () and direct_output_theme->direct_output_theme ()
+	//f// direct_oxhtml_theme->__construct () and direct_oxhtml_theme->direct_oxhtml_theme ()
 /**
-	* Constructor (PHP5) __construct (direct_output_theme)
+	* Constructor (PHP5) __construct (direct_oxhtml_theme)
 	*
 	* @uses  direct_debug()
 	* @uses  USE_debug_reporting
@@ -85,8 +88,8 @@ Extend the class using old and new behavior
 */
 	/*#ifndef(PHP4) */public /* #*/function __construct ()
 	{
-		global $direct_classes,$direct_settings;
-		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -output_theme_class->__construct (direct_output_theme)- (#echo(__LINE__)#)"); }
+		global $direct_globals,$direct_settings;
+		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -output_theme_class->__construct (direct_oxhtml_theme)- (#echo(__LINE__)#)"); }
 
 /* -------------------------------------------------------------------------
 My parent should be on my side to get the work done
@@ -98,20 +101,20 @@ My parent should be on my side to get the work done
 Check the blocker support and inform the system about available functions
 ------------------------------------------------------------------------- */
 
-		if ($direct_classes['basic_functions']->include_file ($direct_settings['path_system']."/functions/swg_blocker.php",2)) { $this->functions['theme_page'] = true; }
+		if ($direct_globals['basic_functions']->include_file ($direct_settings['path_system']."/functions/swg_blocker.php",2)) { $this->functions['theme_page'] = true; }
 
-		$direct_classes['output']->css_header ();
-		$direct_classes['output']->js_header ();
+		$direct_globals['output']->css_header ();
+		$direct_globals['output']->js_header ();
 	}
 /*#ifdef(PHP4):
 /**
-	* Constructor (PHP4) direct_output_theme (direct_output_theme)
+	* Constructor (PHP4) direct_oxhtml_theme (direct_oxhtml_theme)
 	*
 	* @since v0.1.00
 *\/
-	function direct_output_theme () { $this->__construct (); }
+	function direct_oxhtml_theme () { $this->__construct (); }
 :#*/
-	//f// direct_output_theme->theme_page ($f_title)
+	//f// direct_oxhtml_theme->theme_page ($f_title)
 /**
 	* This function will be activated to show the content in default mode.
 	*
@@ -122,7 +125,7 @@ Check the blocker support and inform the system about available functions
 */
 	/*#ifndef(PHP4) */public /* #*/function theme_page ($f_title)
 	{
-		global $direct_cachedata,$direct_classes,$direct_local,$direct_settings;
+		global $direct_cachedata,$direct_globals,$direct_local,$direct_settings;
 		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -output_theme_class->theme_page ($f_title)- (#echo(__LINE__)#)"); }
 
 		$direct_settings['theme_xhtml_type'] = "application/xhtml+xml; charset=".$direct_local['lang_charset'];
@@ -130,15 +133,15 @@ Check the blocker support and inform the system about available functions
 
 		if (!isset ($direct_settings['theme_mainmenu'])) { $direct_settings['theme_mainmenu'] = "mainmenu"; }
 
-$this->page = ("<?xml version='1.0' encoding='$direct_local[lang_charset]' ?><!DOCTYPE html SYSTEM \"about:legacy-compat\">
+$this->output_data = ("<?xml version='1.0' encoding='$direct_local[lang_charset]' ?><!DOCTYPE html SYSTEM \"about:legacy-compat\">
 <html xmlns='http://www.w3.org/1999/xhtml' xml:lang='$direct_local[lang_iso_domain]'>
 
 <head>
 <title>$f_title</title>");
 
-		if (strlen ($direct_cachedata['output_p3purl'])) { $this->page .= "\n<link rel='P3Pv1' href='{$direct_cachedata['output_p3purl']}'>"; }
+		if (strlen ($direct_cachedata['output_p3purl'])) { $this->output_data .= "\n<link rel='P3Pv1' href='{$direct_cachedata['output_p3purl']}'>"; }
 
-$this->page .= ("\n<meta http-equiv='Content-Type' content='$direct_settings[theme_xhtml_type]' />
+$this->output_data .= ("\n<meta http-equiv='Content-Type' content='$direct_settings[theme_xhtml_type]' />
 <meta name='author' content='direct Netware Group' />
 <meta name='creator' content='$direct_settings[product_lcode_txt] by the direct Netware Group' />
 <meta name='description' content='$direct_settings[product_lcode_subtitle_txt]' />
@@ -165,7 +168,7 @@ td { padding:0px }
 .designcopyrightcontent { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10px;color:#DDDDDD }
 .designcopyrightcontent a, .designcopyrightcontent a:link, .designcopyrightcontent a:active, .designcopyrightcontent a:visited, .designcopyrightcontent a:hover, .designcopyrightcontent a:focus { color:#FFFFFF }
 
-.designlogobg { width:152px;height:80px;background-image:url(".(direct_linker_dynamic ("url0","s=cache&dsd=dfile+$direct_settings[path_themes]/swg/v4/design_05.png",false,false)).");background-repeat:no-repeat;text-align:left }
+.designlogobg { width:152px;height:80px;background-image:url(".(direct_linker_dynamic ("url0","s=cache;dsd=dfile+$direct_settings[path_themes]/swg/v4/design_05.png",false,false)).");background-repeat:no-repeat;text-align:left }
 .designlogobg { margin-top:4px;padding-top:1px;text-align:left }
 
 .designmainmenucontent { border:1px solid #375A9D;border-radius:3px 3px;padding:5px;text-align:center }
@@ -184,11 +187,7 @@ td { padding:0px }
 .designpagemenucontent span a, .designpagemenucontent span a:link, .designpagemenucontent span a:visited { color:#000000;text-decoration:underline }
 .designpagemenucontent span a:active, .designpagemenucontent span a:hover, .designpagemenucontent span a:focus { color:#444444;text-decoration:none }
 
-.designservicemenucontent { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;color:#222222 }
-.designservicemenucontent a, .designservicemenucontent a:link, .designservicemenucontent a:visited { color:#000000;text-decoration:underline }
-.designservicemenucontent a:active, .designservicemenucontent a:hover, .designservicemenucontent a:focus { color:#444444;text-decoration:none }
-
-.designtitlebg { background-image:url(".(direct_linker_dynamic ("url0","s=cache&dsd=dfile+$direct_settings[path_themes]/swg/v4/design_04.png",false,false)).");background-repeat:repeat-x;background-color:#FFFFFF }
+.designtitlebg { background-image:url(".(direct_linker_dynamic ("url0","s=cache;dsd=dfile+$direct_settings[path_themes]/swg/v4/design_04.png",false,false)).");background-repeat:repeat-x;background-color:#FFFFFF }
 .designtitlecontent { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;color:#000000 }
 .designtitlecontent a, .designtitlecontent a:link, .designtitlecontent a:visited { color:#000000;text-decoration:underline }
 .designtitlecontent a:active, .designtitlecontent a:hover, .designtitlecontent a:focus { color:#193879;text-decoration:none }
@@ -202,6 +201,7 @@ td { padding:0px }
 .pagecontent a, .pagecontent a:link, .pagecontent a:active, .pagecontent a:visited, .pagecontent a:hover, .pagecontent a:focus { color:#000000 }
 .pagecontentinputbutton { background-color:#F5F5F5;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;color:#000000 }
 .pagecontentinputcheckbox { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;color:#222222;background-color:#FFFFFF }
+.pagecontentinputfocused { border-color:#193879 }
 .pagecontentinputtextnpassword { border:1px solid #C0C0C0;background-color:#F5F5F5 }
 .pagecontentinputtextnpassword { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;color:#222222 }
 .pagecontentselect { border:1px solid #C0C0C0;background-color:#F5F5F5 }
@@ -226,83 +226,83 @@ td { padding:0px }
 .pagehighlightborder1 { background-color:#FF0000;border-collapse:separate;border-spacing:1px }
 .pagehighlightborder2 { border:1px solid #FF0000;background-color:#FBF6CD;padding:4px }
 
+.pagehoveropacity, .pagehoveropacity:link, .pagehoveropacity:visited { opacity:0.75 }
+.pagehoveropacity:active, .pagehoveropacity:hover, .pagehoveropacity:focus { opacity:1 }
+
 .pagehr { height:1px;overflow:hidden;border-top:1px solid #193879 }
+
+.pageservicemenubg { border:1px solid #D9D9DA;padding:5px }
+.pageservicemenucontent { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10px;color:#222222 }
+.pageservicemenucontent a, .pageservicemenucontent a:link, .pageservicemenucontent a:visited { color:#000000;text-decoration:underline }
+.pageservicemenucontent a:active, .pageservicemenucontent a:hover, .pageservicemenucontent a:focus { color:#444444;text-decoration:none }
 
 .pagetitlecellbg { background-color:#375A9D }
 .pagetitlecellcontent { display:block;padding:3px }
 .pagetitlecellcontent { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;font-weight:bold;color:#FFFFFF }
 .pagetitlecellcontent a, .pagetitlecellcontent a:link, .pagetitlecellcontent a:active, .pagetitlecellcontent a:visited, .pagetitlecellcontent a:hover, .pagetitlecellcontent a:focus { color:#FFFFFF }
 ]]></style>
-".($direct_classes['output']->header_elements ())."
+".($direct_globals['output']->header_elements ())."
 </head>
 
 <body onload='djs_run_onload ();'><div id='swgAJAX_loading_point' style='display:none'><!-- iPoint // --></div><script type='text/javascript'><![CDATA[
-djs_swgAJAX_loading_writeln ('center');
+djs_var.core_run_onload.push ({ func:'djs_swgAJAX_init',params: { position:'center' } });
 ]]></script><div style='position:absolute;top:0px;left:0px;z-index:254;width:31px;height:71px;background-color:#FFFFFF'>
 <div style='width:31px;height:16px;background-color:#000000'></div>
 <div style='width:19px;height:1px;margin-top:1px;background-color:#000000'></div>
 <div style='width:19px;height:49px;margin-top:1px;background-color:#193879'></div>
 <div style='width:19px;height:1px;margin-top:1px;background-color:#193879'></div>
-</div><img src='".(direct_linker_dynamic ("url0","s=cache&dsd=dfile+$direct_settings[path_themes]/swg/v4/design_01.png",true,false))."' width='31' height='125' alt='' title='' style='position:absolute;top:0px;left:0px;z-index:255' /><div style='width:100%;height:10px;background-color:#000000'></div><table style='width:100%;background-image:url(".(direct_linker_dynamic ("url0","s=cache&dsd=dfile+$direct_settings[path_themes]/swg/v4/design_02.png",true,false)).");background-repeat:repeat-x'>
+</div><img src='".(direct_linker_dynamic ("url0","s=cache;dsd=dfile+$direct_settings[path_themes]/swg/v4/design_01.png",true,false))."' width='31' height='125' alt='' title='' style='position:absolute;top:0px;left:0px;z-index:255' /><div style='width:100%;height:10px;background-color:#000000'></div><table style='width:100%;background-image:url(".(direct_linker_dynamic ("url0","s=cache;dsd=dfile+$direct_settings[path_themes]/swg/v4/design_02.png",true,false)).");background-repeat:repeat-x'>
 <thead><tr>
-<td class='designtitlebg' style='height:85px;text-align:right;vertical-align:middle'><div class='designlogobg' style='float:left'><a href='http://www.direct-netware.de/redirect.php?$direct_settings[product_icode]' target='_blank'><img src='$direct_settings[iscript_url]a=cache&amp;dsd=dfile+swg_logo.png' width='75' height='75' alt='$direct_settings[product_lcode_txt]' title='$direct_settings[product_lcode_txt]' /></a></div>
+<td class='designtitlebg' style='height:85px;text-align:right;vertical-align:middle'><div class='designlogobg' style='float:left'><a href='http://www.direct-netware.de/redirect.php?$direct_settings[product_icode]' target='_blank'><img src='$direct_settings[iscript_url]a=cache;dsd=dfile+swg_logo.png' width='75' height='75' alt='$direct_settings[product_lcode_txt]' title='$direct_settings[product_lcode_txt]' /></a></div>
 <p class='designtitlecontent' style='padding:5px 0px'><span id='swgversion_ipoint' style='font-size:24px'><a href='".(direct_linker ("url0","a=info"))."' target='_blank' style='text-decoration:none'>$direct_settings[product_lcode_html]</a><br /></span><script type='text/javascript'><![CDATA[
-if (djs_swgDOM)
-{
- function djs_swgversion_switch ()
- {
-  if (self.document.getElementById('swgversion').style.display == 'none') { self.document.getElementById('swgversion').style.display = 'inline'; }
-  else { self.document.getElementById('swgversion').style.display = 'none'; }
- }
-
-djs_swgDOM_replace (\"<span class='designtitlecontent'><span style='font-size:24px'><a href='javascript:djs_swgversion_switch();' style='text-decoration:none'>$direct_settings[product_lcode_html]</a></span><br />\\n\" +
-\"<span id='swgversion' style='display:none'>$direct_settings[product_version] - $direct_settings[product_buildid]<br /></span></span>\",'swgversion_ipoint')
-}
+function djs_theme_swgversion_switch () { \$('#swgversion').slideToggle (); }
+djs_var.core_run_onload.push ({ func:'djs_swgDOM_replace',params: { id:'swgversion_ipoint',data:\"<span class='designtitlecontent'><span style='font-size:24px'><a href='javascript:djs_theme_swgversion_switch();' style='text-decoration:none'>$direct_settings[product_lcode_html]</a></span><br />\\n\" +
+\"<span id='swgversion' style='display:none'>$direct_settings[product_version] - $direct_settings[product_buildid]<br /></span></span>\" } });
 ]]></script>$direct_settings[product_lcode_subtitle_html]</p></td>
 </tr></thead><tbody><tr>
 <td class='designpagebg' style='padding:10px 12px;text-align:left;vertical-align:middle'>");
 
-		if ($direct_classes['output']->options_check ("pagemenu"))
+		if ($direct_globals['output']->options_check ("pagemenu"))
 		{
-			$this->page .= "<p class='designpagemenucontent'>";
-			if ($direct_cachedata['output_pagemenu_title']) { $this->page .= "<span style='font-weight:bold'>{$direct_cachedata['output_pagemenu_title']}:</span> "; }
-			$this->page .= "<span>[ ".($direct_classes['output']->options_generator ("v","pagemenu"," ]</span> <span>[ "))." ]</span></p>\n";
+			$this->output_data .= "<p class='designpagemenucontent'>";
+			if ($direct_cachedata['output_pagemenu_title']) { $this->output_data .= "<span style='font-weight:bold'>{$direct_cachedata['output_pagemenu_title']}:</span> "; }
+			$this->output_data .= "<span>[ ".($direct_globals['output']->options_generator ("v","pagemenu"," ]</span> <span>[ "))." ]</span></p>\n";
 		}
 
-		$this->page .= "<p class='designmainmenucontent'><span>[ ".(direct_block_get ("blockmenu","h",$direct_settings['theme_mainmenu']," ]</span> <span>[ "))." ]</span></p>\n";
+		$this->output_data .= "<p class='designmainmenucontent'><span>[ ".(direct_block_get ("blockmenu","h",$direct_settings['theme_mainmenu']," ]</span> <span>[ "))." ]</span></p>\n";
 
 		if ((is_array ($direct_cachedata['output_warning']))&&(!empty ($direct_cachedata['output_warning'])))
 		{
-			foreach ($direct_cachedata['output_warning'] as $f_warning_array) { $this->page .= "<p class='pagehighlightborder2'><span class='pageextracontent'><span style='font-weight:bold'>{$f_warning_array['title']}</span><br />\n{$f_warning_array['text']}</span></p>\n"; }
+			foreach ($direct_cachedata['output_warning'] as $f_warning_array) { $this->output_data .= "<p class='pagehighlightborder2{$direct_settings['theme_css_corners']} pageextracontent'><span style='font-weight:bold'>{$f_warning_array['title']}</span><br />\n{$f_warning_array['text']}</p>\n"; }
 		}
 
-		if ($direct_classes['output']->options_check ("servicemenu")) { $this->page .= "<p class='pageborder2' style='text-align:left'><span class='pageextracontent'>".($direct_classes['output']->options_generator ("h","servicemenu"))."</span></p>\n"; }
-		$this->page .= $direct_classes['output']->page_content;
-		if ($direct_classes['output']->options_check ("servicemenu")) { $this->page .= "\n<p class='pageborder2' style='text-align:right'><span class='pageextracontent'>".($direct_classes['output']->options_generator ("h","servicemenu"))."</span></p>"; }
+		if ($direct_globals['output']->options_check ("servicemenu")) { $this->output_data .= "<p class='pageborder2{$direct_settings['theme_css_corners']} pageextracontent' style='text-align:left'>".($direct_globals['output']->options_generator ("h","servicemenu"))."</p>\n"; }
+		$this->output_data .= $direct_globals['output']->output_content;
+		if ($direct_globals['output']->options_check ("servicemenu")) { $this->output_data .= "\n<p class='pageborder2{$direct_settings['theme_css_corners']} pageextracontent' style='text-align:right'>".($direct_globals['output']->options_generator ("h","servicemenu"))."</p>"; }
 
-$this->page .= ("</td>
+$this->output_data .= ("</td>
 </tr></tbody><tfoot><tr>
 <td class='designcopyrightbg' style='height:50px;text-align:center;vertical-align:middle'><span class='designcopyrightcontent'>Powered by: $direct_settings[product_lcode_html] $direct_settings[product_version]<br />
 &#xA9; <a href='http://www.direct-netware.de/redirect.php?$direct_settings[product_icode]' target='_blank'><span style='font-style:italic'>direct</span> Netware Group</a> - All rights reserved");
 
-		if ($direct_classes['output']->output_additional_copyright) { $this->page .= "<br />\n".$direct_classes['output']->output_additional_copyright; }
+		if ($direct_globals['output']->output_additional_copyright) { $this->output_data .= "<br />\n".$direct_globals['output']->output_additional_copyright; }
 
-$this->page .= ("</span></td>
+$this->output_data .= ("</span></td>
 </tr></tfoot>
 </table><div style='position:absolute;top:0px;right:0px;z-index:254;width:31px;height:71px;background-color:#FFFFFF'>
 <div style='width:31px;height:16px;background-color:#000000'></div>
 <div style='width:19px;height:1px;margin-top:1px;background-color:#000000'></div>
 <div style='width:19px;height:49px;margin-top:1px;background-color:#193879'></div>
 <div style='width:19px;height:1px;margin-top:1px;background-color:#193879'></div>
-</div><img src='".(direct_linker_dynamic ("url0","s=cache&dsd=dfile+$direct_settings[path_themes]/swg/v4/design_03.png",true,false))."' width='31' height='125' alt='' title='' style='position:absolute;top:0px;right:0px;z-index:255' />
+</div><img src='".(direct_linker_dynamic ("url0","s=cache;dsd=dfile+$direct_settings[path_themes]/swg/v4/design_03.png",true,false))."' width='31' height='125' alt='' title='' style='position:absolute;top:0px;right:0px;z-index:255' />
 </body>
 
 </html>");
 	}
 }
 
-$direct_classes['@names']['output_theme'] = "direct_output_theme";
-define ("CLASS_direct_output_theme",true);
+$direct_globals['@names']['output_theme'] = "direct_oxhtml_theme";
+define ("CLASS_direct_oxhtml_theme",true);
 }
 
 //j// EOF

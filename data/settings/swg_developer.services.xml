@@ -5,7 +5,7 @@
   <base64_encode active='1' position='1' lang=''>
    <title value='BASE64-encode' />
    <description value='Create BASE64 encoded strings of your input' />
-   <link value='m=developer&amp;s=tools;base64&amp;a=encode' type='url0' />
+   <link value='m=developer;s=tools+base64;a=encode' type='url0' />
    <guests value='0' />
    <members value='1' />
    <group_right value='0' />
@@ -14,7 +14,7 @@
   <base64_decode active='1' position='2' lang=''>
    <title value='BASE64-decode' />
    <description value='Convert BASE64 encoded strings into human readable text' />
-   <link value='m=developer&amp;s=tools;base64&amp;a=decode' type='url0' />
+   <link value='m=developer;s=tools+base64;a=decode' type='url0' />
    <guests value='0' />
    <members value='1' />
    <group_right value='0' />
@@ -23,7 +23,7 @@
   <md5_encode active='1' position='3' lang=''>
    <title value='MD5-encode' />
    <description value='Covert given input into a MD5 string.' />
-   <link value='m=developer&amp;s=tools;starmd&amp;a=md5' type='url0' />
+   <link value='m=developer;s=tools+starmd;a=md5' type='url0' />
    <guests value='0' />
    <members value='1' />
    <group_right value='0' />
@@ -32,7 +32,7 @@
   <tmd5_encode active='1' position='4' lang=''>
    <title value='Triple MD5-encode' />
    <description value='Covert given input into a Triple MD5 string.' />
-   <link value='m=developer&amp;s=tools;starmd&amp;a=tmd5' type='url0' />
+   <link value='m=developer;s=tools+starmd;a=tmd5' type='url0' />
    <guests value='0' />
    <members value='1' />
    <group_right value='0' />
@@ -41,7 +41,7 @@
   <sqlencode active='1' position='5' lang=''>
    <title value='ANSI SQL Decoder' />
    <description value='Create direct_db compatible source code for ANSI SQL.' />
-   <link value='m=developer&amp;s=sqlsource' type='url0' />
+   <link value='m=developer;s=sqlsource' type='url0' />
    <guests value='0' />
    <members value='1' />
    <group_right value='0' />
@@ -50,7 +50,7 @@
   <translations active='1' position='6' lang=''>
    <title value='Translation tool' />
    <description value='Translate strings into a registered language.' />
-   <link value='m=developer&amp;s=translations' type='url0' />
+   <link value='m=developer;s=translations' type='url0' />
    <guests value='0' />
    <members value='1' />
    <group_right value='0' />

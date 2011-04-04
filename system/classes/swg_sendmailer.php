@@ -51,8 +51,7 @@ Testing for required classes
 ------------------------------------------------------------------------- */
 
 $g_continue_check = ((defined ("CLASS_direct_sendmailer")) ? false : true);
-if (!defined ("CLASS_direct_basic_rfc_functions")) { $direct_classes['basic_functions']->include_file ($direct_settings['path_system']."/classes/swg_basic_rfc_functions.php"); }
-if (!defined ("CLASS_direct_basic_rfc_functions")) { $g_continue_check = false; }
+if (!defined ("CLASS_direct_basic_rfc_functions")) { $g_continue_check = ($direct_globals['basic_functions']->include_file ($direct_settings['path_system']."/classes/swg_basic_rfc_functions.php") ? defined ("CLASS_direct_basic_rfc_functions") : false); }
 
 if ($g_continue_check)
 {
@@ -95,6 +94,7 @@ Extend the class using old and new behavior
 */
 	/*#ifndef(PHP4) */public /* #*/function __construct ()
 	{
+		global $direct_settings;
 		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -sendmailer_class->__construct (direct_sendmailer)- (#echo(__LINE__)#)"); }
 
 /* -------------------------------------------------------------------------
@@ -123,7 +123,7 @@ Set up some variables
 ------------------------------------------------------------------------- */
 
 		$this->data = array ();
-		$this->linesep = "\n";
+		if ($direct_settings['swg_sendmailer_unixmode']) { $this->linesep = "\n"; }
 		$this->recipients = array ();
 	}
 /*#ifdef(PHP4):
@@ -212,7 +212,7 @@ Set up some variables
 */
 	/*#ifndef(PHP4) */public /* #*/function recipient_parse ($f_recipient)
 	{
-		global $direct_classes;
+		global $direct_globals;
 		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -sendmailer_class->recipient_parse (+f_recipient)- (#echo(__LINE__)#)"); }
 
 		$f_return = array ();
@@ -223,7 +223,7 @@ Set up some variables
 			{
 				$f_continue_check = true;
 				$f_recipient_name = trim ($f_result_array[1]);
-				$f_recipient_address = $direct_classes['basic_functions']->inputfilter_email ($f_result_array[2]);
+				$f_recipient_address = $direct_globals['basic_functions']->inputfilter_email ($f_result_array[2]);
 
 				if ((strlen ($f_recipient_name))&&(strlen ($f_recipient_address)))
 				{
@@ -266,7 +266,7 @@ Set up some variables
 			}
 			else
 			{
-				$f_recipient_address = $direct_classes['basic_functions']->inputfilter_email ($f_recipient);
+				$f_recipient_address = $direct_globals['basic_functions']->inputfilter_email ($f_recipient);
 
 				if (strlen ($f_recipient_address))
 				{
@@ -375,62 +375,60 @@ Set up some variables
 			$f_from = preg_replace ("#\r|\n#","",$f_from);
 			$f_sender_address = preg_replace ("#\"(.*?)\" <(.*?)>#i","\\2",$f_from);
 			if (!$direct_settings['swg_sendmailer_use_names']) { $f_from = $f_sender_address; }
+			$f_subject = $this->quoted_printable_encode ($f_subject,true);
 
-			$f_email_headers .= (($this->header_align ("Return-Path: ".$f_from))."\r\n");
-			$f_email_headers .= (($this->header_align ("From: ".$f_from))."\r\n");
+			$f_email_headers .= ($this->header_align ("From: ".$f_from)).$this->linesep;
 
 			if ($f_type == "bcc")
 			{
-				$f_email_headers .= (($this->header_align ("Bcc: ".$f_recipients))."\r\n");
+				$f_email_headers .= ($this->header_align ("Bcc: ".$f_recipients)).$this->linesep;
 
 				if ($direct_settings['swg_sendmailer_use_names']) { $f_recipients = $direct_settings['swg_sendmailer_bcc_recipient']; }
 				else { $f_recipients = preg_replace ("#\"(.*?)\" <(.*?)>#i","\\2",$direct_settings['swg_sendmailer_bcc_recipient']); }
 			}
 
-			$f_email_headers .= (($this->header_align ("Reply-To: ".$f_from))."\r\n");
-			$f_email_headers .= "User-Agent: direct SendMailer/1.1.0 (PHP-mail) [direct Netware Group]\r\n";
-			$f_email_headers .= (($this->header_align ("X-Sender: ".$f_from))."\r\n");
-			$f_email_headers .= "X-Mailer: direct SendMailer/1.1.0 (PHP-mail) [direct Netware Group]\r\n";
-			$f_email_headers .= "MIME-Version: 1.0\r\n";
+			$f_email_headers .= ($this->header_align ("Reply-To: ".$f_from)).$this->linesep;
+			$f_email_headers .= "User-Agent: direct SendMailer/1.1.0 (PHP-mail) [direct Netware Group]".$this->linesep;
+			$f_email_headers .= ($this->header_align ("X-Sender: ".$f_from)).$this->linesep;
+			$f_email_headers .= "X-Mailer: direct SendMailer/1.1.0 (PHP-mail) [direct Netware Group]".$this->linesep;
+			$f_email_headers .= "MIME-Version: 1.0".$this->linesep;
 
 			if ((count ($this->data)) == 1)
 			{
 				$f_email_content = ((isset ($this->data['@text'])) ? "@text" : "@mhtml");
-				$f_email_headers .= (($this->header_align ("Content-Type: ".$this->data[$f_email_content]['mimetype']."; charset=".$this->data[$f_email_content]['encoding']))."\n");
-				$f_email_headers .= $this->header_align ("Content-Transfer-Encoding: quoted-printable");
-				if ($direct_settings['swg_sendmailer_unixheader']) { $f_email_headers = str_replace ("\r\n","\n",$f_email_headers); }
+				$f_email_headers .= ($this->header_align ("Content-Type: ".$this->data[$f_email_content]['mimetype']."; charset=".$this->data[$f_email_content]['encoding'])).$this->linesep;
+				$f_email_headers .= "Content-Transfer-Encoding: quoted-printable";
+
 				$f_email_content = $this->quoted_printable_encode ($this->data[$f_email_content]['data']);
 
-				if ((PHP_VERSION > "4.0.4")&&($direct_settings['swg_sendmailer_senderrewrite'])) { $f_return = mail ($f_recipients,$f_subject,$f_email_content,$f_email_headers,"-f".$f_sender_address); }
-				else { $f_return = mail ($f_recipients,$f_subject,$f_email_content,$f_email_headers); }
+				$f_return = ($direct_settings['swg_sendmailer_senderrewrite'] ? mail ($f_recipients,$f_subject,$f_email_content,$f_email_headers,"-f".$f_sender_address) : mail ($f_recipients,$f_subject,$f_email_content,$f_email_headers));
 			}
 			else
 			{
 				$f_email_headers .= $this->multipart_header ("multipart/mixed");
-				if ($direct_settings['swg_sendmailer_unixheader']) { $f_email_headers = str_replace ("\r\n","\n",$f_email_headers); }
-				$f_email_content = "";
 
-				if (isset ($this->data['@text'])) { $f_email_content .= ((isset ($this->data['@mhtml'])) ? (($this->multipart_body_alternative_header (1))."\n\n".($this->multipart_body ("@text",$this->data['@text'],1))) : $this->multipart_body ("@text",$this->data['@text'])); }
+				$f_email_content = "";
+				if (isset ($this->data['@text'])) { $f_email_content .= ((isset ($this->data['@mhtml'])) ? (($this->multipart_body_alternative_header (1)).$this->linesep.$this->linesep.($this->multipart_body ("@text",$this->data['@text'],1))) : $this->multipart_body ("@text",$this->data['@text'])); }
 
 				if (isset ($this->data['@mhtml']))
 				{
-					if ($f_email_content) { $f_email_content .= "\n"; }
-					$f_email_content .= ((isset ($this->data['@text'])) ? (($this->multipart_body ("@mhtml",$this->data['@mhtml'],1))."\n".($this->multipart_body_alternative_footer (1))) : $this->multipart_body ("@mhtml",$this->data['@mhtml']));
+					if ($f_email_content) { $f_email_content .= $this->linesep; }
+					$f_email_content .= ((isset ($this->data['@text'])) ? (($this->multipart_body ("@mhtml",$this->data['@mhtml'],1)).$this->linesep.($this->multipart_body_alternative_footer (1))) : $this->multipart_body ("@mhtml",$this->data['@mhtml']));
 				}
 
 				foreach ($this->data as $f_email_content_type => $f_email_content_array)
 				{
 					if (strpos ($f_email_content_type,"@") === false)
 					{
-						if ($f_email_content) { $f_email_content .= "\n"; }
+						if ($f_email_content) { $f_email_content .= $this->linesep; }
 						$f_email_content .= $this->multipart_body ($f_email_content_type,$f_email_content_array);
 					}
 				}
 
-				if ($f_email_content) { $f_email_content .= "\n"; }
+				if ($f_email_content) { $f_email_content .= $this->linesep; }
 				$f_email_content .= $this->multipart_footer ();
 
-				$f_return = (((PHP_VERSION > "4.0.4")&&($direct_settings['swg_sendmailer_senderrewrite'])) ? mail ($f_recipients,($this->quoted_printable_encode ($f_subject,true)),$f_email_content,$f_email_headers,"-f".$f_sender_address) : mail ($f_recipients,($this->quoted_printable_encode ($f_subject,true)),$f_email_content,$f_email_headers));
+				$f_return = ($direct_settings['swg_sendmailer_senderrewrite'] ? mail ($f_recipients,$f_subject,$f_email_content,$f_email_headers,"-f".$f_sender_address) : mail ($f_recipients,$f_subject,$f_email_content,$f_email_headers));
 			}
 		}
 		else { trigger_error ("sWG/#echo(__FILEPATH__)# -sendmailer_class->send ()- (#echo(__LINE__)#) reporting: Error while preparing e-mail delivery",E_USER_WARNING); }
@@ -488,26 +486,27 @@ Set up some variables
 		else { return /*#ifdef(DEBUG):direct_debug (7,"sWG/#echo(__FILEPATH__)# -sendmailer_class->xhtml_get ()- (#echo(__LINE__)#)",:#*/false/*#ifdef(DEBUG):,true):#*/; }
 	}
 
-	//f// direct_sendmailer->xhtml_set ($f_encoding,$f_data)
+	//f// direct_sendmailer->xhtml_set ($f_encoding,$f_data,$f_content_type = NULL)
 /**
 	* Sets a new (X)HTML email body (replacing the old one).
 	*
-	* @param  string $f_encoding HTML content encoding
-	* @param  string $f_data HTML document
-	* @uses   direct_debug()
-	* @uses   USE_debug_reporting
-	* @since  v0.1.00
+	* @param string $f_encoding HTML content encoding
+	* @param string $f_data HTML document
+	* @param string $f_content_type Content type for $f_data
+	* @uses  direct_debug()
+	* @uses  USE_debug_reporting
+	* @since v0.1.00
 */
-	/*#ifndef(PHP4) */public /* #*/function xhtml_set ($f_encoding,$f_data)
+	/*#ifndef(PHP4) */public /* #*/function xhtml_set ($f_encoding,$f_data,$f_content_type = NULL)
 	{
-		global $direct_settings;
-		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -sendmailer_class->xhtml_set ($f_encoding,+f_data)- (#echo(__LINE__)#)"); }
+		global $direct_local,$direct_settings;
+		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -sendmailer_class->xhtml_set ($f_encoding,+f_data,+f_content_type)- (#echo(__LINE__)#)"); }
 
 		if ($direct_settings['swg_sendmailer_use_xhtml_mime']) { $this->data['@mhtml'] = array ("mimetype" => "application/xhtml+xml","encoding" => $f_encoding,"data" => $f_data); }
 		else
 		{
-			$f_data = preg_replace ("#<meta(.+?)application/xhtml\+xml(.+?)>#si","<meta\\1text/html\\2>",$f_data);
-			$f_data = preg_replace ("#<(script|style)(.*?)><\!\[CDATA\[(.*?)\]\]><\/(script|style)>#si","<\\1\\2><!--\\3// --></\\4>",$f_data);
+			if (!isset ($f_content_type)) { $f_content_type = "application/xhtml+xml; charset=".$direct_local['lang_charset']; }
+			direct_outputenc_xhtml_cleanup ($f_data,$f_content_type);
 			$this->data['@mhtml'] = array ("mimetype" => "text/html","encoding" => $f_encoding,"data" => $f_data);
 		}
 	}
@@ -523,7 +522,7 @@ define ("CLASS_direct_sendmailer",true);
 
 if (!isset ($direct_settings['swg_sendmailer_bcc_recipient'])) { $direct_settings['swg_sendmailer_bcc_recipient'] = $direct_settings['administration_email_out']; }
 if (!isset ($direct_settings['swg_sendmailer_senderrewrite'])) { $direct_settings['swg_sendmailer_senderrewrite'] = true; }
-if (!isset ($direct_settings['swg_sendmailer_unixheader'])) { $direct_settings['swg_sendmailer_unixheader'] = true; }
+if (!isset ($direct_settings['swg_sendmailer_unixmode'])) { $direct_settings['swg_sendmailer_unixmode'] = false; }
 if (!isset ($direct_settings['swg_sendmailer_use_names'])) { $direct_settings['swg_sendmailer_use_names'] = true; }
 if (!isset ($direct_settings['swg_sendmailer_use_xhtml_mime'])) { $direct_settings['swg_sendmailer_use_xhtml_mime'] = false; }
 }

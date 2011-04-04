@@ -57,7 +57,7 @@ $direct_settings['additional_copyright'][] = array ("Module basic #echo(sWGbasic
 
 if (USE_debug_reporting) { direct_debug (2,"sWG/#echo(__FILEPATH__)# _main_ (#echo(__LINE__)#)"); }
 
-$g_user_array = $direct_classes['kernel']->v_user_get ($direct_cachedata['validation_data']['account_userid']);
+$g_user_array = $direct_globals['kernel']->v_user_get ($direct_cachedata['validation_data']['account_userid']);
 
 if ($g_user_array)
 {
@@ -65,14 +65,14 @@ if ($g_user_array)
 	{
 		$g_user_array['ddbusers_password'] = $direct_cachedata['validation_data']['account_password'];
 
-		if (!$direct_classes['kernel']->v_user_update ($direct_cachedata['validation_data']['account_userid'],$g_user_array))
+		if (!$direct_globals['kernel']->v_user_update ($direct_cachedata['validation_data']['account_userid'],$g_user_array))
 		{
-			$direct_cachedata['validation_error'] = array ("core_database_error","sWG/#echo(__FILEPATH__)# _main_ (#echo(__LINE__)#)");
+			$direct_cachedata['validation_error'] = array ("core_database_error","","sWG/#echo(__FILEPATH__)# _main_ (#echo(__LINE__)#)");
 			$direct_cachedata['validation_remove_vid'] = false;
 		}
 	}
 }
-else { $direct_cachedata['validation_error'] = array ("core_username_unknown","sWG/#echo(__FILEPATH__)# _main_ (#echo(__LINE__)#)"); }
+else { $direct_cachedata['validation_error'] = array ("core_username_unknown","","sWG/#echo(__FILEPATH__)# _main_ (#echo(__LINE__)#)"); }
 
 //j// EOF
 ?>

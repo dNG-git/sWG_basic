@@ -5,6 +5,7 @@
  <cs><national>Česky</national><international>Czech</international></cs>
  <da><national>Dansk</national><international>Danish</international></da>
  <de><national>Deutsch</national><international>German</international></de>
+ <de_formal><national>Deutsch (förmlich)</national><international>German (formal)</international></de_formal>
  <el><national>Ελληνικά</national><international>Greek</international></el>
  <en><national>English</national><international>English</international></en>
  <es><national>Español</national><international>Spanish</international></es>

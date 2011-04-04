@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<swg_lang_file_v1>
+
+ <cp><core>
+  <control><panel><input input="string" /></panel></control>
+  <service><list><input input="string" /></list></service>
+ </core></cp>
+
+ <errors><cp><core><init><completed><input input="string" /></completed></init></core></cp></errors>
+
+</swg_lang_file_v1>

@@ -101,8 +101,15 @@ Informing the system about available functions
 		$this->functions['cleanup'] = true;
 		$this->functions['decode'] = true;
 		$this->functions['encode'] = true;
+		$this->functions['parser'] = true;
+		$this->functions['parser_decode_font'] = true;
+		$this->functions['parser_decode_img'] = true;
+		$this->functions['parser_tag_end_find_position'] = true;
+		$this->functions['parser_tag_find_end_position'] = true;
+		$this->functions['parser_tag_parse'] = true;
+		$this->functions['pre_cleanup'] = true;
+		$this->functions['pre_decode'] = true;
 		$this->functions['recode_newlines'] = true;
-		$this->functions['tree_changer_simple'] = true;
 	}
 /*#ifdef(PHP4):
 /**
@@ -112,132 +119,72 @@ Informing the system about available functions
 *\/
 	function direct_formtags () { $this->__construct (); }
 :#*/
-	//f// direct_formtags->cleanup ($f_data,$f_break_urls = false)
+	//f// direct_formtags->cleanup ($f_data,$f_break_urls = false,$f_withnewline = true)
 /**
 	* Removes FormTags from a given string.
 	*
 	* @param  string $f_data Input string containing FormTags
 	* @param  boolean $f_break_urls True for changing URLs to be shorter (but not
-	*                 usable anymore)
+	*         usable anymore)
+	* @param  boolean $f_withnewline False to remove multiple lines
 	* @uses   direct_debug()
-	* @uses   direct_formtags::tree_changer_rule_based()
+	* @uses   direct_formtags::parser()
 	* @uses   direct_local_get()
 	* @uses   USE_debug_reporting
 	* @return string Filtered string
 	* @since  v0.1.00
 */
-	/*#ifndef(PHP4) */public /* #*/function cleanup ($f_data,$f_break_urls = false)
+	/*#ifndef(PHP4) */public /* #*/function cleanup ($f_data,$f_break_urls = false,$f_withnewline = true)
 	{
-		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags_class->cleanup (+f_data,+f_break_urls)- (#echo(__LINE__)#)"); }
+		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags_class->cleanup (+f_data,+f_break_urls,+f_newline_mode)- (#echo(__LINE__)#)"); }
 
-		$f_return =& $f_data;
-		$f_data = str_replace ((array ("\r","\n")),"",$f_data);
-
-		if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($f_data,"[sourcecode]") !== false) { $this->tree_changer_rule_based ($f_data,"cleanup:sourcecode"); }
-
-		$f_data = str_replace ("[br]","\n",$f_data);
-		$f_data = str_replace ("[newline]","\n",$f_data);
-
-		if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($f_data,"[contentform") !== false)
-		{
-			$f_data = preg_replace ("#\[contentform(.*?)\]#i","",$f_data);
-			$f_data = str_replace ("[/contentform]","\n",$f_data);
-		}
-
-		if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($f_data,"[font") !== false)
-		{
-			$f_data = preg_replace ("#\[font(.*?)\]#i","",$f_data);
-			$f_data = str_replace ("[/font]","",$f_data);
-		}
+		if ($f_withnewline) { $f_data = str_replace (array ("\r","\n","[br]","[newline]"),(array ("","","\n","\n")),$f_data); }
+		else { $f_data = str_replace (array ("[br]","[hr]","[newline]","\r","\n"),"",$f_data); }
 
 		if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($f_data,"[hr]") !== false) { $f_data = str_replace ("[hr]","---\n",$f_data); }
 
-		if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($f_data,"[quote") !== false)
-		{
-			if ($f_break_urls) { $f_data = preg_replace ("#\[quote(.*?)\](.+?)\[\/quote\]#si","\n* ".(direct_local_get ("formtags_quote_1","text")).":\n\\2\n*\n",$f_data); }
-			else { $this->tree_changer_rule_based ($f_data,"cleanup:quote"); }
-		}
-
-		$this->tree_changer_simple ($f_data,"[sources]","\n* ".(direct_local_get ("formtags_sources","text")).":\n","[/sources]","\n*\n");
-
-		if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($f_data,"[rewrite") !== false) { $this->tree_changer_rule_based ($f_data,"cleanup:rewrite"); }
+		$this->parser ($f_data,"sourcecode_cleanup");
 
 		if ($f_break_urls)
 		{
 			if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($f_data,"[img") !== false) { $f_data = preg_replace ("#\[img(.*?)\](.+?)\[\/img\]#si"," *".(direct_local_get ("formtags_image","text"))."* ",$f_data); }
-
-			if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($f_data,"[url:anchor:") !== false) { $f_data = preg_replace ("#\[url\:anchor\:(.+?)\]#i","",$f_data); }
+			if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($f_data,"[quote") !== false) { $f_data = preg_replace ("#\[quote(.*?)\](.+?)\[\/quote\]#si","[quote]\\2[/quote]",$f_data); }
 			if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($f_data,"[url") !== false) { $f_data = preg_replace ("#\[url(.*?)\](.+?)\[\/url\]#i"," *".(direct_local_get ("formtags_url","text"))."* ",$f_data); }
 		}
-		else
-		{
-			if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($f_data,"[img") !== false) { $f_data = preg_replace ("#\[img(.*?)\](.+?)\[\/img\]#si","\n* ".(direct_local_get ("formtags_image","text")).":\n\\1\n*\n",$f_data); }
-			if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($f_data,"[url") !== false) { $this->tree_changer_rule_based ($f_data,"cleanup:url"); }
-		}
 
-		$f_data = str_replace ((array ("&lt;","&gt;","&quot;")),(array ("<",">",'"')),$f_data);
-		$f_data = trim ($f_data);
+		$this->parser ($f_data,"cleanup");
+		$f_data = trim (str_replace ((array ("&lt;","&gt;","&quot;")),(array ("<",">",'"')),$f_data));
 
-		if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($f_data,"[-") !== false) { $this->tree_changer_rule_based ($f_data,"cleanup:lists"); }
-
-		return $f_return;
+		return $f_data;
 	}
 
-	//f// direct_formtags->decode ($f_data)
+	//f// direct_formtags->decode ($f_data,$f_withnewline = true)
 /**
 	* Converts all FormTags into valid XHTML 1.0 code.
 	*
 	* @param  string $f_data Input string containing FormTags
+	* @param  boolean $f_withnewline False to remove multiple lines
 	* @uses   direct_debug()
-	* @uses   direct_formtags::tree_changer_rule_based()
-	* @uses   direct_formtags::tree_changer_simple()
+	* @uses   direct_formtags::parser()
 	* @uses   direct_html_get()
 	* @uses   USE_debug_reporting
 	* @return string Filtered string containing XHTML code
 	* @since  v0.1.00
 */
-	/*#ifndef(PHP4) */public /* #*/function decode ($f_data)
+	/*#ifndef(PHP4) */public /* #*/function decode ($f_data,$f_withnewline = true)
 	{
 		global $direct_settings;
-		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags_class->decode (+f_data)- (#echo(__LINE__)#)"); }
+		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags_class->decode (+f_data,+f_newline_mode)- (#echo(__LINE__)#)"); }
 
-		$f_return =& $f_data;
 		$f_data = direct_html_encode_special ($f_data);
 
-		$f_data = str_replace ((array ("\r","\n")),"",$f_data);
+		if ($f_withnewline) { $f_data = str_replace (array ("[br]","[newline]","\r","\n"),(array ("<br />\n","<br />\n","","")),$f_data); }
+		else { $f_data = str_replace (array ("[br]","[hr]","[newline]","\r","\n"),"",$f_data); }
 
-		if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($f_data,"[sourcecode]") !== false) { $this->tree_changer_rule_based ($f_data,"decode:sourcecode"); }
+		if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($f_data,"[hr]") !== false) { $f_data = str_replace ("[hr]","<div class='pagehr' style='$direct_settings[theme_hr_style]'><img src='".(direct_linker_dynamic ("url0","s=cache;dsd=dfile+$direct_settings[path_mmedia]/spacer.png",true,false))."' width='1' height='1' alt='' title='' style='float:left' /></div>",$f_data); }
 
-		$this->tree_changer_simple ($f_data,"[contentform:align:left]","<span style='display:block;text-align:left'>","[/contentform]","</span>");
-		$this->tree_changer_simple ($f_data,"[contentform:align:center]","<span style='display:block;text-align:center'>","[/contentform]","</span>");
-		$this->tree_changer_simple ($f_data,"[contentform:align:right]","<span style='display:block;text-align:right'>","[/contentform]","</span>");
-		$this->tree_changer_simple ($f_data,"[contentform:align:block]","<span style='display:block;text-align:justify'>","[/contentform]","</span>");
-		$this->tree_changer_simple ($f_data,"[contentform:highlight]","<span class='pagehighlightborder2' style='display:block'><span class='pagecontent'>","[/contentform]","</span></span>");
-		if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($f_data,"[contentform:box:") !== false) { $this->tree_changer_rule_based ($f_data,"decode:contentform:box"); }
-		if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($f_data,"[contentform:colorbox:") !== false) { $this->tree_changer_rule_based ($f_data,"decode:contentform:colorbox"); }
-		if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($f_data,"[contentform:hidden:") !== false) { $this->tree_changer_rule_based ($f_data,"decode:contentform:hidden"); }
-		if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($f_data,"[contentform:lineheight:") !== false) { $this->tree_changer_rule_based ($f_data,"decode:contentform:lineheight"); }
-		if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($f_data,"[contentform:spacerbox:") !== false) { $this->tree_changer_rule_based ($f_data,"decode:contentform:spacerbox"); }
-		if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($f_data,"[contentform:textindent:") !== false) { $this->tree_changer_rule_based ($f_data,"decode:contentform:textindent"); }
-
-		$this->tree_changer_simple ($f_data,"[font:bold]","<span style='font-weight:bold'>","[/font]","</span>");
-		$this->tree_changer_simple ($f_data,"[font:italic]","<span style='font-style:italic'>","[/font]","</span>");
-		$this->tree_changer_simple ($f_data,"[font:overline]","<span style='text-decoration:overline'>","[/font]","</span>");
-		$this->tree_changer_simple ($f_data,"[font:strike]","<span style='text-decoration:line-through'>","[/font]","</span>");
-		$this->tree_changer_simple ($f_data,"[font:underline]","<span style='text-decoration:underline'>","[/font]","</span>");
-		if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($f_data,"[font:color:") !== false) { $this->tree_changer_rule_based ($f_data,"decode:font:color"); }
-		if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($f_data,"[font:face:") !== false) { $this->tree_changer_rule_based ($f_data,"decode:font:face"); }
-		if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($f_data,"[font:size:") !== false) { $this->tree_changer_rule_based ($f_data,"decode:font:size"); }
-
-		if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($f_data,"[hr]") !== false) { $f_data = str_replace ("[hr]","<span class='pagehr' style='display:block;$direct_settings[theme_hr_style]'><img src='".(direct_linker_dynamic ("url0","s=cache&dsd=dfile+$direct_settings[path_mmedia]/spacer.png",true,false))."' width='1' height='1' alt='' title='' style='float:left' /></span>",$f_data); }
-
-		if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($f_data,"[img") !== false) { $this->tree_changer_rule_based ($f_data,"decode:img"); }
-
-		if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($f_data,"[quote") !== false) { $this->tree_changer_rule_based ($f_data,"decode:quote"); }
-		$this->tree_changer_simple ($f_data,"[sources]","<span style='$direct_settings[formtags_sources_style]'><span class='pagecontent'><span style='$direct_settings[formtags_sources_title_style]'>".(direct_html_encode_special (direct_local_get ("formtags_sources","text"))).":</span> ","[/sources]","</span></span>");
-
-		if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($f_data,"[rewrite") !== false) { $this->tree_changer_rule_based ($f_data,"decode:rewrite"); }
-		if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($f_data,"[url") !== false) { $this->tree_changer_rule_based ($f_data,"decode:url"); }
+		$this->parser ($f_data,"sourcecode_decode");
+		$this->parser ($f_data,"decode");
 
 		if (preg_match_all ("#(\[|\])(\w{3,5})\:\/\/(.+?)(\[|\])#i",$f_data,$f_result_array,PREG_SET_ORDER))
 		{
@@ -247,23 +194,7 @@ Informing the system about available functions
 		$f_data = str_replace (array ("&lt;","&gt;"),(array ("<",">")),$f_data);
 		$f_data = preg_replace ("#\&amp;(\w{2,4});#i","&\\1;",$f_data);
 
-		if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($f_data,"[-") !== false)
-		{
-			$this->tree_changer_simple ($f_data,"[--]","<span style='$direct_settings[formtags_list_item_style]'>-</span><span style='$direct_settings[formtags_list_content_style]'>","[/--]","</span>");
-			$this->tree_changer_simple ($f_data,"[-<]","<span style='$direct_settings[formtags_list_item_style]'>&#0060;</span><span style='$direct_settings[formtags_list_content_style]'>","[/-<]","</span>");
-			$this->tree_changer_simple ($f_data,"[-<<]","<span style='$direct_settings[formtags_list_item_style]'>&#0171;</span><span style='$direct_settings[formtags_list_content_style]'>","[/-<<]","</span>");
-			$this->tree_changer_simple ($f_data,"[->]","<span style='$direct_settings[formtags_list_item_style]'>&#0062;</span><span style='$direct_settings[formtags_list_content_style]'>","[/->]","</span>");
-			$this->tree_changer_simple ($f_data,"[->>]","<span style='$direct_settings[formtags_list_item_style]'>&#0187;</span><span style='$direct_settings[formtags_list_content_style]'>","[/->>]","</span>");
-			$this->tree_changer_simple ($f_data,"[-o]","<span style='$direct_settings[formtags_list_item_style]'>&#0176;</span><span style='$direct_settings[formtags_list_content_style]'>","[/-o]","</span>");
-			if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($f_data,"[-+") !== false) { $this->tree_changer_rule_based ($f_data,"decode:varlist"); }
-		}
-
-		$f_data = str_replace ("[br]","<br />\n",$f_data);
-		$f_data = str_replace ("[newline]","<br />\n",$f_data);
-
-		$f_data = trim ($f_data);
-
-		return $f_return;
+		return trim (preg_replace ("#</div>(<br />){0,1}#","</div>\n",$f_data));
 	}
 
 	//f// direct_formtags->encode ($f_data,$f_withhtml = false,$f_withftg = true)
@@ -284,9 +215,7 @@ Informing the system about available functions
 	{
 		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags_class->encode (+f_data,+f_withhtml,+f_withftg)- (#echo(__LINE__)#)"); }
 
-		$f_return =& $f_data;
 		$f_data = direct_html_encode_special ($f_data);
-
 		$f_data = str_replace ((array ("[newline]","\r","&amp;")),(array ("\n","","&")),$f_data);
 
 		if (($f_withhtml)||($f_withftg))
@@ -295,39 +224,22 @@ Informing the system about available functions
 
 			if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($f_data,"[#") !== false) { $f_data = preg_replace ("/\[#(.+?)\]/i","[url:anchor:\\1]",$f_data); }
 			if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($f_data,"[b]") !== false) { $f_data = preg_replace ("#\[b\](.+?)\[\/b\]#si","[font:bold]\\1[/font]",$f_data); }
-			if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($f_data,"[code]") !== false) { $f_data = preg_replace ("#\[code\](.+?)\[\/code\]#si","[sourcecode]\\1[/sourcecode]",$f_data); }
+			if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($f_data,"[code") !== false) { $f_data = preg_replace (array ("#\[code\](.+?)\[\/code\]#si","#\[code=(.+?)\](.+?)\[\/code\]#si"),(array ("[sourcecode]\\1[/sourcecode]","[sourcecode:\\1]\\2[/sourcecode]")),$f_data); }
 
 			if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($f_data,"[color=") !== false)
 			{
-				$f_data = preg_replace ("#\[color\=black\](.+?)\[\/color\]#si","[font:color:000000]\\1[/font]",$f_data);
-				$f_data = preg_replace ("#\[color\=gray\](.+?)\[\/color\]#si","[font:color:808080]\\1[/font]",$f_data);
-				$f_data = preg_replace ("#\[color\=maroon\](.+?)\[\/color\]#si","[font:color:800000]\\1[/font]",$f_data);
-				$f_data = preg_replace ("#\[color\=red\](.+?)\[\/color\]#si","[font:color:FF0000]\\1[/font]",$f_data);
-				$f_data = preg_replace ("#\[color\=green\](.+?)\[\/color\]#si","[font:color:008000]\\1[/font]",$f_data);
-				$f_data = preg_replace ("#\[color\=lime\](.+?)\[\/color\]#si","[font:color:00FF00]\\1[/font]",$f_data);
-				$f_data = preg_replace ("#\[color\=olive\](.+?)\[\/color\]#si","[font:color:808000]\\1[/font]",$f_data);
-				$f_data = preg_replace ("#\[color\=yellow\](.+?)\[\/color\]#si","[font:color:FFFF00]\\1[/font]",$f_data);
-				$f_data = preg_replace ("#\[color\=navy\](.+?)\[\/color\]#si","[font:color:000080]\\1[/font]",$f_data);
-				$f_data = preg_replace ("#\[color\=blue\](.+?)\[\/color\]#si","[font:color:0000FF]\\1[/font]",$f_data);
-				$f_data = preg_replace ("#\[color\=purple\](.+?)\[\/color\]#si","[font:color:800080]\\1[/font]",$f_data);
-				$f_data = preg_replace ("#\[color\=fuchsia\](.+?)\[\/color\]#si","[font:color:FF00FF]\\1[/font]",$f_data);
-				$f_data = preg_replace ("#\[color\=teal\](.+?)\[\/color\]#si","[font:color:008080]\\1[/font]",$f_data);
-				$f_data = preg_replace ("#\[color\=aqua\](.+?)\[\/color\]#si","[font:color:00FFFF]\\1[/font]",$f_data);
-				$f_data = preg_replace ("#\[color\=silver\](.+?)\[\/color\]#si","[font:color:C0C0C0]\\1[/font]",$f_data);
-				$f_data = preg_replace ("#\[color\=white\](.+?)\[\/color\]#si","[font:color:FFFFFF]\\1[/font]",$f_data);
-
-				$f_data = preg_replace ("#\[color\=\#(\w{6})\](.+?)\[\/color\]#si","[font:color:\\1]\\2[/font]",$f_data);
+$f_data = preg_replace (array ("#\[color\=black\](.+?)\[\/color\]#si","#\[color\=gray\](.+?)\[\/color\]#si","#\[color\=maroon\](.+?)\[\/color\]#si","#\[color\=red\](.+?)\[\/color\]#si","#\[color\=green\](.+?)\[\/color\]#si","#\[color\=lime\](.+?)\[\/color\]#si","#\[color\=olive\](.+?)\[\/color\]#si","#\[color\=yellow\](.+?)\[\/color\]#si",
+"#\[color\=navy\](.+?)\[\/color\]#si","#\[color\=blue\](.+?)\[\/color\]#si","#\[color\=purple\](.+?)\[\/color\]#si","#\[color\=fuchsia\](.+?)\[\/color\]#si","#\[color\=teal\](.+?)\[\/color\]#si","#\[color\=aqua\](.+?)\[\/color\]#si","#\[color\=silver\](.+?)\[\/color\]#si","#\[color\=white\](.+?)\[\/color\]#si","#\[color\=\#(\w{6})\](.+?)\[\/color\]#si"),
+(array ("[font:color:000000]\\1[/font]","[font:color:808080]\\1[/font]","[font:color:800000]\\1[/font]","[font:color:FF0000]\\1[/font]","[font:color:008000]\\1[/font]","[font:color:00FF00]\\1[/font]","[font:color:808000]\\1[/font]","[font:color:FFFF00]\\1[/font]","[font:color:000080]\\1[/font]","[font:color:0000FF]\\1[/font]",
+"[font:color:800080]\\1[/font]","[font:color:FF00FF]\\1[/font]","[font:color:008080]\\1[/font]","[font:color:00FFFF]\\1[/font]","[font:color:C0C0C0]\\1[/font]","[font:color:FFFFFF]\\1[/font]","[font:color:\\1]\\2[/font]")),$f_data);
 			}
 
 			$f_data = str_replace ((array ("[font:b]","[font:i]","[font:o]","[font:s]","[font:u]")),(array ("[font:bold]","[font:italic]","[font:overline]","[font:strike]","[font:underline]")),$f_data);
-		
+
 			if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($f_data,"[hidden]") !== false) { $f_data = preg_replace ("#\[hidden=(.+?)\](.+?)\[\/hidden\]#si","[contentform:hidden:\\1]\\2[/contentform]",$f_data); }
 			if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($f_data,"[highlight]") !== false) { $f_data = preg_replace ("#\[highlight\](.+?)\[\/highlight\]#si","[contentform:highlight]\\1[/contentform]",$f_data); }
 			if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($f_data,"[i]") !== false) { $f_data = preg_replace ("#\[i\](.+?)\[\/i\]#si","[font:italic]\\1[/font]",$f_data); }
-
-			$f_data = str_replace ("[sc]","[sourcecode]",$f_data);
-			$f_data = str_replace ("[/sc]","[/sourcecode]",$f_data);
-
+			if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($f_data,"[sc") !== false) { $f_data = preg_replace ("#\[sc(.*?)\](.+?)\[\/sc\]#si","[sourcecode\\1]\\2[/sourcecode]",$f_data); }
 			if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($f_data,"[size=") !== false) { $f_data = preg_replace ("#\[size\=(\d{1,3})\](.+?)\[\/size\]#si","[font:size:\\1]\\2[/font]",$f_data); }
 			if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($f_data,"[u]") !== false) { $f_data = preg_replace ("#\[u\](.+?)\[\/u\]#si","[font:underline]\\1[/font]",$f_data); }
 			if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($f_data,"[url]") !== false) { $f_data = preg_replace ("#\[url\](.+?)\[\/url\]#i","\\1",$f_data); }
@@ -367,7 +279,1253 @@ Informing the system about available functions
 		$f_data = str_replace ("\n","[newline]",$f_data);
 		$f_data = trim ($f_data);
 
+		return $f_data;
+	}
+
+
+	//f// direct_formtags->parser (&$f_data,$f_start_tag,$f_start_cresult = "",$f_end_tag = "",$f_end_cresult = "")
+/**
+	* Converts FormTags using specified convert string into valid XHTML 1.0 code.
+	*
+	* @param string &$f_data String that contains convertable data
+	* @param string $f_start_tag Tag for starting a FormTag
+	* @param string $f_start_cresult HTML code that should be used instead of the
+	*        FormTag
+	* @param string $f_end_tag Ending delimiter
+	* @param string $f_end_cresult HTML code that should be used
+	* @uses  direct_debug()
+	* @uses  USE_debug_reporting
+	* @since v0.1.00
+*/
+	/*#ifndef(PHP4) */protected /* #*/function parser (&$f_data,$f_mode = "",$f_data_position = 0,$f_nested_tag = NULL,$f_nested_tag_end_position = NULL)
+	{
+		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags_class->parser (+f_data,$f_mode)- (#echo(__LINE__)#)"); }
+		$f_return = false;
+
+		$f_mode_cleanup = ((($f_mode == "cleanup")||($f_mode == "pre_cleanup")) ? true : false);
+		$f_mode_decode = ((($f_mode == "decode")||($f_mode == "pre_decode")) ? true : false);
+		$f_mode_precode = ((($f_mode == "pre_cleanup")||($f_mode == "pre_decode")) ? true : false);
+		$f_mode_sourcecode = ((($f_mode == "sourcecode_cleanup")||($f_mode == "sourcecode_decode")) ? true : false);
+
+		if ($f_mode_sourcecode)
+		{
+			$f_tags_array = array ("[sourcecode");
+			$f_tags_identifier = "[sourcecode";
+		}
+		elseif ($f_mode_precode)
+		{
+			$f_tags_array = array ("[rewrite");
+			$f_tags_identifier = "[rewrite";
+		}
+		else
+		{
+			$f_tags_array = array ("[-","[img","[url","[font","[quote","[rewrite","[sources]","[contentform");
+			$f_tags_identifier = "[";
+		}
+
+		if (isset ($f_nested_tag_end_position))
+		{
+			$f_data_position = mb_strpos ($f_data,$f_tags_identifier,$f_data_position);
+			if ($f_data_position >= $f_nested_tag_end_position) { $f_data_position = false; }
+			$f_nested_check = true;
+		}
+		else
+		{
+			$f_data_position = mb_strpos ($f_data,$f_tags_identifier,$f_data_position);
+			$f_nested_check = false;
+		}
+
+		if ($f_data_position !== false) { $f_tags_count = count ($f_tags_array); }
+
+		while ($f_data_position !== false)
+		{
+			$f_tag = "";
+			$f_tag_length = 0;
+
+			for ($f_i = 0;((($f_tag_length == 0)||(!in_array ($f_tag,$f_tags_array)))&&($f_i < $f_tags_count));$f_i++)
+			{
+				$f_tag_i_length = strlen ($f_tags_array[$f_i]);
+
+				if ($f_tag_length < $f_tag_i_length)
+				{
+					$f_tag_i_diff = ($f_tag_i_length - $f_tag_length);
+					$f_tag_diff = mb_substr ($f_data,($f_data_position + $f_tag_length),$f_tag_i_diff);
+
+					if ((($f_tag_length == 0)&&(strpos ($f_tag_diff,"[",1) === false))||(strpos ($f_tag_diff,"[") === false))
+					{
+						$f_tag .= $f_tag_diff;
+						$f_tag_length += $f_tag_i_diff;
+					}
+					else
+					{
+						$f_data_position += (($f_tag_length > 0) ? $f_tag_length : 2);
+						$f_i = 0;
+						$f_tag = "";
+						$f_tag_length = 0;
+					}
+				}
+			}
+
+			$f_function = NULL;
+			$f_tag_start_end_position = NULL;
+
+			if (in_array ($f_tag,$f_tags_array))
+			{
+				switch ($f_tag)
+				{
+				case "[-":
+				{
+					$f_tag_start_end_position = $this->parser_tag_find_end_position ($f_data,($f_data_position + $f_tag_length));
+					$f_list_symbol = mb_substr ($f_data,($f_data_position + 2),($f_tag_start_end_position - $f_data_position - 3));
+
+					$f_tag_name = "list";
+					$f_tag_end = "[/-$f_list_symbol]";
+					break 1;
+				}
+				case "[img":
+				{
+					$f_tag_name = "img";
+					break 1;
+				}
+				case "[url":
+				{
+					$f_tag_name = "url";
+					break 1;
+				}
+				case "[font":
+				{
+					$f_tag_name = "font";
+					break 1;
+				}
+				case "[quote":
+				{
+					$f_tag_name = "quote";
+					break 1;
+				}
+				case "[rewrite":
+				{
+					$f_tag_name = "rewrite";
+					break 1;
+				}
+				case "[sources]":
+				{
+					$f_tag_name = "sources";
+					break 1;
+				}
+				case "[sourcecode":
+				{
+					$f_tag_name = "sourcecode";
+					break 1;
+				}
+				case "[contentform":
+				{
+					$f_tag_name = "contentform";
+					break 1;
+				}
+				}
+
+				if (!isset ($f_tag_start_end_position))
+				{
+					$f_tag_start_end_position = $this->parser_tag_find_end_position ($f_data,($f_data_position + $f_tag_length));
+					$f_tag_end = "[/$f_tag_name]";
+				}
+
+				if ($f_tag_start_end_position)
+				{
+					$f_tag_end_position = $this->parser_tag_end_find_position ($f_data,$f_tag_start_end_position,$f_tag_end);
+
+					while (($f_tag_end_position)&&($this->parser ($f_data,$f_mode,($f_data_position + $f_tag_length + 1),$f_tag,$f_tag_end_position)))
+					{
+						$f_tag_start_end_position = $this->parser_tag_find_end_position ($f_data,($f_data_position + $f_tag_length));
+						$f_tag_end_position = ($f_tag_start_end_position ? $this->parser_tag_end_find_position ($f_data,$f_tag_start_end_position,$f_tag_end) : false);
+					}
+				}
+				else { $f_tag_end_position = false; }
+
+				if ($f_tag_end_position)
+				{
+					$f_tag_array = $this->parser_tag_parse ($f_data,$f_data_position,$f_tag_start_end_position);
+
+					if ((!$f_mode_precode)&&(!$f_mode_sourcecode)) { $f_function = "parser_{$f_mode}_".$f_tag_name; }
+					elseif ($f_mode_cleanup) { $f_function = "parser_cleanup_".$f_tag_name; }
+					else { $f_function = "parser_decode_".$f_tag_name; }
+				}
+			}
+
+			if ($f_function)
+			{
+				$f_nested_tag_check = ((($f_nested_check)&&($f_nested_tag == $f_tag)) ? true : false);
+				$f_return = true;
+				$this->{$f_function} ($f_data,$f_tag_array,$f_data_position,$f_tag_start_end_position,$f_tag_end_position,$f_nested_tag_check);
+			}
+			else { $f_data_position += $f_tag_length; }
+
+			if ($f_nested_check)
+			{
+				if ($f_return) { $f_data_position = false; }
+				else
+				{
+					$f_data_position = mb_strpos ($f_data,$f_tags_identifier,$f_data_position);
+					if ($f_data_position >= $f_nested_tag_end_position) { $f_data_position = false; }
+				}
+			}
+			else { $f_data_position = mb_strpos ($f_data,$f_tags_identifier,$f_data_position); }
+		}
+
 		return $f_return;
+	}
+
+	//f// direct_formtags->parser_cleanup_contentform (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false)
+/**
+	* Clean [contentform] tags.
+	*
+	* @param string &$f_data String that contains convertable data
+	* @param array $f_tag_array Tag for starting a FormTag
+	* @param integer $f_tag_start_position Position where the starting tag has
+	*        been found
+	* @param integer $f_tag_content_position Position where the content is
+	*        starting
+	* @param integer $f_tag_end_position Position where the content is ending
+	* @param boolean $f_nested True for nested items
+	* @param string $f_end_cresult HTML code that should be used
+	* @uses  direct_debug()
+	* @uses  USE_debug_reporting
+	* @since v0.1.00
+*/
+	/*#ifndef(PHP4) */protected /* #*/function parser_cleanup_contentform (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false)
+	{
+		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags_class->parser_cleanup_contentform (+f_data,+f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,+f_nested)- (#echo(__LINE__)#)"); }
+
+		$f_data_closed = mb_substr ($f_data,($f_tag_end_position + 14));
+		$f_tag_content = mb_substr ($f_data,$f_tag_content_position,($f_tag_end_position - $f_tag_content_position));
+		$f_data = ((mb_substr ($f_data,0,$f_tag_start_position)).$f_tag_content.$f_data_closed);
+	}
+
+	//f// direct_formtags->parser_cleanup_font (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false)
+/**
+	* Clean [font] tags.
+	*
+	* @param string &$f_data String that contains convertable data
+	* @param array $f_tag_array Tag for starting a FormTag
+	* @param integer $f_tag_start_position Position where the starting tag has
+	*        been found
+	* @param integer $f_tag_content_position Position where the content is
+	*        starting
+	* @param integer $f_tag_end_position Position where the content is ending
+	* @param boolean $f_nested True for nested items
+	* @param string $f_end_cresult HTML code that should be used
+	* @uses  direct_debug()
+	* @uses  USE_debug_reporting
+	* @since v0.1.00
+*/
+	/*#ifndef(PHP4) */protected /* #*/function parser_cleanup_font (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false)
+	{
+		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags_class->parser_cleanup_font (+f_data,+f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,+f_nested)- (#echo(__LINE__)#)"); }
+
+		$f_data_closed = mb_substr ($f_data,($f_tag_end_position + 7));
+		$f_tag_content = mb_substr ($f_data,$f_tag_content_position,($f_tag_end_position - $f_tag_content_position));
+		$f_data = ((mb_substr ($f_data,0,$f_tag_start_position)).$f_tag_content.$f_data_closed);
+	}
+
+	//f// direct_formtags->parser_cleanup_img (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false)
+/**
+	* Clean [img] tags.
+	*
+	* @param string &$f_data String that contains convertable data
+	* @param array $f_tag_array Tag for starting a FormTag
+	* @param integer $f_tag_start_position Position where the starting tag has
+	*        been found
+	* @param integer $f_tag_content_position Position where the content is
+	*        starting
+	* @param integer $f_tag_end_position Position where the content is ending
+	* @param boolean $f_nested True for nested items
+	* @param string $f_end_cresult HTML code that should be used
+	* @uses  direct_debug()
+	* @uses  USE_debug_reporting
+	* @since v0.1.00
+*/
+	/*#ifndef(PHP4) */protected /* #*/function parser_cleanup_img (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false)
+	{
+		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags_class->parser_cleanup_img (+f_data,+f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,+f_nested)- (#echo(__LINE__)#)"); }
+
+		$f_data_closed = mb_substr ($f_data,($f_tag_end_position + 6));
+		$f_tag_content = mb_substr ($f_data,$f_tag_content_position,($f_tag_end_position - $f_tag_content_position));
+		$f_data = ((mb_substr ($f_data,0,$f_tag_start_position)).$f_tag_content.$f_data_closed);
+	}
+
+	//f// direct_formtags->parser_cleanup_list (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false)
+/**
+	* Clean [- list tags.
+	*
+	* @param string &$f_data String that contains convertable data
+	* @param array $f_tag_array Tag for starting a FormTag
+	* @param integer $f_tag_start_position Position where the starting tag has
+	*        been found
+	* @param integer $f_tag_content_position Position where the content is
+	*        starting
+	* @param integer $f_tag_end_position Position where the content is ending
+	* @param boolean $f_nested True for nested items
+	* @param string $f_end_cresult HTML code that should be used
+	* @uses  direct_debug()
+	* @uses  USE_debug_reporting
+	* @since v0.1.00
+*/
+	/*#ifndef(PHP4) */protected /* #*/function parser_cleanup_list (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false)
+	{
+		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags_class->parser_cleanup_list (+f_data,+f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,+f_nested)- (#echo(__LINE__)#)"); }
+
+		$f_list_symbol = mb_substr ($f_tag_array[0],1);
+		$f_data_closed = mb_substr ($f_data,(mb_strlen ($f_list_symbol) + $f_tag_end_position + 4));
+		$f_tag_content = mb_substr ($f_data,$f_tag_content_position,($f_tag_end_position - $f_tag_content_position));
+
+		$f_data = ((mb_substr ($f_data,0,$f_tag_start_position))."\n$f_list_symbol ".$f_tag_content.$f_data_closed);
+	}
+
+	//f// direct_formtags->parser_cleanup_quote (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false)
+/**
+	* Clean [quote] tags.
+	*
+	* @param string &$f_data String that contains convertable data
+	* @param array $f_tag_array Tag for starting a FormTag
+	* @param integer $f_tag_start_position Position where the starting tag has
+	*        been found
+	* @param integer $f_tag_content_position Position where the content is
+	*        starting
+	* @param integer $f_tag_end_position Position where the content is ending
+	* @param boolean $f_nested True for nested items
+	* @param string $f_end_cresult HTML code that should be used
+	* @uses  direct_debug()
+	* @uses  USE_debug_reporting
+	* @since v0.1.00
+*/
+	/*#ifndef(PHP4) */protected /* #*/function parser_cleanup_quote (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false)
+	{
+		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags_class->parser_cleanup_quote (+f_data,+f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,+f_nested)- (#echo(__LINE__)#)"); }
+
+		$f_data_closed = mb_substr ($f_data,($f_tag_end_position + 8));
+		$f_tag_content = mb_substr ($f_data,$f_tag_content_position,($f_tag_end_position - $f_tag_content_position));
+
+		$f_data = mb_substr ($f_data,0,$f_tag_start_position);
+
+		if (isset ($f_tag_array[1]))
+		{
+			$f_data .= "\n* ".(direct_local_get ("formtags_quote_2_1","text"));
+			$f_data .= ((isset ($f_tag_array[2])) ? $f_tag_array[2]." ({$f_tag_array[1]})".(direct_local_get ("formtags_quote_2_2","text"))." ".(direct_local_get ("formtags_quote_2_3","text")).":\n$f_tag_content\n*\n" : $f_tag_array[1].(direct_local_get ("formtags_quote_2_2","text")).":\n$f_tag_content\n*\n");
+		}
+		else { $f_data .= "\n* ".(direct_local_get ("formtags_quote_1","text")).":\n$f_tag_content\n*\n"; }
+
+		$f_data .= $f_data_closed;
+	}
+
+	//f// direct_formtags->parser_cleanup_rewrite (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false)
+/**
+	* Clean [rewrite] tags.
+	*
+	* @param string &$f_data String that contains convertable data
+	* @param array $f_tag_array Tag for starting a FormTag
+	* @param integer $f_tag_start_position Position where the starting tag has
+	*        been found
+	* @param integer $f_tag_content_position Position where the content is
+	*        starting
+	* @param integer $f_tag_end_position Position where the content is ending
+	* @param boolean $f_nested True for nested items
+	* @param string $f_end_cresult HTML code that should be used
+	* @uses  direct_debug()
+	* @uses  USE_debug_reporting
+	* @since v0.1.00
+*/
+	/*#ifndef(PHP4) */protected /* #*/function parser_cleanup_rewrite (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false)
+	{
+		global $direct_cachedata,$direct_globals,$direct_settings;
+		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags_class->parser_cleanup_rewrite (+f_data,+f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,+f_nested)- (#echo(__LINE__)#)"); }
+
+		$f_data_closed = mb_substr ($f_data,($f_tag_end_position + 10));
+		$f_invalid_check = false;
+		$f_tag_content = mb_substr ($f_data,$f_tag_content_position,($f_tag_end_position - $f_tag_content_position));
+
+		$f_data = mb_substr ($f_data,0,$f_tag_start_position);
+
+		if ((!isset ($f_tag_array[1]))||(($f_tag_array[1] != "data")&&($f_tag_array[1] != "edit")&&($f_tag_array[1] != "elink")&&($f_tag_array[1] != "ilink")&&($f_tag_array[1] != "local")&&($f_tag_array[1] != "related"))) { $f_invalid_check = true; }
+		elseif (($f_tag_array[1] == "edit")&&(!isset ($f_tag_array[2],$f_tag_array[3]))) { $f_invalid_check = true; }
+
+		if ($f_invalid_check) { $f_data .= $f_tag_content; }
+		else
+		{
+			switch ($f_tag_array[1])
+			{
+			case "data":
+			{
+				$f_data .= ((isset ($direct_cachedata["output_formtags_".$f_tag_content])) ? direct_html_encode_special ($direct_cachedata["output_formtags_".$f_tag_content]) : direct_local_get ("core_unknown","text"));
+				break 1;
+			}
+			case "edit":
+			{
+				$f_datetime = $direct_globals['basic_functions']->datetime ("shortdate&time",$f_tag_array[2],$direct_settings['user']['timezone'],(direct_local_get ("formtags_edit_2","text")));
+				$f_data .= "\n* ".(direct_local_get ("formtags_edit_1","text")).$f_datetime.(direct_local_get ("formtags_edit_3","text")).$f_tag_content." ($f_tag_array[3])".(direct_local_get ("formtags_edit_4","text"))." *\n";
+
+				break 1;
+			}
+			case "elink":
+			case "ilink":
+			{
+				if ($f_tag_array[1] == "elink") { $f_data .= direct_linker ("url1",$f_tag_content,false,false); }
+				else { $f_data .= direct_linker ("url0",$f_tag_content,false); }
+
+				break 1;
+			}
+			case "local":
+			{
+				$f_data .= direct_local_get ($f_tag_content,"text");
+				break 1;
+			}
+			case "related":
+			{
+				$direct_cachedata['formtags_related_data'] = NULL;
+				$f_tag_content = $direct_globals['basic_functions']->inputfilter_filepath ($f_tag_content);
+				if (($direct_globals['output']->related_manager ($f_tag_content,"formtags_cleanup_action",true))&&($direct_cachedata['formtags_related_data'] !== NULL)) { $f_data .= $direct_cachedata['formtags_related_data']; }
+
+				break 1;
+			}
+			}
+		}
+
+		$f_data .= $f_data_closed;
+	}
+
+	//f// direct_formtags->parser_cleanup_sourcecode (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false)
+/**
+	* Clean [sourcecode] tags.
+	*
+	* @param string &$f_data String that contains convertable data
+	* @param array $f_tag_array Tag for starting a FormTag
+	* @param integer $f_tag_start_position Position where the starting tag has
+	*        been found
+	* @param integer $f_tag_content_position Position where the content is
+	*        starting
+	* @param integer $f_tag_end_position Position where the content is ending
+	* @param boolean $f_nested True for nested items
+	* @param string $f_end_cresult HTML code that should be used
+	* @uses  direct_debug()
+	* @uses  USE_debug_reporting
+	* @since v0.1.00
+*/
+	/*#ifndef(PHP4) */protected /* #*/function parser_cleanup_sourcecode (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false)
+	{
+		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags_class->parser_cleanup_sourcecode (+f_data,+f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,+f_nested)- (#echo(__LINE__)#)"); }
+
+		$f_data_closed = mb_substr ($f_data,($f_tag_end_position + 13));
+		$f_tag_content = mb_substr ($f_data,$f_tag_content_position,($f_tag_end_position - $f_tag_content_position));
+
+		if ($f_nested) { $f_data = ((mb_substr ($f_data,0,$f_tag_start_position))."&#91;sourcecode&#93;$f_tag_content&#91;/sourcecode&#93;".$f_data_closed); }
+		else
+		{
+			$f_tag_content = str_replace (array ("[","]"),(array ("&#91;","&#93;")),$f_tag_content);
+			$f_data = ((mb_substr ($f_data,0,$f_tag_start_position))."\n* ".(direct_local_get ("formtags_sourcecode","text")).":\n$f_tag_content\n*\n".$f_data_closed);
+		}
+	}
+
+	//f// direct_formtags->parser_cleanup_sources (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false)
+/**
+	* Clean [sources] tags.
+	*
+	* @param string &$f_data String that contains convertable data
+	* @param array $f_tag_array Tag for starting a FormTag
+	* @param integer $f_tag_start_position Position where the starting tag has
+	*        been found
+	* @param integer $f_tag_content_position Position where the content is
+	*        starting
+	* @param integer $f_tag_end_position Position where the content is ending
+	* @param boolean $f_nested True for nested items
+	* @param string $f_end_cresult HTML code that should be used
+	* @uses  direct_debug()
+	* @uses  USE_debug_reporting
+	* @since v0.1.00
+*/
+	/*#ifndef(PHP4) */protected /* #*/function parser_cleanup_sources (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false)
+	{
+		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags_class->parser_cleanup_sources (+f_data,+f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,+f_nested)- (#echo(__LINE__)#)"); }
+
+		$f_data_closed = mb_substr ($f_data,($f_tag_end_position + 10));
+		$f_tag_content = mb_substr ($f_data,$f_tag_content_position,($f_tag_end_position - $f_tag_content_position));
+		$f_data = ((mb_substr ($f_data,0,$f_tag_start_position)).(direct_local_get ("formtags_sources","text")).":\n$f_tag_content\n*\n".$f_data_closed);
+	}
+
+	//f// direct_formtags->parser_cleanup_url (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false)
+/**
+	* Clean [url] tags.
+	*
+	* @param string &$f_data String that contains convertable data
+	* @param array $f_tag_array Tag for starting a FormTag
+	* @param integer $f_tag_start_position Position where the starting tag has
+	*        been found
+	* @param integer $f_tag_content_position Position where the content is
+	*        starting
+	* @param integer $f_tag_end_position Position where the content is ending
+	* @param boolean $f_nested True for nested items
+	* @param string $f_end_cresult HTML code that should be used
+	* @uses  direct_debug()
+	* @uses  USE_debug_reporting
+	* @since v0.1.00
+*/
+	/*#ifndef(PHP4) */protected /* #*/function parser_cleanup_url (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false)
+	{
+		global $direct_settings;
+		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags_class->parser_cleanup_url (+f_data,+f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,+f_nested)- (#echo(__LINE__)#)"); }
+
+		$f_data_closed = mb_substr ($f_data,($f_tag_end_position + 6));
+		$f_tag_content = mb_substr ($f_data,$f_tag_content_position,($f_tag_end_position - $f_tag_content_position));
+
+		$f_data = mb_substr ($f_data,0,$f_tag_start_position);
+
+		if ($f_nested) { $f_data .= $f_tag_content; }
+		else
+		{
+			$f_href_content = "";
+
+			if (isset ($f_tag_array[1]))
+			{
+				if ($f_tag_array[1] != "anchor")
+				{
+					$f_tag_array[0] = substr ($f_tag_array[0],1);
+					if (strlen ($f_tag_array[0])) { $f_href_content = ($direct_settings['swg_url_sbcheck'] ? direct_url_sbcheck ($f_tag_array[0],"text") : $f_tag_array[0]); }
+				}
+			}
+			else { $f_href_content = ($direct_settings['swg_url_sbcheck'] ? direct_url_sbcheck ($f_tag_content,"text") : $f_tag_content); }
+
+			if ($f_href_content)
+			{
+				$f_href_content = str_replace (array ("<",">","&#60;","&#62;","&lt;","&gt;"),"",$f_href_content);
+				$f_data .= (($f_href_content == $f_tag_content) ? $f_href_content : $f_tag_content." ($f_href_content)");
+			}
+		}
+
+		$f_data .= $f_data_closed;
+	}
+
+	//f// direct_formtags->parser_decode_contentform (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false)
+/**
+	* Decode [contentform] tags.
+	*
+	* @param string &$f_data String that contains convertable data
+	* @param array $f_tag_array Tag for starting a FormTag
+	* @param integer $f_tag_start_position Position where the starting tag has
+	*        been found
+	* @param integer $f_tag_content_position Position where the content is
+	*        starting
+	* @param integer $f_tag_end_position Position where the content is ending
+	* @param boolean $f_nested True for nested items
+	* @param string $f_end_cresult HTML code that should be used
+	* @uses  direct_debug()
+	* @uses  USE_debug_reporting
+	* @since v0.1.00
+*/
+	/*#ifndef(PHP4) */protected /* #*/function parser_decode_contentform (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false)
+	{
+		global $direct_settings;
+		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags_class->parser_decode_contentform (+f_data,+f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,+f_nested)- (#echo(__LINE__)#)"); }
+
+		$f_data_closed = mb_substr ($f_data,($f_tag_end_position + 14));
+		$f_invalid_check = false;
+		$f_tag_content = mb_substr ($f_data,$f_tag_content_position,($f_tag_end_position - $f_tag_content_position));
+
+		$f_data = mb_substr ($f_data,0,$f_tag_start_position);
+
+		if ((!isset ($f_tag_array[1]))||(($f_tag_array[1] != "align")&&($f_tag_array[1] != "box")&&($f_tag_array[1] != "colorbox")&&($f_tag_array[1] != "css")&&($f_tag_array[1] != "hidden")&&($f_tag_array[1] != "highlight")&&($f_tag_array[1] != "linehight")&&($f_tag_array[1] != "spacerbox")&&($f_tag_array[1] != "textindent"))) { $f_invalid_check = true; }
+		else
+		{
+			if (($f_tag_array[1] == "align")&&((!isset ($f_tag_array[2]))||(($f_tag_array[2] != "left")&&($f_tag_array[2] != "center")&&($f_tag_array[2] != "right")&&($f_tag_array[2] != "block")))) { $f_invalid_check = true; }
+			elseif ((($f_tag_array[1] == "box")||($f_tag_array[1] == "css"))&&(!isset ($f_tag_array[2]))) { $f_invalid_check = true; }
+			elseif ($f_tag_array[1] == "lineheight")
+			{
+				if (!isset ($f_tag_array[2])) { $f_invalid_check = true; }
+				elseif ($f_tag_array[2] < $direct_settings['swg_lineheight_min']) { $f_tag_array[2] = $direct_settings['swg_lineheight_min']; }
+				elseif ($f_tag_array[2] > $direct_settings['swg_lineheight_max']) { $f_tag_array[2] = $direct_settings['swg_lineheight_max']; }
+			}
+			elseif (($f_tag_array[1] == "spacerbox")&&((!isset ($f_tag_array[2]))||(!preg_match ("#^(\d+)$#",$f_tag_array[2])))) { $f_invalid_check = true; }
+			elseif ($f_tag_array[1] == "textindent")
+			{
+				if (!isset ($f_tag_array[2])) { $f_invalid_check = true; }
+				elseif ($f_tag_array[2] < $direct_settings['swg_textindent_min']) { $f_tag_array[2] = $direct_settings['swg_textindent_min']; }
+				elseif ($f_tag_array[2] > $direct_settings['swg_textindent_max']) { $f_tag_array[2] = $direct_settings['swg_textindent_max']; }
+			}
+		}
+
+		if ($f_invalid_check) { $f_data .= $f_tag_content; }
+		else
+		{
+			switch ($f_tag_array[1])
+			{
+			case "align":
+			{
+				if ($f_tag_array[2] == "block") { $f_tag_array[2] = "justify"; }
+				$f_data .= "<div style='text-align:{$f_tag_array[2]}'>$f_tag_content</div>";
+				break 1;
+			}
+			case "box":
+			{
+				if ($f_tag_array[2] == "left") { $f_css = "float:left"; }
+				elseif ($f_tag_array[2] == "right") { $f_css = "float:right"; }
+				elseif ($f_tag_array[2] == "br") { $f_css = "clear:both"; }
+				else { $f_css = ""; }
+
+				if ((isset ($f_tag_array[3]))&&(preg_match ("#^(\d{1,3})$#i",$f_tag_array[3],$f_percentage_array))&&($f_percentage_array[1] > 0)&&($f_percentage_array[1] < 101)) { $f_css .= ($f_css ? ";width:{$f_percentage_array[1]}%" : "width:{$f_percentage_array[1]}%"); }
+
+				if (isset ($f_tag_array[4]))
+				{
+					if ($f_tag_array[2] == "left") { $f_css = ";clear:left"; }
+					elseif ($f_tag_array[2] == "right") { $f_css = ";clear:right"; }
+				}
+
+				$f_data .= "<div style='$f_css'>$f_tag_content</div>";
+				break 1;
+			}
+			case "colorbox":
+			{
+				$f_data .= (((isset ($f_tag_array[2]))&&(preg_match ("#^(\w{6})$#i",$f_tag_array[2],$f_color_result_array))) ? "<div class='pageborder2{$direct_settings['theme_css_corners']} pageextracontent' style=\"padding:2px;background-color:#{$f_color_result_array[1]}\">$f_tag_content</div>" : "<div class='pageborder2{$direct_settings['theme_css_corners']} pageextracontent' style='margin:5px'>$f_tag_content</div>");
+				break 1;
+			}
+			case "css":
+			{
+				$f_data .= "<div class=\"".(str_replace ('"','\"',$f_tag_array[2]))."\">$f_tag_content</div>";
+				break 1;
+			}
+			case "hidden":
+			{
+/*
+						$f_hidden_code = "<span style='font-weight:bold'><a href=\"javascript:djs_iblock_switch('swgformtags_hidden_{$f_hidden_id}_point')\">".$f_result_array[($f_i - 1)]."</a></span><div id='swgformtags_hidden_{$f_hidden_id}_point' style='display:none'><div class='pagehr' style='$direct_settings[theme_hr_style]'><img src='".(direct_linker_dynamic ("url0","s=cache;dsd=dfile+$direct_settings[path_mmedia]/spacer.png",true,false))."' width='1' height='1' alt='' title='' style='float:left' /></div>$f_tag_content</div>";
+						$f_hidden_id = uniqid ("");
+
+$f_data_array[($f_i - 1)] .= (isset ($direct_settings['swg_clientsupport']['JSDOMManipulation']) ? $f_hidden_code : ("<div id='swgformtags_hidden_{$f_hidden_id}_point'><span style='font-weight:bold'>".$f_result_array[($f_i - 1)]."</span><div class='pagehr' style='$direct_settings[theme_hr_style]'><img src='".(direct_linker_dynamic ("url0","s=cache;dsd=dfile+$direct_settings[path_mmedia]/spacer.png",true,false))."' width='1' height='1' alt='' title='' style='float:left' /></div>$f_tag_content</div><script type='text/javascript'><![CDATA[
+djs_swgDOM_replace (\"".(str_replace ('"','\"',$f_hidden_code))."\",'swgformtags_hidden_{$f_hidden_id}_point');
+]]></script>"));
+
+						$f_data_array[($f_i - 1)] .= "".$f_data_closed;
+*/
+				$f_data .= $f_tag_content;
+				break 1;
+			}
+			case "highlight":
+			{
+				$f_data .= "<div class='pagehighlightborder2{$direct_settings['theme_css_corners']} pagecontent'>$f_tag_content</div>";
+				break 1;
+			}
+			case "lineheight":
+			{
+				$f_data .= "<div style='line-height:{$f_tag_array[2]}px'>$f_tag_content</div>";
+				break 1;
+			}
+			case "spacerbox":
+			{
+				if ((isset ($f_tag_array[3]))&&(preg_match ("#^(\d+)$#",$f_tag_array[3])))
+				{
+					$f_css = (($f_tag_array[3] < 0) ? "padding:0px" : "padding:{$f_tag_array[3]}px");
+					$f_css .= (($f_tag_array[2] < 1) ? ";margin:1px" : ";margin:{$f_tag_array[2]}px");
+				}
+				else { $f_css = (($f_tag_array[2] < 1) ? "padding:1px" : "padding:{$f_tag_array[2]}px"); }
+
+				$f_data .= "<div style='$f_css'>$f_tag_content</div>";
+				break 1;
+			}
+			case "textindent":
+			{
+				$f_data .= "<div style='margin-left:{$f_tag_array[2]}px'>$f_tag_content</div>";
+				break 1;
+			}
+			}
+		}
+
+		$f_data .= $f_data_closed;
+	}
+
+	//f// direct_formtags->parser_decode_font (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false)
+/**
+	* Decode [font] tags.
+	*
+	* @param string &$f_data String that contains convertable data
+	* @param array $f_tag_array Tag for starting a FormTag
+	* @param integer $f_tag_start_position Position where the starting tag has
+	*        been found
+	* @param integer $f_tag_content_position Position where the content is
+	*        starting
+	* @param integer $f_tag_end_position Position where the content is ending
+	* @param boolean $f_nested True for nested items
+	* @param string $f_end_cresult HTML code that should be used
+	* @uses  direct_debug()
+	* @uses  USE_debug_reporting
+	* @since v0.1.00
+*/
+	/*#ifndef(PHP4) */protected /* #*/function parser_decode_font (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false)
+	{
+		global $direct_settings;
+		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags_class->parser_decode_font (+f_data,+f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,+f_nested)- (#echo(__LINE__)#)"); }
+
+		$f_data_closed = mb_substr ($f_data,($f_tag_end_position + 7));
+		$f_invalid_check = false;
+		$f_tag_content = mb_substr ($f_data,$f_tag_content_position,($f_tag_end_position - $f_tag_content_position));
+
+		$f_data = mb_substr ($f_data,0,$f_tag_start_position);
+
+		if ((!isset ($f_tag_array[1]))||(($f_tag_array[1] != "bold")&&($f_tag_array[1] != "color")&&($f_tag_array[1] != "face")&&($f_tag_array[1] != "italic")&&($f_tag_array[1] != "overline")&&($f_tag_array[1] != "size")&&($f_tag_array[1] != "strike")&&($f_tag_array[1] != "underline"))) { $f_invalid_check = true; }
+		else
+		{
+			if ((($f_tag_array[1] == "color")||($f_tag_array[1] == "face"))&&(!isset ($f_tag_array[2]))) { $f_invalid_check = true; }
+			elseif ($f_tag_array[1] == "size")
+			{
+				if (!isset ($f_tag_array[2])) { $f_invalid_check = true; }
+				elseif ($f_tag_array[2] < $direct_settings['swg_fontsize_min']) { $f_tag_array[2] = $direct_settings['swg_fontsize_min']; }
+				elseif ($f_tag_array[2] > $direct_settings['swg_fontsize_max']) { $f_tag_array[2] = $direct_settings['swg_fontsize_max']; }
+			}
+		}
+
+		if ($f_invalid_check) { $f_data .= $f_tag_content; }
+		else
+		{
+			$f_data .= "<span style=";
+
+			switch ($f_tag_array[1])
+			{
+			case "bold":
+			{
+				$f_data .= "'font-weight:bold'";
+				break 1;
+			}
+			case "color":
+			{
+				$f_data .= "\"color:#$f_tag_array[2]\"";
+				break 1;
+			}
+			case "face":
+			{
+				$f_tag_array[2] = preg_replace ("#^(.+?) (.+?)$#im","'\\1 \\2'",(str_replace (",","\n",$f_tag_array[2])));
+				$f_tag_array[2] = trim (str_replace ("\n",",",$f_tag_array[2]));
+				if ($direct_settings['swg_fontfamily']) { $f_tag_array[2] .= ",".$direct_settings['swg_fontfamily']; }
+
+				$f_data .= "\"font-family:$f_tag_array[2]\"";
+				break 1;
+			}
+			case "italic":
+			{
+				$f_data .= "'font-style:italic'";
+				break 1;
+			}
+			case "overline":
+			{
+				$f_data .= "'text-decoration:overline'";
+				break 1;
+			}
+			case "size":
+			{
+				$f_data .= "'font-size:$f_tag_array[2]px'";
+				break 1;
+			}
+			case "strike":
+			{
+				$f_data .= "'text-decoration:line-through'";
+				break 1;
+			}
+			case "underline":
+			{
+				$f_data .= "'text-decoration:underline'";
+				break 1;
+			}
+			}
+
+			$f_data .= ">$f_tag_content</span>";
+		}
+
+		$f_data .= $f_data_closed;
+	}
+
+	//f// direct_formtags->parser_decode_img (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false)
+/**
+	* Decode [img] tags.
+	*
+	* @param string &$f_data String that contains convertable data
+	* @param array $f_tag_array Tag for starting a FormTag
+	* @param integer $f_tag_start_position Position where the starting tag has
+	*        been found
+	* @param integer $f_tag_content_position Position where the content is
+	*        starting
+	* @param integer $f_tag_end_position Position where the content is ending
+	* @param boolean $f_nested True for nested items
+	* @param string $f_end_cresult HTML code that should be used
+	* @uses  direct_debug()
+	* @uses  USE_debug_reporting
+	* @since v0.1.00
+*/
+	/*#ifndef(PHP4) */protected /* #*/function parser_decode_img (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false)
+	{
+		global $direct_settings;
+		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags_class->parser_decode_img (+f_data,+f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,+f_nested)- (#echo(__LINE__)#)"); }
+
+		$f_data_closed = mb_substr ($f_data,($f_tag_end_position + 6));
+
+		if ($f_nested) { $f_data = (mb_substr ($f_data,0,$f_tag_start_position)); }
+		else
+		{
+			$f_tag_content = mb_substr ($f_data,$f_tag_content_position,($f_tag_end_position - $f_tag_content_position));
+
+			$f_data = mb_substr ($f_data,0,$f_tag_start_position);
+
+			if (preg_match ("#^(.*?)\[title:(.+?)\](.*?)$#i",$f_tag_content,$f_result_array))
+			{
+				if (($f_tag_array[0] == ":right")||($f_tag_array[0] == ":right:nobox")) { $f_data .= "<div class='pageborder2{$direct_settings['theme_css_corners']} pageextracontent' style='overflow:auto;margin:5px;float:right;clear:right;text-align:center'><img src=\"".$f_result_array[1].$f_result_array[3]."\" alt='' title='' /><br />\n".$f_result_array[2]."</div>"; }
+				elseif (($f_tag_array[0] == ":left")||($f_tag_array[0] == ":left:nobox")) { $f_data .= "<div class='pageborder2{$direct_settings['theme_css_corners']} pageextracontent' style='overflow:auto;margin:5px;float:left;clear:left;text-align:center'><img src=\"".$f_result_array[1].$f_result_array[3]."\" alt='' title='' /><br />\n".$f_result_array[2]."</div>"; }
+				else { $f_data .= "<div class='pageborder2{$direct_settings['theme_css_corners']} pageextracontent' style='overflow:auto;margin:5px;text-align:center'><img src=\"".$f_result_array[1].$f_result_array[3]."\" alt='' title='' /><br />\n".$f_result_array[2]."</div>"; }
+			}
+			elseif ($f_tag_array)
+			{
+				$f_box_check = true;
+
+				switch ($f_tag_array[0])
+				{
+				case ":right:nobox":
+				{
+					$f_box_check = false;
+					$f_data .= "<span style='overflow:auto;float:right;clear:right'>";
+					break 1;
+				}
+				case ":right":
+				{
+					$f_data .= "<div class='pageborder2{$direct_settings['theme_css_corners']}' style='overflow:auto;margin:5px;line-height:0px;float:right;clear:right'>";
+					break 1;
+				}
+				case ":left:nobox":
+				{
+					$f_box_check = false;
+					$f_data .= "<span style='overflow:auto;float:left;clear:left'>";
+					break 1;
+				}
+				case ":left":
+				{
+					$f_data .= "<div class='pageborder2{$direct_settings['theme_css_corners']}' style='overflow:auto;margin:5px;line-height:0px;float:left;clear:left'>";
+					break 1;
+				}
+				default: { $f_data .= "<div class='pageborder2{$direct_settings['theme_css_corners']}' style='overflow:auto;margin:5px;line-height:0px;text-align:center'>"; }
+				}
+
+				$f_data .= "<img src=\"$f_tag_content\" alt='' title='' />";
+				$f_data .= ($f_box_check ? "</div>" : "</span>");
+			}
+			else { $f_data .= "<span style='overflow:auto'><img src=\"$f_tag_content\" alt='' title='' /></span>"; }
+		}
+
+		$f_data .= $f_data_closed;
+	}
+
+	//f// direct_formtags->parser_decode_list (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false)
+/**
+	* Decode [- list tags.
+	*
+	* @param string &$f_data String that contains convertable data
+	* @param array $f_tag_array Tag for starting a FormTag
+	* @param integer $f_tag_start_position Position where the starting tag has
+	*        been found
+	* @param integer $f_tag_content_position Position where the content is
+	*        starting
+	* @param integer $f_tag_end_position Position where the content is ending
+	* @param boolean $f_nested True for nested items
+	* @param string $f_end_cresult HTML code that should be used
+	* @uses  direct_debug()
+	* @uses  USE_debug_reporting
+	* @since v0.1.00
+*/
+	/*#ifndef(PHP4) */protected /* #*/function parser_decode_list (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false)
+	{
+		global $direct_settings;
+		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags_class->parser_decode_list (+f_data,+f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,+f_nested)- (#echo(__LINE__)#)"); }
+
+		$f_list_symbol = mb_substr ($f_tag_array[0],1);
+
+		switch ($f_list_symbol)
+		{
+		case "<":
+		{
+			$f_list_symbol = "&#0060;";
+			break 1;
+		}
+		case "<<":
+		{
+			$f_list_symbol = "&#0171;";
+			break 1;
+		}
+		case ">":
+		{
+			$f_list_symbol = "&#0062;";
+			break 1;
+		}
+		case ">>":
+		{
+			$f_list_symbol = "&#0187;";
+			break 1;
+		}
+		case "o":
+		{
+			$f_list_symbol = "&#0176;";
+			break 1;
+		}
+		}
+
+		$f_data_closed = mb_substr ($f_data,(mb_strlen ($f_list_symbol) + $f_tag_end_position + 4));
+		$f_tag_content = mb_substr ($f_data,$f_tag_content_position,($f_tag_end_position - $f_tag_content_position));
+
+		$f_data = (mb_substr ($f_data,0,$f_tag_start_position));
+		$f_data .= "<div style='$direct_settings[formtags_list_item_style]'>$f_list_symbol</div><div style='$direct_settings[formtags_list_content_style]'>$f_tag_content</div>".$f_data_closed;
+	}
+
+	//f// direct_formtags->parser_decode_quote (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false)
+/**
+	* Decode [quote] tags.
+	*
+	* @param string &$f_data String that contains convertable data
+	* @param array $f_tag_array Tag for starting a FormTag
+	* @param integer $f_tag_start_position Position where the starting tag has
+	*        been found
+	* @param integer $f_tag_content_position Position where the content is
+	*        starting
+	* @param integer $f_tag_end_position Position where the content is ending
+	* @param boolean $f_nested True for nested items
+	* @param string $f_end_cresult HTML code that should be used
+	* @uses  direct_debug()
+	* @uses  USE_debug_reporting
+	* @since v0.1.00
+*/
+	/*#ifndef(PHP4) */protected /* #*/function parser_decode_quote (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false)
+	{
+		global $direct_globals,$direct_settings;
+		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags_class->parser_decode_quote (+f_data,+f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,+f_nested)- (#echo(__LINE__)#)"); }
+
+		$f_data_closed = mb_substr ($f_data,($f_tag_end_position + 8));
+		$f_tag_content = $direct_globals['output']->smiley_cleanup (mb_substr ($f_data,$f_tag_content_position,($f_tag_end_position - $f_tag_content_position)));
+
+		$f_data = mb_substr ($f_data,0,$f_tag_start_position);
+
+		if (isset ($f_tag_array[1]))
+		{
+			$f_data .= "<div style='margin:0px 20px;text-align:left'><span class='pagecontent' style='$direct_settings[formtags_quote_style]'>".(direct_local_get ("formtags_quote_2_1","text"));
+			$f_data .= ((isset ($f_tag_array[2])) ? "<a href='".(direct_linker ("url0","m=account;s=profile;a=view;dsd=auid+".$f_tag_array[1]))."' target='_blank'>$f_tag_array[2]</a>".(direct_local_get ("formtags_quote_2_2","text")).": </span><span class='pagecontent' style='$direct_settings[formtags_quote_notice_style]'>".(direct_local_get ("formtags_quote_2_3","text"))."</span></div>" : $f_tag_array[1].(direct_local_get ("formtags_quote_2_2","text")).":</span></div>");
+			$f_data .= "<div class='pageborder2{$direct_settings['theme_css_corners']} pageextracontent' style='margin:0px 20px;text-align:left'>$f_tag_content</div>";
+		}
+		else { $f_data .= "<div style='margin:0px 20px;text-align:left;$direct_settings[formtags_quote_style]'><span class='pagecontent'>".(direct_local_get ("formtags_quote_1","text")).":</span></div><div class='pageborder2{$direct_settings['theme_css_corners']} pageextracontent' style='margin:0px 20px;text-align:left'>$f_tag_content</div>"; }
+
+		$f_data .= $f_data_closed;
+	}
+
+	//f// direct_formtags->parser_decode_rewrite (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false)
+/**
+	* Decode [rewrite] tags.
+	*
+	* @param string &$f_data String that contains convertable data
+	* @param array $f_tag_array Tag for starting a FormTag
+	* @param integer $f_tag_start_position Position where the starting tag has
+	*        been found
+	* @param integer $f_tag_content_position Position where the content is
+	*        starting
+	* @param integer $f_tag_end_position Position where the content is ending
+	* @param boolean $f_nested True for nested items
+	* @param string $f_end_cresult HTML code that should be used
+	* @uses  direct_debug()
+	* @uses  USE_debug_reporting
+	* @since v0.1.00
+*/
+	/*#ifndef(PHP4) */protected /* #*/function parser_decode_rewrite (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false)
+	{
+		global $direct_cachedata,$direct_globals,$direct_settings;
+		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags_class->parser_decode_rewrite (+f_data,+f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,+f_nested)- (#echo(__LINE__)#)"); }
+
+		$f_data_closed = mb_substr ($f_data,($f_tag_end_position + 10));
+		$f_invalid_check = false;
+		$f_tag_content = mb_substr ($f_data,$f_tag_content_position,($f_tag_end_position - $f_tag_content_position));
+
+		$f_data = mb_substr ($f_data,0,$f_tag_start_position);
+
+		if ((!isset ($f_tag_array[1]))||(($f_tag_array[1] != "data")&&($f_tag_array[1] != "edit")&&($f_tag_array[1] != "elink")&&($f_tag_array[1] != "ilink")&&($f_tag_array[1] != "local")&&($f_tag_array[1] != "related"))) { $f_invalid_check = true; }
+		elseif (($f_tag_array[1] == "edit")&&(!isset ($f_tag_array[2],$f_tag_array[3]))) { $f_invalid_check = true; }
+
+		if ($f_invalid_check) { $f_data .= $f_tag_content; }
+		else
+		{
+			switch ($f_tag_array[1])
+			{
+			case "data":
+			{
+				$f_data .= ((isset ($direct_cachedata["output_formtags_".$f_tag_content])) ? direct_html_encode_special ($direct_cachedata["output_formtags_".$f_tag_content]) : direct_local_get ("core_unknown"));
+				break 1;
+			}
+			case "edit":
+			{
+				$f_datetime = $direct_globals['basic_functions']->datetime ("shortdate&time",$f_tag_array[2],$direct_settings['user']['timezone'],(direct_local_get ("formtags_edit_2")));
+				$f_user_profile = direct_linker ("url1","m=account;s=profile;a=view;dsd=auid+".$f_tag_array[3]);
+				$f_data .= ("<br /><span style='$direct_settings[formtags_edit_style]'>".(direct_local_get ("formtags_edit_1")).$f_datetime.(direct_local_get ("formtags_edit_3"))."<a href='$f_user_profile' target='_self'>".(direct_html_encode_special ($f_tag_content))."</a>".(direct_local_get ("formtags_edit_4"))."</span>");
+
+				break 1;
+			}
+			case "elink":
+			case "ilink":
+			{
+				if ($f_tag_array[1] == "elink") { $f_data .= direct_linker ("url1",$f_tag_content,true,false); }
+				else { $f_data .= direct_linker ("url0",$f_tag_content); }
+
+				break 1;
+			}
+			case "local":
+			{
+				$f_data .= direct_local_get ($f_tag_content);
+				break 1;
+			}
+			case "related":
+			{
+				$direct_cachedata['formtags_related_data'] = NULL;
+				$f_tag_content = $direct_globals['basic_functions']->inputfilter_filepath ($f_tag_content);
+				if (($direct_globals['output']->related_manager ($f_tag_content,"formtags_decode_action",true))&&($direct_cachedata['formtags_related_data'] !== NULL)) { $f_data .= $direct_cachedata['formtags_related_data']; }
+
+				break 1;
+			}
+			}
+		}
+
+		$f_data .= $f_data_closed;
+	}
+
+	//f// direct_formtags->parser_decode_sourcecode (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false)
+/**
+	* Decode [sourcecode] tags.
+	*
+	* @param string &$f_data String that contains convertable data
+	* @param array $f_tag_array Tag for starting a FormTag
+	* @param integer $f_tag_start_position Position where the starting tag has
+	*        been found
+	* @param integer $f_tag_content_position Position where the content is
+	*        starting
+	* @param integer $f_tag_end_position Position where the content is ending
+	* @param boolean $f_nested True for nested items
+	* @param string $f_end_cresult HTML code that should be used
+	* @uses  direct_debug()
+	* @uses  USE_debug_reporting
+	* @since v0.1.00
+*/
+	/*#ifndef(PHP4) */protected /* #*/function parser_decode_sourcecode (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false)
+	{
+		global $direct_globals,$direct_settings;
+		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags_class->parser_decode_sourcecode (+f_data,+f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,+f_nested)- (#echo(__LINE__)#)"); }
+
+		$f_data_closed = mb_substr ($f_data,($f_tag_end_position + 13));
+		$f_tag_content = mb_substr ($f_data,$f_tag_content_position,($f_tag_end_position - $f_tag_content_position));
+
+		if ($f_nested) { $f_data = ((mb_substr ($f_data,0,$f_tag_start_position))."&#91;sourcecode&#93;$f_tag_content&#91;/sourcecode&#93;".$f_data_closed); }
+		else
+		{
+			$f_tag_content = $direct_globals['output']->smiley_cleanup ($f_tag_content);
+			$f_tag_content = str_replace (array ("[br]","[newline]","[","]"),(array ("\n","\n","&#91;","&#93;")),$f_tag_content);
+			$f_data = ((mb_substr ($f_data,0,$f_tag_start_position))."<div class='pageborder2{$direct_settings['theme_css_corners']}' style='overflow:auto;padding:5px'><code class='pageextracontent' style='text-align:left;white-space:pre;font-family:\"Courier New\",Courier,mono'>$f_tag_content</code></div>".$f_data_closed);
+		}
+	}
+
+	//f// direct_formtags->parser_decode_sources (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false)
+/**
+	* Decode [sources] tags.
+	*
+	* @param string &$f_data String that contains convertable data
+	* @param array $f_tag_array Tag for starting a FormTag
+	* @param integer $f_tag_start_position Position where the starting tag has
+	*        been found
+	* @param integer $f_tag_content_position Position where the content is
+	*        starting
+	* @param integer $f_tag_end_position Position where the content is ending
+	* @param boolean $f_nested True for nested items
+	* @param string $f_end_cresult HTML code that should be used
+	* @uses  direct_debug()
+	* @uses  USE_debug_reporting
+	* @since v0.1.00
+*/
+	/*#ifndef(PHP4) */protected /* #*/function parser_decode_sources (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false)
+	{
+		global $direct_globals,$direct_settings;
+		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags_class->parser_decode_sources (+f_data,+f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,+f_nested)- (#echo(__LINE__)#)"); }
+
+		$f_data_closed = mb_substr ($f_data,($f_tag_end_position + 10));
+		$f_tag_content = $direct_globals['output']->smiley_cleanup (mb_substr ($f_data,$f_tag_content_position,($f_tag_end_position - $f_tag_content_position)));
+
+		$f_data = mb_substr ($f_data,0,$f_tag_start_position);
+		$f_data .= ("<div style='$direct_settings[formtags_sources_style]'><span class='pagecontent'><span style='$direct_settings[formtags_sources_title_style]'>".(direct_local_get ("formtags_sources")).":</span> $f_tag_content</span></div>".$f_data_closed);
+	}
+
+	//f// direct_formtags->parser_decode_url (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false)
+/**
+	* Decode [url] tags.
+	*
+	* @param string &$f_data String that contains convertable data
+	* @param array $f_tag_array Tag for starting a FormTag
+	* @param integer $f_tag_start_position Position where the starting tag has
+	*        been found
+	* @param integer $f_tag_content_position Position where the content is
+	*        starting
+	* @param integer $f_tag_end_position Position where the content is ending
+	* @param boolean $f_nested True for nested items
+	* @param string $f_end_cresult HTML code that should be used
+	* @uses  direct_debug()
+	* @uses  USE_debug_reporting
+	* @since v0.1.00
+*/
+	/*#ifndef(PHP4) */protected /* #*/function parser_decode_url (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false)
+	{
+		global $direct_settings;
+		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags_class->parser_decode_url (+f_data,+f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,+f_nested)- (#echo(__LINE__)#)"); }
+
+		$f_data_closed = mb_substr ($f_data,($f_tag_end_position + 6));
+		$f_tag_content = mb_substr ($f_data,$f_tag_content_position,($f_tag_end_position - $f_tag_content_position));
+
+		$f_data = mb_substr ($f_data,0,$f_tag_start_position);
+
+		if ($f_nested) { $f_data .= $f_tag_content; }
+		else
+		{
+			$f_href_content = "";
+
+			if (isset ($f_tag_array[1]))
+			{
+				if ($f_tag_array[1] == "anchor")
+				{
+					if (strpos ("\n",$f_tag_content) === false) { $f_data .= "<a id=\"$f_tag_content\" name=\"$f_tag_content\"></a>"; }
+					else { $f_data .= $f_tag_content; }
+				}
+				else { $f_href_content = substr ($f_tag_array[0],1); }
+			}
+			else { $f_href_content = $f_tag_content; }
+
+			if ($f_href_content)
+			{
+				$f_href_content = str_replace (array ("<",">","&#60;","&#62;","&lt;","&gt;"),"",$f_href_content);
+				$f_href_settings = (preg_match ("#^(\w+)\:\/\/#i",$f_href_content) ? " target='_blank' rel='nofollow'" : "");
+
+				$f_data .= ((($direct_settings['swg_url_sbcheck'])&&($f_href_settings)) ? "<a href=\"".(direct_url_sbcheck ($f_href_content))."\"$f_href_settings>$f_tag_content</a>" : "<a href=\"$f_href_content\">$f_tag_content</a>");
+			}
+		}
+
+		$f_data .= $f_data_closed;
+	}
+
+	//f// direct_formtags->parser_tag_end_find_position (&$f_data,$f_data_position,$f_tag_end)
+/**
+	* Converts FormTags using specified convert string into valid XHTML 1.0 code.
+	*
+	* @param string &$f_data String that contains convertable data
+	* @param string $f_start_tag Tag for starting a FormTag
+	* @param string $f_start_cresult HTML code that should be used instead of the
+	*        FormTag
+	* @param string $f_end_tag Ending delimiter
+	* @param string $f_end_cresult HTML code that should be used
+	* @uses  direct_debug()
+	* @uses  USE_debug_reporting
+	* @since v0.1.00
+*/
+	/*#ifndef(PHP4) */protected /* #*/function parser_tag_end_find_position (&$f_data,$f_data_position,$f_tag_end)
+	{
+		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags_class->parser_tag_end_find_position (+f_data,$f_data_position)- (#echo(__LINE__)#)"); }
+
+		do
+		{
+			$f_return = mb_strpos ($f_data,$f_tag_end,$f_data_position);
+			$f_data_position++;
+		}
+		while (($f_return !== false)&&(mb_substr ($f_data,($f_return - 1),1) == "\\"));
+
+		return $f_return;
+	}
+
+	//f// direct_formtags->parser_tag_find_end_position (&$f_data,$f_data_position)
+/**
+	* Converts FormTags using specified convert string into valid XHTML 1.0 code.
+	*
+	* @param string &$f_data String that contains convertable data
+	* @param string $f_start_tag Tag for starting a FormTag
+	* @param string $f_start_cresult HTML code that should be used instead of the
+	*        FormTag
+	* @param string $f_end_tag Ending delimiter
+	* @param string $f_end_cresult HTML code that should be used
+	* @uses  direct_debug()
+	* @uses  USE_debug_reporting
+	* @since v0.1.00
+*/
+	/*#ifndef(PHP4) */protected /* #*/function parser_tag_find_end_position (&$f_data,$f_data_position)
+	{
+		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags_class->parser_tag_find_end_position (+f_data,$f_data_position)- (#echo(__LINE__)#)"); }
+
+		do
+		{
+			$f_return = mb_strpos ($f_data,"]",$f_data_position);
+			$f_data_position++;
+		}
+		while (($f_return !== false)&&(mb_substr ($f_data,($f_return - 1),1) == "\\"));
+
+		if ($f_return !== false) { $f_return = (1 + $f_return); }
+		return $f_return;
+	}
+
+	//f// direct_formtags->parser_tag_parse (&$f_data,$f_start_position,$f_end_position)
+/**
+	* Converts FormTags using specified convert string into valid XHTML 1.0 code.
+	*
+	* @param string &$f_data String that contains convertable data
+	* @param string $f_start_tag Tag for starting a FormTag
+	* @param string $f_start_cresult HTML code that should be used instead of the
+	*        FormTag
+	* @param string $f_end_tag Ending delimiter
+	* @param string $f_end_cresult HTML code that should be used
+	* @uses  direct_debug()
+	* @uses  USE_debug_reporting
+	* @since v0.1.00
+*/
+	/*#ifndef(PHP4) */protected /* #*/function parser_tag_parse (&$f_data,$f_start_position,$f_end_position)
+	{
+		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags_class->parser_tag_parse (+f_data,$f_start_position,$f_end_position)- (#echo(__LINE__)#)"); }
+
+		$f_tag_content = mb_substr ($f_data,($f_start_position + 1),($f_end_position - $f_start_position - 2));
+		$f_tag_array = explode (":",$f_tag_content);
+		if (count ($f_tag_array) > 1) { $f_tag_array[0] = mb_substr ($f_tag_content,(mb_strlen ($f_tag_array[0]))); }
+
+		return $f_tag_array;
+	}
+
+	//f// direct_formtags->pre_cleanup ($f_data)
+/**
+	* Cleans and replaces data that are session specific.
+	*
+	* @param  string $f_data Input string containing FormTags
+	* @uses   direct_debug()
+	* @uses   direct_formtags::parser()
+	* @uses   direct_local_get()
+	* @uses   USE_debug_reporting
+	* @return string Filtered string
+	* @since  v0.1.00
+*/
+	/*#ifndef(PHP4) */public /* #*/function pre_cleanup ($f_data)
+	{
+		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags_class->pre_cleanup (+f_data)- (#echo(__LINE__)#)"); }
+
+		$this->parser ($f_data,"pre_cleanup");
+		return $f_data;
+	}
+
+	//f// direct_formtags->pre_decode ($f_data)
+/**
+	* Formats and replaces data that are session specific.
+	*
+	* @param  string $f_data Input string containing FormTags
+	* @uses   direct_debug()
+	* @uses   direct_formtags::parser()
+	* @uses   direct_html_get()
+	* @uses   USE_debug_reporting
+	* @return string Filtered string containing XHTML code
+	* @since  v0.1.00
+*/
+	/*#ifndef(PHP4) */public /* #*/function pre_decode ($f_data)
+	{
+		global $direct_settings;
+		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags_class->pre_decode (+f_data)- (#echo(__LINE__)#)"); }
+
+		$this->parser ($f_data,"pre_decode");
+		return $f_data;
 	}
 
 	//f// direct_formtags->recode_newlines ($f_data,$f_brmode = true)
@@ -385,546 +1543,9 @@ Informing the system about available functions
 	{
 		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags_class->recode_newlines (+f_data,$f_brmode)- (#echo(__LINE__)#)"); }
 
-		$f_return =& $f_data;
-
 		$f_newline = ($f_brmode ? "<br />\n" : "\n");
-		$f_data = str_replace ("[newline]",$f_newline,$f_data);
-		$f_data = trim ($f_data);
-
-		return $f_return;
-	}
-
-	//f// direct_formtags->tree_changer_rule_based (&$f_data,$f_rule)
-/**
-	* Converts FormTags rule-based into valid XHTML 1.0 code.
-	*
-	* @param string &$f_data String that contains convertable data
-	* @param string $f_rule Name of the rule that should be used
-	* @uses  direct_basic_functions::datetime()
-	* @uses  direct_debug()
-	* @uses  direct_linker_get()
-	* @uses  direct_local_get()
-	* @uses  USE_debug_reporting
-	* @link  http://www.direct-netware.de/redirect.php?swg;handbooks;dev;formtagrules
-	*        Click here to get a list of available rules
-	* @since v0.1.00
-*/
-	/*#ifndef(PHP4) */protected /* #*/function tree_changer_rule_based (&$f_data,$f_rule)
-	{
-		global $direct_cachedata,$direct_classes,$direct_settings;
-		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags_class->tree_changer_rule_based (+f_data,$f_rule)- (#echo(__LINE__)#)"); }
-
-		$f_tag_start = "";
-		$f_tag_end = "";
-
-		switch ($f_rule)
-		{
-		case "cleanup:lists":
-		{
-			$f_tag_start = "\[-(.+?)\]";
-			$f_tag_end = "[/-(.+?)]";
-			break 1;
-		}
-		case "cleanup:quote":
-		{
-			$f_tag_start = "\[quote(.*?)\]";
-			$f_tag_end = "[/quote]";
-			break 1;
-		}
-		case "cleanup:rewrite":
-		{
-			if (preg_match_all ("#\[rewrite\:edit\:(.+?)\:(.+?)\:(.+?)\]#i",$f_data,$f_result_array,PREG_SET_ORDER))
-			{
-				foreach ($f_result_array as $f_result_item_array)
-				{
-					$f_datetime = $direct_classes['basic_functions']->datetime ("shortdate&time",$f_result_item_array[1],$direct_settings['user']['timezone'],(direct_local_get ("formtags_edit_2","text")));
-					$f_data = str_replace ($f_result_item_array[0],"\n* ".(direct_local_get ("formtags_edit_1","text")).$f_datetime.(direct_local_get ("formtags_edit_3","text")).$f_result_item_array[3]." ({$f_result_item_array[2]})".(direct_local_get ("formtags_edit_4","text"))." *\n",$f_data);
-				}
-			}
-
-			if (preg_match_all ("#\[rewrite\:elink\:(.+?)\]#i",$f_data,$f_result_array,PREG_SET_ORDER))
-			{
-				foreach ($f_result_array as $f_result_item_array) { $f_data = str_replace ($f_result_item_array[0],(direct_linker ("url1",$f_result_item_array[1],false,false)),$f_data); }
-			}
-
-			if (preg_match_all ("#\[rewrite\:ilink\:(.+?)\]#i",$f_data,$f_result_array,PREG_SET_ORDER))
-			{
-				foreach ($f_result_array as $f_result_item_array) { $f_data = str_replace ($f_result_item_array[0],(direct_linker ("url0",$f_result_item_array[1],false)),$f_data); }
-			}
-
-			if (preg_match_all ("#\[rewrite\:local\:(.+?)\]#i",$f_data,$f_result_array,PREG_SET_ORDER))
-			{
-				foreach ($f_result_array as $f_result_item_array) { $f_data = str_replace ($f_result_item_array[0],(direct_local_get ($f_result_item_array[1],"text")),$f_data); }
-			}
-
-			if (preg_match_all ("#\[rewrite\:related\:(.+?)\]#i",$f_data,$f_result_array,PREG_SET_ORDER))
-			{
-				foreach ($f_result_array as $f_result_item_array)
-				{
-					$f_result_item_array[1] = $direct_classes['basic_functions']->inputfilter_filepath ($f_result_item_array[1]);
-
-					$direct_cachedata['formtags_related_data'] = NULL;
-					if ((direct_output_related_manager ($f_result_item_array[1],"formtags_cleanup_action",true))&&($direct_cachedata['formtags_related_data'] !== NULL)) { $f_data = str_replace ($f_result_item_array[0],$direct_cachedata['formtags_related_data'],$f_data); }
-				}
-			}
-
-			$f_data = preg_replace ("#\[rewrite\:(.+?)\]#i","",$f_data);
-
-			break 1;
-		}
-		case "cleanup:sourcecode":
-		{
-			$f_data_array = explode ("[sourcecode]",$f_data);
-			$f_occurrences = (count ($f_data_array) - 1);
-
-			for ($f_i = $f_occurrences;$f_i > 0;$f_i--)
-			{
-				$f_data_closed_array = explode ("[/sourcecode]",$f_data_array[$f_i],3);
-				unset ($f_data_array[$f_i]);
-
-				$f_data_closed_elements = (count ($f_data_closed_array) - 1);
-
-				if ($f_data_closed_elements == 1)
-				{
-					$f_tag_content = $f_data_closed_array[0];
-					$f_tag_content = str_replace ("[","&#91;",$f_tag_content);
-					$f_tag_content = str_replace ("]","&#93;",$f_tag_content);
-					$f_tag_content = str_replace ("&#91;br&#93;","\n",$f_tag_content);
-					$f_tag_content = str_replace ("&#91;newline&#93;","\n",$f_tag_content);
-
-					$f_data_closed = $f_data_closed_array[1];
-
-					$f_data_array[($f_i - 1)] .= "\n* ".(direct_local_get ("formtags_sourcecode","text")).":\n$f_tag_content\n*\n".$f_data_closed;
-				}
-				elseif ($f_data_closed_elements)
-				{
-					$f_tag_content = $f_data_closed_array[0];
-					unset ($f_data_closed_array[0]);
-					$f_data_array[($f_i - 1)] .= "&#91;sourcecode&#93;$f_tag_content&#91;/sourcecode&#93;".(implode ("[/sourcecode]",$f_data_closed_array));
-				}
-				else { $f_data_array[($f_i - 1)] .= $f_data_closed_array[0]; }
-			}
-
-			$f_data = $f_data_array[0];
-			break 1;
-		}
-		case "cleanup:url":
-		{
-			if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($f_data,"[url:anchor:") !== false) { $f_data = preg_replace ("#\[url:anchor:(.+?)\]#i","",$f_data); }
-
-			$f_tag_start = "\[url(.*?)\]";
-			$f_tag_end = "[/url]";
-			break 1;
-		}
-		case "decode:contentform:box":
-		{
-			$f_tag_start = "\[contentform:box:(.+?)\]";
-			$f_tag_end = "[/contentform]";
-			break 1;
-		}
-		case "decode:contentform:colorbox":
-		{
-			$f_tag_start = "\[contentform:colorbox(.*?)\]";
-			$f_tag_end = "[/contentform]";
-			break 1;
-		}
-		case "decode:contentform:hidden":
-		{
-			$f_tag_start = "\[contentform:hidden:(.+?)\]";
-			$f_tag_end = "[/contentform]";
-			break 1;
-		}
-		case "decode:contentform:lineheight":
-		{
-			$f_tag_start = "\[contentform:lineheight:(\d{1,3})\]";
-			$f_tag_end = "[/contentform]";
-			break 1;
-		}
-		case "decode:contentform:spacerbox":
-		{
-			$f_tag_start = "\[contentform:spacerbox:(.+?)\]";
-			$f_tag_end = "[/contentform]";
-			break 1;
-		}
-		case "decode:contentform:textindent":
-		{
-			$f_tag_start = "\[contentform:textindent:(\d{1,3})\]";
-			$f_tag_end = "[/contentform]";
-			break 1;
-		}
-		case "decode:font:color":
-		{
-			$f_tag_start = "\[font:color:(\w{6})\]";
-			$f_tag_end = "[/font]";
-			break 1;
-		}
-		case "decode:font:face":
-		{
-			$f_tag_start = "\[font:face:([a-zA-Z0-9 ,]+)\]";
-			$f_tag_end = "[/font]";
-			break 1;
-		}
-		case "decode:font:size":
-		{
-			$f_tag_start = "\[font:size:(\d{1,3})\]";
-			$f_tag_end = "[/font]";
-			break 1;
-		}
-		case "decode:img":
-		{
-			$f_tag_start = "\[img(.*?)\]";
-			$f_tag_end = "[/img]";
-			break 1;
-		}
-		case "decode:quote":
-		{
-			$f_tag_start = "\[quote(.*?)\]";
-			$f_tag_end = "[/quote]";
-			break 1;
-		}
-		case "decode:rewrite":
-		{
-			if (preg_match_all ("#\[rewrite\:edit\:(.+?)\:(.+?)\:(.+?)\]#i",$f_data,$f_result_array,PREG_SET_ORDER))
-			{
-				foreach ($f_result_array as $f_result_item_array)
-				{
-					$f_datetime = $direct_classes['basic_functions']->datetime ("shortdate&time",$f_result_item_array[1],$direct_settings['user']['timezone'],(direct_local_get ("formtags_edit_2","text")));
-					$f_user_profile = direct_linker ("url1","m=account&s=profile&a=view&dsd=auid+".$f_result_item_array[2]);
-					$f_data = str_replace ($f_result_item_array[0],("<br /><span style='$direct_settings[formtags_edit_style]'>".(direct_local_get ("formtags_edit_1","text")).$f_datetime.(direct_local_get ("formtags_edit_3","text"))."<a href='$f_user_profile' target='_self'>{$f_result_item_array[3]}</a>".(direct_local_get ("formtags_edit_4","text"))."</span>"),$f_data);
-				}
-			}
-
-			if (preg_match_all ("#\[rewrite\:elink\:(.+?)\]#i",$f_data,$f_result_array,PREG_SET_ORDER))
-			{
-				foreach ($f_result_array as $f_result_item_array) { $f_data = str_replace ($f_result_item_array[0],(direct_linker ("url1",$f_result_item_array[1],true,false)),$f_data); }
-			}
-
-			if (preg_match_all ("#\[rewrite\:ilink\:(.+?)\]#i",$f_data,$f_result_array,PREG_SET_ORDER))
-			{
-				foreach ($f_result_array as $f_result_item_array) { $f_data = str_replace ($f_result_item_array[0],(direct_linker ("url0",$f_result_item_array[1])),$f_data); }
-			}
-
-			if (preg_match_all ("#\[rewrite\:local\:(.+?)\]#i",$f_data,$f_result_array,PREG_SET_ORDER))
-			{
-				foreach ($f_result_array as $f_result_item_array) { $f_data = str_replace ($f_result_item_array[0],(direct_local_get ($f_result_item_array[1],"text")),$f_data); }
-			}
-
-			if (preg_match_all ("#\[rewrite\:related\:(.+?)\]#i",$f_data,$f_result_array,PREG_SET_ORDER))
-			{
-				foreach ($f_result_array as $f_result_item_array)
-				{
-					$f_result_item_array[1] = $direct_classes['basic_functions']->inputfilter_filepath ($f_result_item_array[1]);
-
-					$direct_cachedata['formtags_related_data'] = NULL;
-					if ((direct_output_related_manager ($f_result_item_array[1],"formtags_decode_action",true))&&($direct_cachedata['formtags_related_data'] !== NULL)) { $f_data = str_replace ($f_result_item_array[0],$direct_cachedata['formtags_related_data'],$f_data); }
-				}
-			}
-
-			break 1;
-		}
-		case "decode:sourcecode":
-		{
-			$f_data_array = explode ("[sourcecode]",$f_data);
-			$f_occurrences = (count ($f_data_array) - 1);
-
-			for ($f_i = $f_occurrences;$f_i > 0;$f_i--)
-			{
-				$f_data_closed_array = explode ("[/sourcecode]",$f_data_array[$f_i],3);
-				unset ($f_data_array[$f_i]);
-
-				$f_data_closed_elements = (count ($f_data_closed_array) - 1);
-
-				if ($f_data_closed_elements == 1)
-				{
-					$f_tag_content = $f_data_closed_array[0];
-					$f_tag_content = str_replace ("[","&#91;",$f_tag_content);
-					$f_tag_content = str_replace ("]","&#93;",$f_tag_content);
-					$f_tag_content = str_replace ("&#91;br&#93;","\n",$f_tag_content);
-					$f_tag_content = str_replace ("&#91;newline&#93;","\n",$f_tag_content);
-
-					$f_data_closed = $f_data_closed_array[1];
-
-					$f_data_array[($f_i - 1)] .= "<span style='display:block;overflow:auto;padding:5px;text-align:left;white-space:pre' class='pageborder2'><span class='pagecontent' style='font-family:\"Courier New\",Courier,mono'>$f_tag_content</span></span>".$f_data_closed;
-				}
-				elseif ($f_data_closed_elements)
-				{
-					$f_tag_content = $f_data_closed_array[0];
-					unset ($f_data_closed_array[0]);
-					$f_data_array[($f_i - 1)] .= "&#91;sourcecode&#93;$f_tag_content&#91;/sourcecode&#93;".(implode ("[/sourcecode]",$f_data_closed_array));
-				}
-				else { $f_data_array[($f_i - 1)] .= $f_data_closed_array[0]; }
-			}
-
-			$f_data = $f_data_array[0];
-			break 1;
-		}
-		case "decode:url":
-		{
-			if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($f_data,"[url:anchor:") !== false) { $f_data = preg_replace ("#\[url:anchor:(.+?)\]#i","<a id=\"\\1\" name=\"\\1\"></a>",$f_data); }
-
-			$f_tag_start = "\[url(.*?)\]";
-			$f_tag_end = "[/url]";
-			break 1;
-		}
-		case "decode:varlist":
-		{
-			$f_tag_start = "\[-\+(.*?)\]";
-			$f_tag_end = "[/-+]";
-			break 1;
-		}
-		}
-
-		if (($f_tag_start)&&($f_tag_end))
-		{
-			preg_match_all ("#$f_tag_start#i",$f_data,$f_result_array,PREG_PATTERN_ORDER);
-			$f_result_array = $f_result_array[1];
-
-			$f_data_array = preg_split ("#$f_tag_start#i",$f_data);
-			$f_occurrences = (count ($f_data_array) - 1);
-
-			for ($f_i = $f_occurrences;$f_i > 0;$f_i--)
-			{
-				$f_data_closed_elements = explode ($f_tag_end,$f_data_array[$f_i],2);
-				unset ($f_data_array[$f_i]);
-
-				if (count ($f_data_closed_elements) > 1)
-				{
-					$f_tag_content = $f_data_closed_elements[0];
-					unset ($f_data_closed_elements[0]);
-					$f_data_closed = implode ($f_tag_end,$f_data_closed_elements);
-
-					switch ($f_rule)
-					{
-					case "cleanup:lists":
-					{
-						$f_data_array[($f_i - 1)] .= "\n- ".$f_tag_content.$f_data_closed;
-						break 1;
-					}
-					case "cleanup:quote":
-					{
-						if ($f_result_array[($f_i - 1)])
-						{
-							$f_quote_result_array = explode (":",$f_result_array[($f_i - 1)],3);
-							$f_data_array[($f_i - 1)] .= "\n* ".(direct_local_get ("formtags_quote_2_1","text"));
-							$f_data_array[($f_i - 1)] .= ($f_quote_result_array[2] ? $f_quote_result_array[2]." ({$f_quote_result_array[1]})".(direct_local_get ("formtags_quote_2_2","text")).": ".(direct_local_get ("formtags_quote_2_3","text"))."\n$f_tag_content\n*\n".$f_data_closed : $f_quote_result_array[1].(direct_local_get ("formtags_quote_2_2","text")).":\n$f_tag_content\n*\n".$f_data_closed);
-						}
-						else { $f_data_array[($f_i - 1)] .= "\n* ".(direct_local_get ("formtags_quote_1","text")).":\n$f_tag_content\n*\n".$f_data_closed; }
-
-						break 1;
-					}
-					case "cleanup:url":
-					{
-						if ($f_result_array[($f_i - 1)])
-						{
-							if (preg_match ("#^\[#",$f_result_array[($f_i - 1)])) { $f_data_array[($f_i - 1)] .= "[url:".$f_result_array[($f_i - 1)]."]{$f_tag_content}[/url]".$f_data_closed; }
-							else
-							{
-								$f_result_array[($f_i - 1)] = substr ($f_result_array[($f_i - 1)],1);
-								if ($direct_settings['swg_url_sbcheck']) { $f_result_array[($f_i - 1)] = direct_url_sbcheck ($f_result_array[($f_i - 1)],"text"); }
-								$f_data_array[($f_i - 1)] .= (($f_result_array[($f_i - 1)] == $f_tag_content) ? $f_result_array[($f_i - 1)].$f_data_closed : $f_result_array[($f_i - 1)]." (".$f_result_array[($f_i - 1)].")".$f_data_closed);
-							}
-						}
-						else { $f_data_array[($f_i - 1)] .= ($direct_settings['swg_url_sbcheck'] ? (direct_url_sbcheck ($f_tag_content,"text")).$f_data_closed : $f_tag_content.$f_data_closed); }
-
-						break 1;
-					}
-					case "decode:contentform:box":
-					{
-						$f_box_result_array = explode (":",$f_result_array[($f_i - 1)]);
-
-						if (preg_match ("#^(\d{1,3})$#i",$f_box_result_array[1],$f_percentage_array)) { $f_box_result_array[1] = ((($f_percentage_array[1] > 0)&&($f_percentage_array[1] < 101)) ? ";width:{$f_box_result_array[1]}%" : ""); }
-						else { $f_box_result_array[1] = ""; }
-
-						if (isset ($f_box_result_array[2]))
-						{
-							if (($f_box_result_array[0] == "left")&&($f_box_result_array[2] == "br")) { $f_box_result_array[2] = ";clear:left"; }
-							elseif (($f_box_result_array[0] == "right")&&($f_box_result_array[2] == "br")) { $f_box_result_array[2] = ";clear:right"; }
-							elseif ($f_box_result_array[2] == "br") { $f_box_result_array[2] = ";clear:both"; }
-							else { $f_box_result_array[2] = ""; }
-						}
-						else { $f_box_result_array[2] = ""; }
-
-						if ($f_box_result_array[0] == "left") { $f_data_array[($f_i - 1)] .= "<span style='display:block;float:left{$f_box_result_array[1]}{$f_box_result_array[2]}'>$f_tag_content</span>".$f_data_closed; }
-						elseif ($f_box_result_array[0] == "right") { $f_data_array[($f_i - 1)] .= "<span style='display:block;float:right{$f_box_result_array[1]}{$f_box_result_array[2]}'>$f_tag_content</span>".$f_data_closed; }
-						else { $f_data_array[($f_i - 1)] .= (($f_box_result_array[0] == "br") ? "<span style='display:block;clear:both'>$f_tag_content</span>".$f_data_closed : "<span style='display:block{$f_box_result_array[1]}{$f_box_result_array[2]}'>$f_tag_content</span>".$f_data_closed); }
-
-						break 1;
-					}
-					case "decode:contentform:colorbox":
-					{
-						$f_data_array[($f_i - 1)] .= ((preg_match ("#^\:(\w{6})$#i",$f_result_array[($f_i - 1)],$f_color_result_array)) ? "<span style=\"display:block;padding:2px;background-color:#{$f_color_result_array[1]}\">$f_tag_content</span>".$f_data_closed : "<span class='pageborder2' style=\"display:block;margin:5px\"><span class='pageextracontent'>$f_tag_content</span></span>".$f_data_closed);
-						break 1;
-					}
-					case "decode:contentform:hidden":
-					{
-						$f_hidden_id = uniqid ("");
-
-$f_data_array[($f_i - 1)] .= "<span class='pageborder2' style=\"display:block;margin:5px\"><span id='swgformtags_hidden_{$f_hidden_id}_point' class='pageextracontent'><span style='font-weight:bold'>".$f_result_array[($f_i - 1)]."</span><br /><img src='".(direct_linker_dynamic ("url0","s=cache&dsd=dfile+$direct_settings[path_mmedia]/spacer.png",true,false))."' width='100%' height='1' alt='' title='' class='pagehr' style='$direct_settings[theme_hr_style]' />$f_tag_content</span></span><script language='JavaScript1.5' type='text/javascript'><![CDATA[
-djs_swgDOM_replace (\"<span class='pageextracontent'><span style='font-weight:bold'><a href=\\\"javascript:djs_iblock_switch('swgformtags_hidden_{$f_hidden_id}_point')\\\">".$f_result_array[($f_i - 1)]."</a></span><span style='display:block'><span id='swgformtags_hidden_{$f_hidden_id}_point' style='display:none'><img src='".(direct_linker_dynamic ("url0","s=cache&dsd=dfile+$direct_settings[path_mmedia]/spacer.png",true,false))."' width='100%' height='1' alt='' title='' class='pagehr' style='$direct_settings[theme_hr_style]' />$f_tag_content</span></span></span>\",'swgformtags_hidden_{$f_hidden_id}_point');
-]]></script>".$f_data_closed;
-
-						break 1;
-					}
-					case "decode:contentform:lineheight":
-					{
-						if ($f_result_array[($f_i - 1)] < $direct_settings['swg_lineheight_min']) { $f_result_array[($f_i - 1)] = $direct_settings['swg_lineheight_min']; }
-						if ($f_result_array[($f_i - 1)] > $direct_settings['swg_lineheight_max']) { $f_result_array[($f_i - 1)] = $direct_settings['swg_lineheight_max']; }
-
-						$f_data_array[($f_i - 1)] .= "<span style='line-height:".$f_result_array[($f_i - 1)]."px'>$f_tag_content</span>".$f_data_closed;
-						break 1;
-					}
-					case "decode:contentform:spacerbox":
-					{
-						$f_box_result_array = explode (":",$f_result_array[($f_i - 1)]);
-
-						if ((isset ($f_box_result_array[1]))&&(preg_match ("#^(\d+)$#",$f_box_result_array[1])))
-						{
-							if (preg_match ("#^(\d+)$#",$f_box_result_array[0])) { $f_box_result_array[0] = (($f_box_result_array[0] < 1) ? "margin:1px;" : "margin:{$f_box_result_array[0]}px;"); }
-							else { $f_box_result_array[0] = ""; }
-
-							$f_box_result_array[1] = (($f_box_result_array[1] < 0) ? "padding:0px" : "padding:{$f_box_result_array[1]}px");
-						}
-						elseif (preg_match ("#^(\d+)$#",$f_box_result_array[0]))
-						{
-							$f_box_result_array[0] = (($f_box_result_array[0] < 1) ? "padding:1px;" : "padding:{$f_box_result_array[0]}px;");
-							$f_box_result_array[1] = "";
-						}
-						else { $f_box_result_array = array ("",""); }
-
-						$f_data_array[($f_i - 1)] .= "<span style='display:block;{$f_box_result_array[0]}{$f_box_result_array[1]}'>$f_tag_content</span>".$f_data_closed;
-						break 1;
-					}
-					case "decode:contentform:textindent":
-					{
-						if ($f_result_array[($f_i - 1)] < $direct_settings['swg_textindent_min']) { $f_result_array[($f_i - 1)] = $direct_settings['swg_textindent_min']; }
-						if ($f_result_array[($f_i - 1)] > $direct_settings['swg_textindent_max']) { $f_result_array[($f_i - 1)] = $direct_settings['swg_textindent_max']; }
-
-						$f_data_array[($f_i - 1)] .= "<span style='display:block;margin-left:".$f_result_array[($f_i - 1)]."px'>$f_tag_content</span>".$f_data_closed;
-						break 1;
-					}
-					case "decode:font:color":
-					{
-						$f_data_array[($f_i - 1)] .= "<span style=\"color:#".$f_result_array[($f_i - 1)]."\">$f_tag_content</span>".$f_data_closed;
-						break 1;
-					}
-					case "decode:font:face":
-					{
-						$f_result_array[($f_i - 1)] = preg_replace ("#^(.+?) (.+?)$#im","'\\1 \\2'",(str_replace (",","\n",$f_result_array[($f_i - 1)])));
-						$f_result_array[($f_i - 1)] = trim (str_replace ("\n",",",$f_result_array[($f_i - 1)]));
-						if ($direct_settings['swg_fontfamily']) { $f_result_array[($f_i - 1)] .= ",".$direct_settings['swg_fontfamily']; }
-
-						$f_data_array[($f_i - 1)] .= "<span style=\"font-family:".$f_result_array[($f_i - 1)]."\">$f_tag_content</span>".$f_data_closed;
-						break 1;
-					}
-					case "decode:font:size":
-					{
-						if ($f_result_array[($f_i - 1)] < $direct_settings['swg_fontsize_min']) { $f_result_array[($f_i - 1)] = $direct_settings['swg_fontsize_min']; }
-						if ($f_result_array[($f_i - 1)] > $direct_settings['swg_fontsize_max']) { $f_result_array[($f_i - 1)] = $direct_settings['swg_fontsize_max']; }
-
-						$f_data_array[($f_i - 1)] .= "<span style='font-size:".$f_result_array[($f_i - 1)]."px'>$f_tag_content</span>".$f_data_closed;
-						break 1;
-					}
-					case "decode:img":
-					{
-						if (preg_match ("#^(.*?)\[title:(.+?)\](.*?)$#i",$f_tag_content,$f_title_result_array))
-						{
-							if (($f_result_array[($f_i - 1)] == ":right")||($f_result_array[($f_i - 1)] == ":right:nobox")) { $f_data_array[($f_i - 1)] .= "<span class='pageborder2' style='overflow:auto;margin:5px;float:right;clear:right;text-align:center'><img src=\"".$f_title_result_array[1].$f_title_result_array[3]."\" alt='' title='' /><br />\n<span class='pageextracontent'>".$f_title_result_array[2]."</span></span>".$f_data_closed; }
-							elseif (($f_result_array[($f_i - 1)] == ":left")||($f_result_array[($f_i - 1)] == ":left:nobox")) { $f_data_array[($f_i - 1)] .= "<span class='pageborder2' style='overflow:auto;margin:5px;float:left;clear:left;text-align:center'><img src=\"".$f_title_result_array[1].$f_title_result_array[3]."\" alt='' title='' /><br />\n<span class='pageextracontent'>".$f_title_result_array[2]."</span></span>".$f_data_closed; }
-							else { $f_data_array[($f_i - 1)] .= "<span class='pageborder2' style='display:block;overflow:auto;margin:5px;text-align:center'><img src=\"".$f_title_result_array[1].$f_title_result_array[3]."\" alt='' title='' /><br />\n<span class='pageextracontent'>".$f_title_result_array[2]."</span></span>".$f_data_closed; }
-						}
-						elseif ($f_result_array[($f_i - 1)])
-						{
-							if ($f_result_array[($f_i - 1)] == ":right:nobox") { $f_result_array[($f_i - 1)] = "<span style='overflow:auto;float:right;clear:right'>"; }
-							elseif ($f_result_array[($f_i - 1)] == ":right") { $f_result_array[($f_i - 1)] = "<span class='pageborder2' style='overflow:auto;margin:5px;line-height:0px;float:right;clear:right'>"; }
-							elseif ($f_result_array[($f_i - 1)] == ":left:nobox") { $f_result_array[($f_i - 1)] = "<span style='overflow:auto;float:left;clear:left'>"; }
-							elseif ($f_result_array[($f_i - 1)] == ":left") { $f_result_array[($f_i - 1)] = "<span class='pageborder2' style='overflow:auto;margin:5px;line-height:0px;float:left;clear:left'>"; }
-							else { $f_result_array[($f_i - 1)] = "<span class='pageborder2' style='display:block;overflow:auto;margin:5px;line-height:0px;text-align:center'>"; }
-
-							$f_data_array[($f_i - 1)] .= $f_result_array[($f_i - 1)]."<img src=\"$f_tag_content\" alt='' title='' /></span>".$f_data_closed;
-						}
-						else { $f_data_array[($f_i - 1)] .= "<span style='overflow:auto'><img src=\"$f_tag_content\" alt='' title='' /></span>".$f_data_closed; }
-
-						break 1;
-					}
-					case "decode:quote":
-					{
-						if ($f_result_array[($f_i - 1)])
-						{
-							$f_quote_result_array = explode (":",$f_result_array[($f_i - 1)],3);
-
-							$f_data_array[($f_i - 1)] .= "<span style='display:block;margin:0px 20px;text-align:left'><span class='pagecontent' style='$direct_settings[formtags_quote_style]'>".(direct_local_get ("formtags_quote_2_1","text"));
-							$f_data_array[($f_i - 1)] .= ($f_quote_result_array[2] ? "<a href='".(direct_linker ("url0","m=account&s=profile&a=view&dsd=auid+".$f_quote_result_array[1]))."' target='_blank'>{$f_quote_result_array[2]}</a>".(direct_local_get ("formtags_quote_2_2","text")).": </span><span class='pagecontent' style='$direct_settings[formtags_quote_notice_style]'>".(direct_local_get ("formtags_quote_2_3","text"))."</span></span>" : $f_quote_result_array[1].(direct_local_get ("formtags_quote_2_2","text")).":</span></span>");
-							$f_data_array[($f_i - 1)] .= "<span class='pageborder2' style='display:block;margin:0px 20px;text-align:left'><span class='pageextracontent'>$f_tag_content</span></span>".$f_data_closed;
-						}
-						else { $f_data_array[($f_i - 1)] .= "<span style='display:block;margin:0px 20px;text-align:left;$direct_settings[formtags_quote_style]'><span class='pagecontent'>".(direct_local_get ("formtags_quote_1","text")).":</span></span><span class='pageborder2' style='display:block;margin:0px 20px;text-align:left'><span class='pageextracontent'>$f_tag_content</span></span>".$f_data_closed; }
-
-						break 1;
-					}
-					case "decode:url":
-					{
-						if ($f_result_array[($f_i - 1)])
-						{
-							$f_result_array[($f_i - 1)] = substr ($f_result_array[($f_i - 1)],1);
-							if ($direct_settings['swg_url_sbcheck']) { $f_result_array[($f_i - 1)] = direct_url_sbcheck ($f_result_array[($f_i - 1)]); }
-
-							if (preg_match ("#^(\w{3,5})\:\/\/#i",$f_result_array[($f_i - 1)])) { $f_data_array[($f_i - 1)] .= "<a href=\"".$f_result_array[($f_i - 1)]."\" target='_blank' rel='nofollow'>$f_tag_content</a>".$f_data_closed; }
-							elseif (!preg_match ("#^\[#",$f_result_array[($f_i - 1)])) { $f_data_array[($f_i - 1)] .= "<a href=\"".$f_result_array[($f_i - 1)]."\">$f_tag_content</a>".$f_data_closed; }
-							else { $f_data_array[($f_i - 1)] .= "[url:".$f_result_array[($f_i - 1)]."]{$f_tag_content}[/url]".$f_data_closed; }
-						}
-						else { $f_data_array[($f_i - 1)] .= ($direct_settings['swg_url_sbcheck'] ? "<a href=\"".(direct_url_sbcheck ($f_tag_content))."\">$f_tag_content</a>".$f_data_closed : "<a href=\"$f_tag_content\">$f_tag_content</a>".$f_data_closed); }
-
-						break 1;
-					}
-					case "decode:varlist":
-					{
-						$f_data_array[($f_i - 1)] .= "<span style='$direct_settings[formtags_list_item_style]'>".$f_result_array[($f_i - 1)]."</span><span style='$direct_settings[formtags_list_content_style]'>$f_tag_content</span>".$f_data_closed;
-						break 1;
-					}
-					}
-				}
-				else { $f_data_array[($f_i - 1)] .= $f_data_closed_elements[0]; }
-			}
-
-			$f_data = $f_data_array[0];
-		}
-	}
-
-	//f// direct_formtags->tree_changer_simple (&$f_data,$f_start_tag,$f_start_cresult = "",$f_end_tag = "",$f_end_cresult = "")
-/**
-	* Converts FormTags using specified convert string into valid XHTML 1.0 code.
-	*
-	* @param string &$f_data String that contains convertable data
-	* @param string $f_start_tag Tag for starting a FormTag
-	* @param string $f_start_cresult HTML code that should be used instead of the
-	*        FormTag
-	* @param string $f_end_tag Ending delimiter
-	* @param string $f_end_cresult HTML code that should be used
-	* @uses  direct_debug()
-	* @uses  USE_debug_reporting
-	* @since v0.1.00
-*/
-	/*#ifndef(PHP4) */protected /* #*/function tree_changer_simple (&$f_data,$f_start_tag,$f_start_cresult = "",$f_end_tag = "",$f_end_cresult = "")
-	{
-		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags_class->tree_changer_simple (+f_data,$f_start_tag,$f_start_cresult,$f_end_tag,$f_end_cresult)- (#echo(__LINE__)#)"); }
-
-		$f_data_array = explode ($f_start_tag,$f_data);
-		$f_occurrences = (count ($f_data_array) - 1);
-
-		for ($f_i = $f_occurrences;$f_i > 0;$f_i--)
-		{
-			$f_data_closed_array = explode ($f_end_tag,$f_data_array[$f_i],2);
-			unset ($f_data_array[$f_i]);
-
-			if (count ($f_data_closed_array) > 1)
-			{
-				$f_tag_content = $f_data_closed_array[0];
-				unset ($f_data_closed_array[0]);
-				$f_data_array[($f_i - 1)] .= $f_start_cresult.$f_tag_content.$f_end_cresult.(implode ($f_end_tag,$f_data_closed_array));
-			}
-			else { $f_data_array[($f_i - 1)] .= $f_data_closed_array[0]; }
-		}
-
-		$f_data = $f_data_array[0];
+		$f_data = trim (str_replace ("[newline]",$f_newline,$f_data));
+		return $f_data;
 	}
 }
 
@@ -932,17 +1553,17 @@ djs_swgDOM_replace (\"<span class='pageextracontent'><span style='font-weight:bo
 Mark this class as the most up-to-date one
 ------------------------------------------------------------------------- */
 
-$direct_classes['@names']['formtags'] = "direct_formtags";
+$direct_globals['@names']['formtags'] = "direct_formtags";
 define ("CLASS_direct_formtags",true);
 
 //j// Script specific commands
 
 if (!isset ($direct_settings['formtags_edit_style'])) { $direct_settings['formtags_edit_style'] = "font-size:10px;font-style:italic"; }
-if (!isset ($direct_settings['formtags_list_item_style'])) { $direct_settings['formtags_list_item_style'] = "display:block;float:left;clear:left;padding-right:0.5em"; }
-if (!isset ($direct_settings['formtags_list_content_style'])) { $direct_settings['formtags_list_content_style'] = "display:block;padding-left:1.2em"; }
+if (!isset ($direct_settings['formtags_list_item_style'])) { $direct_settings['formtags_list_item_style'] = "float:left;clear:left;padding-right:0.5em"; }
+if (!isset ($direct_settings['formtags_list_content_style'])) { $direct_settings['formtags_list_content_style'] = "padding-left:1.2em"; }
 if (!isset ($direct_settings['formtags_quote_style'])) { $direct_settings['formtags_quote_style'] = "font-size:11px;font-weight:bold"; }
 if (!isset ($direct_settings['formtags_quote_notice_style'])) { $direct_settings['formtags_quote_notice_style'] = "font-size:10px"; }
-if (!isset ($direct_settings['formtags_sources_style'])) { $direct_settings['formtags_sources_style'] = "display:block;margin:0px 20px;text-align:left;font-size:10px"; }
+if (!isset ($direct_settings['formtags_sources_style'])) { $direct_settings['formtags_sources_style'] = "margin:0px 20px;text-align:left;font-size:10px"; }
 if (!isset ($direct_settings['formtags_sources_title_style'])) { $direct_settings['formtags_sources_title_style'] = "font-size:11px;font-weight:bold"; }
 if (!isset ($direct_settings['swg_fontfamily'])) { $direct_settings['swg_fontfamily'] = "sans-serif"; }
 if (!isset ($direct_settings['swg_fontsize_min'])) { $direct_settings['swg_fontsize_min'] = 8; }
@@ -952,8 +1573,9 @@ if (!isset ($direct_settings['swg_lineheight_max'])) { $direct_settings['swg_lin
 if (!isset ($direct_settings['swg_textindent_min'])) { $direct_settings['swg_textindent_min'] = 4; }
 if (!isset ($direct_settings['swg_textindent_max'])) { $direct_settings['swg_textindent_max'] = 160; }
 if (!isset ($direct_settings['swg_url_sbcheck'])) { $direct_settings['swg_url_sbcheck'] = false; }
-if ($direct_settings['swg_url_sbcheck']) { $direct_settings['swg_url_sbcheck'] = $direct_classes['basic_functions']->include_file ($direct_settings['path_system']."/functions/swg_link_sbcheck.php",1); }
-if (!isset ($direct_settings['theme_hr_style'])) { $direct_settings['theme_hr_style'] = "display:block;height:1px;overflow:hidden"; }
+if ($direct_settings['swg_url_sbcheck']) { $direct_settings['swg_url_sbcheck'] = $direct_globals['basic_functions']->include_file ($direct_settings['path_system']."/functions/swg_link_sbcheck.php",1); }
+$direct_settings['theme_css_corners'] = ((isset ($direct_settings['theme_css_corners_class'])) ? " ".$direct_settings['theme_css_corners_class'] : " ui-corner-all");
+if (!isset ($direct_settings['theme_hr_style'])) { $direct_settings['theme_hr_style'] = "height:1px;overflow:hidden"; }
 }
 
 //j// EOF

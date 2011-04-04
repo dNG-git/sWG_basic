@@ -72,13 +72,13 @@ if (!defined ("direct_product_iversion")) { exit (); }
 */
 function direct_service_list ($f_module,$f_page = 1)
 {
-	global $direct_classes,$direct_settings;
+	global $direct_globals,$direct_settings;
 	if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -direct_service_list ($f_module,$f_page)- (#echo(__LINE__)#)"); }
 
 	$f_module = preg_replace ("#[\/\\\?:@\=\&\. \+]#i","",$f_module);
 	$f_module_file_name = str_replace (";","_",$f_module);
 	$f_return = array ();
-	$f_xml_array = ((file_exists ($direct_settings['path_data']."/settings/swg_{$f_module_file_name}.services.xml")) ? $direct_classes['basic_functions']->memcache_get_file_merged_xml ($direct_settings['path_data']."/settings/swg_{$f_module_file_name}.services.xml") : array ());
+	$f_xml_array = ((file_exists ($direct_settings['path_data']."/settings/swg_{$f_module_file_name}.services.xml")) ? $direct_globals['basic_functions']->memcache_get_file_merged_xml ($direct_settings['path_data']."/settings/swg_{$f_module_file_name}.services.xml") : array ());
 
 	if ((is_array ($f_xml_array))&&(!empty ($f_xml_array)))
 	{
@@ -113,19 +113,19 @@ function direct_service_list ($f_module,$f_page = 1)
 
 				if ($f_xml_array[$f_tag."_members"])
 				{
-					if (($f_xml_array[$f_tag."_members"]['value'])&&(direct_class_function_check ($direct_classes['kernel'],"v_usertype_get_int")))
+					if (($f_xml_array[$f_tag."_members"]['value'])&&(direct_class_function_check ($direct_globals['kernel'],"v_usertype_get_int")))
 					{
-						if ($direct_classes['kernel']->v_usertype_get_int ($direct_settings['user']['type'])) { $f_right_check = true; }
+						if ($direct_globals['kernel']->v_usertype_get_int ($direct_settings['user']['type'])) { $f_right_check = true; }
 					}
 				}
 
 				if ((!$f_right_check)&&($f_xml_array[$f_tag."_group_right"]))
 				{
-					if (direct_class_function_check ($direct_classes['kernel'],"v_group_user_check_right"))
+					if (direct_class_function_check ($direct_globals['kernel'],"v_group_user_check_right"))
 					{
 						if (isset ($f_xml_array[$f_tag."_group_right"]['value']))
 						{
-							if ($f_xml_array[$f_tag."_group_right"]['value']) { $f_right_check = $direct_classes['kernel']->v_group_user_check_right ($f_xml_array[$f_tag."_group_right"]['value']); }
+							if ($f_xml_array[$f_tag."_group_right"]['value']) { $f_right_check = $direct_globals['kernel']->v_group_user_check_right ($f_xml_array[$f_tag."_group_right"]['value']); }
 						}
 						elseif (is_array ($f_xml_array[$f_tag."_group_right"]))
 						{
@@ -136,7 +136,7 @@ function direct_service_list ($f_module,$f_page = 1)
 								if (strlen ($f_group_right_array['value'])) { $f_group_rights_array[] = $f_group_right_array['value']; }
 							}
 
-							$f_right_check = $direct_classes['kernel']->v_group_user_check_right ($f_group_rights_array);
+							$f_right_check = $direct_globals['kernel']->v_group_user_check_right ($f_group_rights_array);
 						}
 					}
 				}
@@ -179,7 +179,7 @@ function direct_service_list ($f_module,$f_page = 1)
 */
 function direct_service_list_parse ($f_module,$f_list,$f_page)
 {
-	global $direct_settings;
+	global $direct_globals,$direct_settings;
 	if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -direct_service_list_parse ($f_module,+f_list,$f_page)- (#echo(__LINE__)#)"); }
 
 	$f_return = array ();
@@ -194,6 +194,7 @@ function direct_service_list_parse ($f_module,$f_list,$f_page)
 		if ($f_return['data']['page'] > $f_return['data']['pages']) { $f_return['data']['page'] = $f_return['data']['pages']; }
 		if ($f_return['data']['pages'] < 1) { $f_return['data']['pages'] = 1; }
 
+		$f_icon_path = $direct_globals['basic_functions']->varfilter ($direct_settings['swg_services_path_icons'],"settings");
 		$f_offset_start = (($f_return['data']['page'] - 1) * $direct_settings['swg_services_per_page']);
 		$f_offset_end = ($f_return['data']['page'] * $direct_settings['swg_services_per_page']);
 		$f_return['list'] = array ();
@@ -209,7 +210,7 @@ function direct_service_list_parse ($f_module,$f_list,$f_page)
 
 			$f_list[$f_i]['attributes']['link']['value'] = direct_linker ($f_link_type,$f_list[$f_i]['attributes']['link']['value']);
 
-			if ($f_list[$f_i]['attributes']['image']) { $f_list[$f_i]['attributes']['image'] = ((file_exists ($direct_settings['path_themes']."/$direct_settings[theme]/".$f_list[$f_i]['attributes']['image'])) ? direct_linker_dynamic ("url0","m=default&s=cache&dsd=dfile+$direct_settings[path_themes]/$direct_settings[theme]/".$f_list[$f_i]['attributes']['image'],true,false) : ""); }
+			if ($f_list[$f_i]['attributes']['image']) { $f_list[$f_i]['attributes']['image'] = ((file_exists ($f_icon_path.$f_list[$f_i]['attributes']['image'])) ? direct_linker_dynamic ("url0","s=cache;dsd=dfile+$f_icon_path".$f_list[$f_i]['attributes']['image'],true,false) : ""); }
 			else { $f_list[$f_i]['attributes']['image'] = ""; }
 
 			$f_services_array = array ($f_list[$f_i]['attributes']['image'],$f_list[$f_i]['value'],$f_list[$f_i]['attributes']['link']['value'],$f_list[$f_i]['attributes']['description']);
@@ -242,14 +243,14 @@ function direct_service_list_parse ($f_module,$f_list,$f_page)
 */
 function direct_service_list_search ($f_module,$f_sstring,$f_smode = "title_preg",$f_page = 1)
 {
-	global $direct_classes,$direct_settings;
+	global $direct_globals,$direct_settings;
 	if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -direct_service_list_search ($f_module,$f_page)- (#echo(__LINE__)#)"); }
 
 	$f_module = preg_replace ("#[\/\\\?:@\=\&\. \+]#i","",$f_module);
 	$f_module_file_name = str_replace (";","_",$f_module);
 	$f_return = array ();
 	if (($f_smode == "title_preg")||($f_smode == "title-desc_preg")) { $f_sstring = str_replace ("\*","(.+?)",("#".(preg_quote ($f_sstring,"#"))."#si")); }
-	$f_xml_array = ((file_exists ($direct_settings['path_data']."/settings/swg_{$f_module_file_name}.services.xml")) ? $direct_classes['basic_functions']->memcache_get_file_merged_xml ($direct_settings['path_data']."/settings/swg_{$f_module_file_name}.services.xml") : array ());
+	$f_xml_array = ((file_exists ($direct_settings['path_data']."/settings/swg_{$f_module_file_name}.services.xml")) ? $direct_globals['basic_functions']->memcache_get_file_merged_xml ($direct_settings['path_data']."/settings/swg_{$f_module_file_name}.services.xml") : array ());
 
 	if ((is_array ($f_xml_array))&&(!empty ($f_xml_array)))
 	{
@@ -317,19 +318,19 @@ function direct_service_list_search ($f_module,$f_sstring,$f_smode = "title_preg
 
 					if ($f_xml_array[$f_tag."_members"])
 					{
-						if (($f_xml_array[$f_tag."_members"]['value'])&&(direct_class_function_check ($direct_classes['kernel'],"v_usertype_get_int")))
+						if (($f_xml_array[$f_tag."_members"]['value'])&&(direct_class_function_check ($direct_globals['kernel'],"v_usertype_get_int")))
 						{
-							if ($direct_classes['kernel']->v_usertype_get_int ($direct_settings['user']['type'])) { $f_right_check = true; }
+							if ($direct_globals['kernel']->v_usertype_get_int ($direct_settings['user']['type'])) { $f_right_check = true; }
 						}
 					}
 
 					if ((!$f_right_check)&&($f_xml_array[$f_tag."_group_right"]))
 					{
-						if (direct_class_function_check ($direct_classes['kernel'],"v_group_user_check_right"))
+						if (direct_class_function_check ($direct_globals['kernel'],"v_group_user_check_right"))
 						{
 							if (isset ($f_xml_array[$f_tag."_group_right"]['value']))
 							{
-								if ($f_xml_array[$f_tag."_group_right"]['value']) { $f_right_check = $direct_classes['kernel']->v_group_user_check_right ($f_xml_array[$f_tag."_group_right"]['value']); }
+								if ($f_xml_array[$f_tag."_group_right"]['value']) { $f_right_check = $direct_globals['kernel']->v_group_user_check_right ($f_xml_array[$f_tag."_group_right"]['value']); }
 							}
 							elseif (is_array ($f_xml_array[$f_tag."_group_right"]))
 							{
@@ -340,7 +341,7 @@ function direct_service_list_search ($f_module,$f_sstring,$f_smode = "title_preg
 									if (strlen ($f_group_right_array['value'])) { $f_group_rights_array[] = $f_group_right_array['value']; }
 								}
 
-								$f_right_check = $direct_classes['kernel']->v_group_user_check_right ($f_group_rights_array);
+								$f_right_check = $direct_globals['kernel']->v_group_user_check_right ($f_group_rights_array);
 							}
 						}
 					}
@@ -367,6 +368,7 @@ function direct_service_list_search ($f_module,$f_sstring,$f_smode = "title_preg
 
 //j// Script specific commands
 
+if (!isset ($direct_settings['swg_services_path_icons'])) { $direct_settings['swg_services_path_icons'] = $direct_settings['path_themes']."/$direct_settings[theme]/"; }
 if (!isset ($direct_settings['swg_services_per_page'])) { $direct_settings['swg_services_per_page'] = 20; }
 
 //j// EOF

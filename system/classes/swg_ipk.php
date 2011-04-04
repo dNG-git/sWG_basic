@@ -351,7 +351,7 @@ Set default iPK data
 */
 	/*#ifndef(PHP4) */public /* #*/function open ($f_file_path,$f_readonly = false)
 	{
-		global $direct_cachedata,$direct_classes,$direct_settings;
+		global $direct_cachedata,$direct_globals,$direct_settings;
 		if (USE_debug_reporting) { direct_debug (3,"sWG/#echo(__FILEPATH__)# -ipk_handler->open ($f_file_path,+f_readonly)- (#echo(__LINE__)#)"); }
 
 		if (is_object ($this->data)) { $f_return = false; }
@@ -362,7 +362,7 @@ Set default iPK data
 
 			if (file_exists ($f_file_path))
 			{
- 				$f_file_mode = ((($this->readonly)||(!is_writable ($f_file_path))) ? "rb" : "r+b");
+				$f_file_mode = ((($this->readonly)||(!is_writable ($f_file_path))) ? "rb" : "r+b");
 				$f_created_check = false; 
 				$this->filesize = @filesize ($f_file_path);
 			}
@@ -401,7 +401,7 @@ Set default iPK data
 
 					if ($f_result_array['version'] == 200000)
 					{
-						if (!defined ("CLASS_direct_ipk_v200000")) { $direct_classes['basic_functions']->include_file ($direct_settings['path_system']."/classes/ext_ipk/ipk_v2.0.0.php"); }
+						if (!defined ("CLASS_direct_ipk_v200000")) { $direct_globals['basic_functions']->include_file ($direct_settings['path_system']."/classes/ext_ipk/ipk_v2.0.0.php"); }
 
 						if (defined ("CLASS_direct_ipk_v200000"))
 						{
@@ -413,7 +413,7 @@ Set default iPK data
 				}
 				elseif ($f_file_id == "iPK")
 				{
-					if (!defined ("CLASS_direct_ipk_v1")) { $direct_classes['basic_functions']->include_file ($direct_settings['path_system']."/classes/ext_ipk/ipk_v1.php"); }
+					if (!defined ("CLASS_direct_ipk_v1")) { $direct_globals['basic_functions']->include_file ($direct_settings['path_system']."/classes/ext_ipk/ipk_v1.php"); }
 
 					if (defined ("CLASS_direct_ipk_v1"))
 					{
@@ -425,7 +425,7 @@ Set default iPK data
 				}
 				elseif ($f_created_check)
 				{
-					if (!defined ("CLASS_direct_ipk_v200000")) { $direct_classes['basic_functions']->include_file ($direct_settings['path_system']."/classes/ext_ipk/ipk_v2.0.0.php"); }
+					if (!defined ("CLASS_direct_ipk_v200000")) { $direct_globals['basic_functions']->include_file ($direct_settings['path_system']."/classes/ext_ipk/ipk_v2.0.0.php"); }
 
 					if (defined ("CLASS_direct_ipk_v200000"))
 					{

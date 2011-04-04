@@ -68,13 +68,21 @@ switch ($direct_settings['a'])
 case "login":
 case "login-save":
 {
-	$g_mode_save = (($direct_settings['a'] == "login-save") ? true : false);
+	$g_mode_ajax_dialog = false;
+	$g_mode_save = false;
+
+	if ($direct_settings['a'] == "login-save")
+	{
+		if ($direct_settings['ohandler'] == "ajax_dialog") { $g_mode_ajax_dialog = true; }
+		$g_mode_save = true;
+	}
+
 	if (USE_debug_reporting) { direct_debug (1,"sWG/#echo(__FILEPATH__)# _a={$direct_settings['a']}_ (#echo(__LINE__)#)"); }
 
-	$g_source = (isset ($direct_settings['dsd']['source']) ? ($direct_classes['basic_functions']->inputfilter_basic ($direct_settings['dsd']['source'])) : "");
-	$g_target = (isset ($direct_settings['dsd']['target']) ? ($direct_classes['basic_functions']->inputfilter_basic ($direct_settings['dsd']['target'])) : "");
+	$g_source = (isset ($direct_settings['dsd']['source']) ? ($direct_globals['basic_functions']->inputfilter_basic ($direct_settings['dsd']['source'])) : "");
+	$g_target = (isset ($direct_settings['dsd']['target']) ? ($direct_globals['basic_functions']->inputfilter_basic ($direct_settings['dsd']['target'])) : "");
 
-	$g_source_url = ($g_source ? base64_decode ($g_source) : "m=account&a=services[lang][theme]");
+	$g_source_url = ($g_source ? base64_decode ($g_source) : "m=account;a=services[lang][theme]");
 
 	if ($g_target) { $g_target_url = base64_decode ($g_target); }
 	else
@@ -86,36 +94,40 @@ case "login-save":
 	if ($g_mode_save)
 	{
 		$direct_cachedata['page_this'] = "";
-		$direct_cachedata['page_backlink'] = "m=account&s=status&a=login&dsd=source+".(urlencode ($g_source))."++target+".(urlencode ($g_target));
+		$direct_cachedata['page_backlink'] = "m=account;s=status;a=login;dsd=source+".(urlencode ($g_source))."++target+".(urlencode ($g_target));
 		$direct_cachedata['page_homelink'] = str_replace (array ("[oid]","[lang]","[theme]"),"",$g_source_url);
 	}
 	else
 	{
-		$direct_cachedata['page_this'] = "m=account&s=status&a=login&dsd=source+".(urlencode ($g_source))."++target+".(urlencode ($g_target));
+		$direct_cachedata['page_this'] = "m=account;s=status;a=login;dsd=source+".(urlencode ($g_source))."++target+".(urlencode ($g_target));
 		$direct_cachedata['page_backlink'] = str_replace (array ("[oid]","[lang]","[theme]"),"",$g_source_url);
 		$direct_cachedata['page_homelink'] = $direct_cachedata['page_backlink'] ;
 	}
 
-	if ($direct_classes['kernel']->service_init_default ())
+	if ($direct_globals['kernel']->service_init_default ())
 	{
 	//j// BOA
-	if ($g_mode_save) { direct_output_related_manager ("account_status_login_form_save","pre_module_service_action"); }
+	if ($g_mode_save)
+	{
+		if ($g_mode_ajax_dialog) { $direct_globals['output']->related_manager ("account_status_login_form_save","pre_module_service_action_ajax"); }
+		else { $direct_globals['output']->related_manager ("account_status_login_form_save","pre_module_service_action"); }
+	}
+	elseif ($g_mode_ajax_dialog) { $direct_globals['output']->related_manager ("account_status_login_form","pre_module_service_action_ajax"); }
 	else
 	{
-		direct_output_related_manager ("account_status_login_form","pre_module_service_action");
-		$direct_classes['kernel']->service_https ($direct_settings['account_https_login'],$direct_cachedata['page_this']);
+		$direct_globals['output']->related_manager ("account_status_login_form","pre_module_service_action");
+		$direct_globals['kernel']->service_https ($direct_settings['account_https_login'],$direct_cachedata['page_this']);
 	}
 
-	$direct_classes['basic_functions']->require_file ($direct_settings['path_system']."/classes/swg_formbuilder.php");
-	$direct_classes['basic_functions']->require_file ($direct_settings['path_system']."/functions/swg_mods_support.php");
+	$direct_globals['basic_functions']->require_file ($direct_settings['path_system']."/classes/swg_formbuilder.php");
+	$direct_globals['basic_functions']->require_file ($direct_settings['path_system']."/functions/swg_mods_support.php");
 	direct_local_integration ("account");
 
-	if ($g_mode_save) { $direct_classes['basic_functions']->require_file ($direct_settings['path_system']."/functions/swg_log_storager.php"); }
+	if ($g_mode_save) { $direct_globals['basic_functions']->require_file ($direct_settings['path_system']."/functions/swg_log_storager.php"); }
 
 	direct_class_init ("formbuilder");
-	direct_class_init ("output");
-	$direct_classes['output']->servicemenu ("account");
-	$direct_classes['output']->options_insert (2,"servicemenu",$direct_cachedata['page_backlink'],(direct_local_get ("core_back")),$direct_settings['serviceicon_default_back'],"url0");
+	$direct_globals['output']->servicemenu ("account");
+	$direct_globals['output']->options_insert (2,"servicemenu",$direct_cachedata['page_backlink'],(direct_local_get ("core_back")),$direct_settings['serviceicon_default_back'],"url0");
 
 	if ($g_mode_save)
 	{
@@ -123,29 +135,30 @@ case "login-save":
 We should have input in save mode
 ------------------------------------------------------------------------- */
 
-		$direct_cachedata['i_ausername'] = (isset ($GLOBALS['i_ausername']) ? ($direct_classes['basic_functions']->inputfilter_basic ($GLOBALS['i_ausername'])) : "");
-		$direct_cachedata['i_apassword'] = (isset ($GLOBALS['i_apassword']) ? ($direct_classes['basic_functions']->inputfilter_basic ($GLOBALS['i_apassword'])) : "");
+		$direct_cachedata['i_ausername'] = (isset ($GLOBALS['i_ausername']) ? ($direct_globals['basic_functions']->inputfilter_basic ($GLOBALS['i_ausername'])) : "");
+		$direct_cachedata['i_apassword'] = (isset ($GLOBALS['i_apassword']) ? ($direct_globals['basic_functions']->inputfilter_basic ($GLOBALS['i_apassword'])) : "");
 
 		if (USE_cookies)
 		{
 			$direct_cachedata['i_acookie'] = (isset ($GLOBALS['i_acookie']) ? (str_replace ("'","",$GLOBALS['i_acookie'])) : "");
 			$direct_cachedata['i_acookie'] = str_replace ("<value value='$direct_cachedata[i_acookie]' />","<value value='$direct_cachedata[i_acookie]' /><selected value='1' />","<evars><no><value value='0' /><text><![CDATA[".(direct_local_get ("core_no"))."]]></text></no><yes><value value='1' /><text><![CDATA[".(direct_local_get ("core_yes"))."]]></text></yes></evars>");
 		}
+
+		$direct_cachedata['i_atimeoffset'] = (isset ($GLOBALS['i_atimeoffset']) ? ($direct_globals['basic_functions']->inputfilter_number ($GLOBALS['i_atimeoffset'])) : NULL);
 	}
 	else
 	{
-		$direct_cachedata['i_ausername'] = "";
-		$direct_cachedata['i_apassword'] = "";
 		if (USE_cookies) { $direct_cachedata['i_acookie'] = "<evars><no><value value='0' /><text><![CDATA[".(direct_local_get ("core_no"))."]]></text></no><yes><value value='1' /><selected value='1' /><text><![CDATA[".(direct_local_get ("core_yes"))."]]></text></yes></evars>"; }
+		$direct_cachedata['i_atimeoffset'] = $direct_settings['user']['timezone'];
 	}
 
 /* -------------------------------------------------------------------------
 Build the form
 ------------------------------------------------------------------------- */
 
-	$direct_classes['formbuilder']->entry_add_text ("ausername",(direct_local_get ("core_username")),true,"l",$direct_settings['users_min'],100,((direct_local_get ("core_helper_username_1")).$direct_settings['users_min'].(direct_local_get ("core_helper_username_2"))),"",true);
-	$direct_classes['formbuilder']->entry_add_password ("tmd5","apassword",(direct_local_get ("core_password")),true,"l",$direct_settings['users_password_min'],0,((direct_local_get ("core_helper_password_1")).$direct_settings['users_password_min'].(direct_local_get ("core_helper_password_2"))),"",true);
-	if (USE_cookies) { $direct_classes['formbuilder']->entry_add_radio ("acookie",(direct_local_get ("account_use_cookie")),true); }
+	$direct_globals['formbuilder']->entry_add_text (array ("name" => "ausername","title" => (direct_local_get ("core_username")),"required" => true,"size" => "s","min" => $direct_settings['users_min'],"max" => 100,"helper_text" => ((direct_local_get ("core_helper_username_1")).$direct_settings['users_min'].(direct_local_get ("core_helper_username_2")))));
+	$direct_globals['formbuilder']->entry_add_password (array ("name" => "apassword","title" => (direct_local_get ("core_password")),"required" => true,"min" => $direct_settings['users_password_min']),"tmd5");
+	if (USE_cookies) { $direct_globals['formbuilder']->entry_add_radio (array ("name" => "acookie","title" => (direct_local_get ("account_use_cookie")),"required" => true)); }
 
 /* -------------------------------------------------------------------------
 Call registered mods
@@ -154,35 +167,35 @@ Call registered mods
 	if ($g_mode_save)
 	{
 		$g_continue_check = direct_mods_include ($direct_settings['account_status_mods_support'],"account_status","login_check");
-		$direct_cachedata['output_formelements'] = $direct_classes['formbuilder']->form_get (true);
+		$direct_cachedata['output_formelements'] = $direct_globals['formbuilder']->form_get (true);
 	}
 	else
 	{
 		direct_mods_include ($direct_settings['account_status_mods_support'],"account_status","login");
-		$direct_cachedata['output_formelements'] = $direct_classes['formbuilder']->form_get (false);
+		$direct_cachedata['output_formelements'] = $direct_globals['formbuilder']->form_get (false);
 	}
 
-	if (($g_mode_save)&&(($direct_classes['formbuilder']->check_result)||($g_continue_check)))
+	if (($g_mode_save)&&(($direct_globals['formbuilder']->check_result)||($g_continue_check)))
 	{
 /* -------------------------------------------------------------------------
 Save data edited
 ------------------------------------------------------------------------- */
 
 		$g_cookie = (((USE_cookies)&&($direct_cachedata['i_acookie'])) ? true : false);
-		$g_user_array = $direct_classes['kernel']->v_user_get ("",$direct_cachedata['i_ausername'],true);
+		$g_user_array = $direct_globals['kernel']->v_user_get ("",$direct_cachedata['i_ausername'],true);
 
 		if (direct_mods_include ($direct_settings['account_status_mods_support'],"account_status","test"))
 		{
 			$g_override_check = direct_mods_include (true,"account_status","login_process",$g_user_array);
-			if ($g_override_check) { $g_user_array = $direct_classes['kernel']->v_user_get ("",$direct_cachedata['i_ausername'],true); }
+			if ($g_override_check) { $g_user_array = $direct_globals['kernel']->v_user_get ("",$direct_cachedata['i_ausername'],true); }
 		}
 		else { $g_override_check = false; }
 
 		if ($g_user_array)
 		{
-			if ($g_user_array['ddbusers_banned']) { $direct_classes['error_functions']->error_page ("standard","account_username_banned","SECURITY ERROR:<br />&quot;$direct_cachedata[i_ausername]&quot; has been banned<br />sWG/#echo(__FILEPATH__)# _a=login-save_ (#echo(__LINE__)#)"); }
-			elseif ($g_user_array['ddbusers_deleted']) { $direct_classes['error_functions']->error_page ("standard","core_username_unknown","SECURITY ERROR:<br />&quot;$direct_cachedata[i_ausername]&quot; was deleted<br />sWG/#echo(__FILEPATH__)# _a=login-save_ (#echo(__LINE__)#)"); }
-			elseif ($g_user_array['ddbusers_locked']) { $direct_classes['error_functions']->error_page ("standard","account_username_locked","SECURITY ERROR:<br />&quot;$direct_cachedata[i_ausername]&quot; has been locked by the administration or the system<br />sWG/#echo(__FILEPATH__)# _a=login-save_ (#echo(__LINE__)#)"); }
+			if ($g_user_array['ddbusers_banned']) { $direct_globals['output']->output_send_error ("standard","account_username_banned","SECURITY ERROR: &quot;$direct_cachedata[i_ausername]&quot; has been banned","sWG/#echo(__FILEPATH__)# _a=login-save_ (#echo(__LINE__)#)"); }
+			elseif ($g_user_array['ddbusers_deleted']) { $direct_globals['output']->output_send_error ("standard","core_username_unknown","SECURITY ERROR: &quot;$direct_cachedata[i_ausername]&quot; was deleted","sWG/#echo(__FILEPATH__)# _a=login-save_ (#echo(__LINE__)#)"); }
+			elseif ($g_user_array['ddbusers_locked']) { $direct_globals['output']->output_send_error ("standard","account_username_locked","SECURITY ERROR: &quot;$direct_cachedata[i_ausername]&quot; has been locked by the administration or the system","sWG/#echo(__FILEPATH__)# _a=login-save_ (#echo(__LINE__)#)"); }
 			elseif ((($g_user_array['ddbusers_type'] != "ex")&&($g_user_array['ddbusers_password'] == $direct_cachedata['i_apassword']))||($g_override_check))
 			{
 $g_uuid_array = array (
@@ -194,24 +207,27 @@ $g_uuid_array = array (
 
 				if (isset ($g_uuid_array['userid']))
 				{
-					$direct_classes['kernel']->v_uuid_write ((direct_evars_write ($g_uuid_array)),$g_cookie);
+					$direct_globals['kernel']->v_uuid_write ((direct_evars_write ($g_uuid_array)),$g_cookie);
 
-					$direct_settings['user'] = array ("id" => $g_user_array['ddbusers_id'],"name" => $g_user_array['ddbusers_name'],"name_html" => (direct_html_encode_special ($g_user_array['ddbusers_name'])),"type" => $g_user_array['ddbusers_type'],"timezone" => $g_user_array['ddbusers_timezone']);
+					if (is_numeric ($direct_cachedata['i_atimeoffset'])) { $g_user_array['ddbusers_timezone'] = $direct_cachedata['i_atimeoffset']; }
+					$direct_settings['user'] = array ("id" => $g_user_array['ddbusers_id'],"type" => $g_user_array['ddbusers_type'],"timezone" => $g_user_array['ddbusers_timezone']);
+					$direct_globals['input']->user_set ($g_user_array['ddbusers_name']);
+
 					$g_user_array['ddbusers_lastvisit_ip'] = $direct_settings['user_ip'];
 					$g_user_array['ddbusers_lastvisit_time'] = $direct_cachedata['core_time'];
-					$direct_classes['kernel']->v_user_update ($direct_settings['user']['id'],$g_user_array);
-					if (direct_class_function_check ($direct_classes['kernel'],"v_group_user_get_rights")) { $direct_classes['kernel']->v_group_user_get_rights (); }
-					$direct_classes['kernel']->v_uuid_cookie_save ();
+					$direct_globals['kernel']->v_user_update ($direct_settings['user']['id'],$g_user_array);
+					if (direct_class_function_check ($direct_globals['kernel'],"v_group_user_get_rights")) { $direct_globals['kernel']->v_group_user_get_rights (); }
+					$direct_globals['kernel']->v_uuid_cookie_save ();
 
 					$g_lang = $g_user_array['ddbusers_lang'];
 					$g_theme = $g_user_array['ddbusers_theme'];
 
 $g_log_array = array (
-"source_user_id" => $g_user_array['ddbusers_id'],
-"source_user_ip" => $direct_settings['user_ip'],
-"sid" => "e268443e43d93dab7ebef303bbe9642f",
+"ddblog_source_user_id" => $g_user_array['ddbusers_id'],
+"ddblog_source_user_ip" => $direct_settings['user_ip'],
+"ddblog_sid" => "e268443e43d93dab7ebef303bbe9642f",
 // md5 ("account")
-"identifier" => "account_login"
+"ddblog_identifier" => "account_login"
 );
 
 					direct_log_write ($g_log_array);
@@ -221,37 +237,53 @@ $g_log_array = array (
 
 					if ($g_target_url)
 					{
-						$g_target_link = str_replace (array ("[oid]","[lang]","[theme]"),(array ("auid_d+{$g_user_array['ddbusers_id']}++","&lang=".$g_lang,"&theme=".$g_theme)),$g_target_url);
+						$g_target_link = str_replace (array ("[oid]","[lang]","[theme]"),(array ("auid_d+{$g_user_array['ddbusers_id']}++",";lang=".$g_lang,";theme=".$g_theme)),$g_target_url);
 
 						$direct_cachedata['output_jsjump'] = 2000;
 						$direct_cachedata['output_pagetarget'] = str_replace ('"',"",(direct_linker ("url0",$g_target_link)));
-						$direct_cachedata['output_scripttarget'] = str_replace ('"',"",(direct_linker ("url0",$g_target_link,false)));
+						$direct_globals['output']->options_flush (true);
 					}
 					else { $direct_cachedata['output_jsjump'] = 0; }
 
-					direct_output_related_manager ("account_status_login_form_save","post_module_service_action");
-					$direct_classes['output']->oset ("default","done");
-					$direct_classes['output']->options_flush (true);
-					$direct_classes['output']->header (false,true,$direct_settings['p3p_url'],$direct_settings['p3p_cp']);
-					$direct_classes['output']->page_show ($direct_cachedata['output_job']);
+					if ($g_mode_ajax_dialog)
+					{
+						$direct_globals['output']->header (false,true);
+						$direct_globals['output']->related_manager ("account_status_login_form_save","post_module_service_action_ajax");
+						$direct_globals['output']->oset ("default_embedded","ajax_dialog_done");
+						$direct_globals['output']->output_send (direct_local_get ("core_done").": ".$direct_cachedata['output_job']);
+					}
+					else
+					{
+						$direct_globals['output']->header (false,true,$direct_settings['p3p_url'],$direct_settings['p3p_cp']);
+						$direct_globals['output']->related_manager ("account_status_login_form_save","post_module_service_action");
+						$direct_globals['output']->oset ("default","done");
+						$direct_globals['output']->output_send ($direct_cachedata['output_job']);
+					}
 				}
-				elseif (is_bool ($g_override_check)) { $direct_classes['error_functions']->error_page ("standard","core_unknown_error","sWG/#echo(__FILEPATH__)# _a=login-save_ (#echo(__LINE__)#)"); }
+				elseif (is_bool ($g_override_check)) { $direct_globals['output']->output_send_error ("standard","core_unknown_error","","sWG/#echo(__FILEPATH__)# _a=login-save_ (#echo(__LINE__)#)"); }
 			}
 			else
 			{
 $g_log_array = array (
-"source_user_id" => $g_user_array['ddbusers_id'],
-"source_user_ip" => $direct_settings['user_ip'],
-"sid" => "e268443e43d93dab7ebef303bbe9642f",
+"ddblog_source_user_id" => $g_user_array['ddbusers_id'],
+"ddblog_source_user_ip" => $direct_settings['user_ip'],
+"ddblog_sid" => "e268443e43d93dab7ebef303bbe9642f",
 // md5 ("account")
-"identifier" => "account_password_invalid"
+"ddblog_identifier" => "account_password_invalid"
 );
 
 				direct_log_write ($g_log_array);
-				$direct_classes['error_functions']->error_page ("login","account_password_invalid","sWG/#echo(__FILEPATH__)# _a=login-save_ (#echo(__LINE__)#)");
+				$direct_globals['output']->output_send_error ("standard","account_password_invalid","","sWG/#echo(__FILEPATH__)# _a=login-save_ (#echo(__LINE__)#)");
 			}
 		}
-		else { $direct_classes['error_functions']->error_page ("standard","core_username_unknown","sWG/#echo(__FILEPATH__)# _a=login-save_ (#echo(__LINE__)#)"); }
+		else { $direct_globals['output']->output_send_error ("standard","core_username_unknown","","sWG/#echo(__FILEPATH__)# _a=login-save_ (#echo(__LINE__)#)"); }
+	}
+	elseif ($g_mode_ajax_dialog)
+	{
+		$direct_globals['output']->header (false,true);
+		$direct_globals['output']->related_manager ("account_status_login_form_save","post_module_service_action_ajax");
+		$direct_globals['output']->oset ("default_embedded","ajax_dialog_form_results");
+		$direct_globals['output']->output_send (direct_local_get ("formbuilder_error"));
 	}
 	else
 	{
@@ -260,13 +292,14 @@ View form
 ------------------------------------------------------------------------- */
 
 		$direct_cachedata['output_formbutton'] = direct_local_get ("core_login");
-		$direct_cachedata['output_formtarget'] = "m=account&s=status&a=login-save&dsd=source+".(urlencode ($g_source))."++target+".(urlencode ($g_target));
+		$direct_cachedata['output_formsupport_ajax_dialog'] = true;
+		$direct_cachedata['output_formtarget'] = "m=account;s=status;a=login-save;dsd=source+".(urlencode ($g_source))."++target+".(urlencode ($g_target));
 		$direct_cachedata['output_formtitle'] = direct_local_get ("core_login");
 
-		direct_output_related_manager ("account_status_login_form","post_module_service_action");
-		$direct_classes['output']->oset ("account","login");
-		$direct_classes['output']->header (false,true,$direct_settings['p3p_url'],$direct_settings['p3p_cp']);
-		$direct_classes['output']->page_show ($direct_cachedata['output_formtitle']);
+		$direct_globals['output']->header (false,true,$direct_settings['p3p_url'],$direct_settings['p3p_cp']);
+		$direct_globals['output']->related_manager ("account_status_login_form","post_module_service_action");
+		$direct_globals['output']->oset ("account","login");
+		$direct_globals['output']->output_send ($direct_cachedata['output_formtitle']);
 	}
 	//j// EOA
 	}
@@ -277,12 +310,13 @@ View form
 //j// $direct_settings['a'] == "lvreset"
 case "lvreset":
 {
+	$g_mode_ajax_dialog = (($direct_settings['ohandler'] == "ajax_dialog") ? true : false);
 	if (USE_debug_reporting) { direct_debug (1,"sWG/#echo(__FILEPATH__)# _a=lvreset_ (#echo(__LINE__)#)"); }
 
-	$g_source = (isset ($direct_settings['dsd']['source']) ? ($direct_classes['basic_functions']->inputfilter_basic ($direct_settings['dsd']['source'])) : "");
-	$g_target = (isset ($direct_settings['dsd']['target']) ? ($direct_classes['basic_functions']->inputfilter_basic ($direct_settings['dsd']['target'])) : "");
+	$g_source = (isset ($direct_settings['dsd']['source']) ? ($direct_globals['basic_functions']->inputfilter_basic ($direct_settings['dsd']['source'])) : "");
+	$g_target = (isset ($direct_settings['dsd']['target']) ? ($direct_globals['basic_functions']->inputfilter_basic ($direct_settings['dsd']['target'])) : "");
 
-	$g_source_url = ($g_source ? base64_decode ($g_source) : "m=account&a=services");
+	$g_source_url = ($g_source ? base64_decode ($g_source) : "m=account;a=services");
 
 	if ($g_target) { $g_target_url = base64_decode ($g_target); }
 	else
@@ -295,14 +329,14 @@ case "lvreset":
 	$direct_cachedata['page_backlink'] = str_replace ("[oid]","",$g_source_url);
 	$direct_cachedata['page_homelink'] = $direct_cachedata['page_backlink'];
 
-	if ($direct_classes['kernel']->service_init_default ())
+	if ($direct_globals['kernel']->service_init_default ())
 	{
 	//j// BOA
-	direct_output_related_manager ("account_status_lvreset","pre_module_service_action");
-	$direct_classes['basic_functions']->require_file ($direct_settings['path_system']."/functions/swg_mods_support.php");
-	direct_local_integration ("account");
+	if ($g_mode_ajax_dialog) { $direct_globals['output']->related_manager ("account_status_lvreset","pre_module_service_action_ajax"); }
+	else { $direct_globals['output']->related_manager ("account_status_lvreset","pre_module_service_action"); }
 
-	direct_class_init ("output");
+	$direct_globals['basic_functions']->require_file ($direct_settings['path_system']."/functions/swg_mods_support.php");
+	direct_local_integration ("account");
 
 	$g_cookie_data = urlencode ($direct_cachedata['core_time']."|".$direct_cachedata['core_time']);
 	$g_cookie_expires = (gmdate ("D, d-M-y H:i:s",($direct_cachedata['core_time'] + 31536000)))." GMT";
@@ -325,17 +359,26 @@ case "lvreset":
 
 		$direct_cachedata['output_jsjump'] = 2000;
 		$direct_cachedata['output_pagetarget'] = str_replace ('"',"",(direct_linker ("url0",$g_target_link)));
-		$direct_cachedata['output_scripttarget'] = str_replace ('"',"",(direct_linker ("url0",$g_target_link,false)));
+		$direct_globals['output']->options_flush (true);
 	}
 	else { $direct_cachedata['output_jsjump'] = 0; }
 
 	direct_mods_include ($direct_settings['account_status_mods_support'],"account_status","lvreset");
 
-	direct_output_related_manager ("account_status_lvreset","post_module_service_action");
-	$direct_classes['output']->oset ("default","done");
-	$direct_classes['output']->options_flush (true);
-	$direct_classes['output']->header (false,true,$direct_settings['p3p_url'],$direct_settings['p3p_cp']);
-	$direct_classes['output']->page_show ($direct_cachedata['output_job']);
+	if ($g_mode_ajax_dialog)
+	{
+		$direct_globals['output']->header (false,true);
+		$direct_globals['output']->related_manager ("account_status_lvreset","post_module_service_action_ajax");
+		$direct_globals['output']->oset ("default_embedded","ajax_dialog_done");
+		$direct_globals['output']->output_send (direct_local_get ("core_done").": ".$direct_cachedata['output_job']);
+	}
+	else
+	{
+		$direct_globals['output']->header (false,true,$direct_settings['p3p_url'],$direct_settings['p3p_cp']);
+		$direct_globals['output']->related_manager ("account_status_lvreset","post_module_service_action");
+		$direct_globals['output']->oset ("default","done");
+		$direct_globals['output']->output_send ($direct_cachedata['output_job']);
+	}
 	//j// EOA
 	}
 
@@ -345,50 +388,53 @@ case "lvreset":
 //j// $direct_settings['a'] == "logout"
 case "logout":
 {
+	$g_mode_ajax_dialog = (($direct_settings['ohandler'] == "ajax_dialog") ? true : false);
 	if (USE_debug_reporting) { direct_debug (1,"sWG/#echo(__FILEPATH__)# _a=logout_ (#echo(__LINE__)#)"); }
 
-	$g_source = (isset ($direct_settings['dsd']['source']) ? ($direct_classes['basic_functions']->inputfilter_basic ($direct_settings['dsd']['source'])) : "");
-	$g_target = (isset ($direct_settings['dsd']['target']) ? ($direct_classes['basic_functions']->inputfilter_basic ($direct_settings['dsd']['target'])) : "");
+	$g_source = (isset ($direct_settings['dsd']['source']) ? ($direct_globals['basic_functions']->inputfilter_basic ($direct_settings['dsd']['source'])) : "");
+	$g_target = (isset ($direct_settings['dsd']['target']) ? ($direct_globals['basic_functions']->inputfilter_basic ($direct_settings['dsd']['target'])) : "");
 
-	$g_source_url = ($g_source ? base64_decode ($g_source) : "m=account&a=services");
-	$g_target_url = ($g_target ? base64_decode ($g_target) : "m=default&s=index&a=index");
+	$g_source_url = ($g_source ? base64_decode ($g_source) : "m=account;a=services");
+	$g_target_url = ($g_target ? base64_decode ($g_target) : "m=default;s=index;a=index");
 
 	$direct_cachedata['page_this'] = "";
 	$direct_cachedata['page_backlink'] = str_replace ("[oid]","",$g_source_url);
 	$direct_cachedata['page_homelink'] = $direct_cachedata['page_backlink'];
 
-	if ($direct_classes['kernel']->service_init_default ())
+	if ($direct_globals['kernel']->service_init_default ())
 	{
 	//j// BOA
-	direct_output_related_manager ("account_status_logout","pre_module_service_action");
-	$direct_classes['basic_functions']->require_file ($direct_settings['path_system']."/functions/swg_log_storager.php");
-	$direct_classes['basic_functions']->require_file ($direct_settings['path_system']."/functions/swg_mods_support.php");
+	if ($g_mode_ajax_dialog) { $direct_globals['output']->related_manager ("account_status_logout","pre_module_service_action_ajax"); }
+	else { $direct_globals['output']->related_manager ("account_status_logout","pre_module_service_action"); }
+
+	$direct_globals['basic_functions']->require_file ($direct_settings['path_system']."/functions/swg_log_storager.php");
+	$direct_globals['basic_functions']->require_file ($direct_settings['path_system']."/functions/swg_mods_support.php");
 	direct_local_integration ("account");
 
-	direct_class_init ("output");
-	$direct_classes['output']->servicemenu ("account");
-	$direct_classes['output']->options_insert (2,"servicemenu","m=account&a=services",(direct_local_get ("core_back")),$direct_settings['serviceicon_default_back'],"url0");
+	$direct_globals['output']->servicemenu ("account");
+	$direct_globals['output']->options_insert (2,"servicemenu","m=account;a=services",(direct_local_get ("core_back")),$direct_settings['serviceicon_default_back'],"url0");
 
 	$g_output_check = direct_mods_include ($direct_settings['account_status_mods_support'],"account_status","logout");
 
 	if ($direct_settings['user']['type'] != "gt")
 	{
 $g_log_array = array (
-"source_user_id" => $direct_settings['user']['id'],
-"source_user_ip" => $direct_settings['user_ip'],
-"sid" => "e268443e43d93dab7ebef303bbe9642f",
+"ddblog_source_user_id" => $direct_settings['user']['id'],
+"ddblog_source_user_ip" => $direct_settings['user_ip'],
+"ddblog_sid" => "e268443e43d93dab7ebef303bbe9642f",
 // md5 ("account")
-"identifier" => "account_logout"
+"ddblog_identifier" => "account_logout"
 );
 
 		direct_log_write ($g_log_array);
 	}
 
-	$direct_classes['kernel']->v_uuid_write ("");
-	$direct_classes['kernel']->v_uuid_cookie_save ();
+	$direct_globals['kernel']->v_uuid_write ("");
+	$direct_globals['kernel']->v_uuid_cookie_save ();
 
 	$g_userid = $direct_settings['user']['id'];
-	$direct_settings['user'] = array ("id" => "","type" => "gt","timezone" => 0);
+	$direct_globals['input']->user_set (NULL);
+	$direct_settings['user'] = array ("id" => "","type" => "gt","timezone" => (int)(date ("Z") / 3600));
 
 	if (!$g_output_check)
 	{
@@ -401,15 +447,24 @@ $g_log_array = array (
 
 			$direct_cachedata['output_jsjump'] = 2000;
 			$direct_cachedata['output_pagetarget'] = str_replace ('"',"",(direct_linker ("url0",$g_target_link)));
-			$direct_cachedata['output_scripttarget'] = str_replace ('"',"",(direct_linker ("url0",$g_target_link,false)));
+			$direct_globals['output']->options_flush (true);
 		}
 		else { $direct_cachedata['output_jsjump'] = 0; }
 
-		direct_output_related_manager ("account_status_logout","post_module_service_action");
-		$direct_classes['output']->oset ("default","done");
-		$direct_classes['output']->options_flush (true);
-		$direct_classes['output']->header (false,true,$direct_settings['p3p_url'],$direct_settings['p3p_cp']);
-		$direct_classes['output']->page_show ($direct_cachedata['output_job']);
+		if ($g_mode_ajax_dialog)
+		{
+			$direct_globals['output']->header (false,true);
+			$direct_globals['output']->related_manager ("account_status_logout","post_module_service_action_ajax");
+			$direct_globals['output']->oset ("default_embedded","ajax_dialog_done");
+			$direct_globals['output']->output_send (direct_local_get ("core_done").": ".$direct_cachedata['output_job']);
+		}
+		else
+		{
+			$direct_globals['output']->header (false,true,$direct_settings['p3p_url'],$direct_settings['p3p_cp']);
+			$direct_globals['output']->related_manager ("account_status_logout","post_module_service_action");
+			$direct_globals['output']->oset ("default","done");
+			$direct_globals['output']->output_send ($direct_cachedata['output_job']);
+		}
 	}
 	//j// EOA
 	}

@@ -61,39 +61,35 @@ if (!defined ("direct_product_iversion")) { exit (); }
 *         simple (X)HTML
 * @param  string $f_ipoint_id iPoint ID to be used for this form
 * @param  string $f_button Button text
-* @param  string $f_button_onclick Javascript to be called on the button
-*         clicked event
 * @param  string $f_text Predefined filter text to be shown
 * @uses   direct_debug()
 * @uses   USE_debug_reporting
 * @return string Valid XHTML code
 * @since  v0.1.00
 */
-function direct_output_oset_default_filter_table ($g_js_mode,$f_ipoint_id,$f_button,$f_button_onclick,$f_text)
+function direct_output_oset_default_filter_table ($g_js_mode,$f_ipoint_id,$f_button,$f_text)
 {
-	global $direct_settings;
+	global $direct_globals,$direct_settings;
 	if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -direct_oset_developer_input_result ()- (#echo(__LINE__)#)"); }
 
-$f_return = ("<table id=\"$f_ipoint_id\" cellspacing='1' summary='' class='pageborder1' style='width:100%;table-layout:fixed'>
-<thead class='pagehide'><tr>
-<td valign='middle' align='center' class='pagetitlecellbg' style='width:25%;padding:$direct_settings[theme_td_padding]'><span class='pagetitlecellcontent'>".(direct_local_get ("formbuilder_field","text"))."</span></td>
-<td valign='middle' align='center' class='pagetitlecellbg' style='width:75%;padding:$direct_settings[theme_td_padding]'><span class='pagetitlecellcontent'>".(direct_local_get ("formbuilder_field_content","text"))."</span></td>
-</tr></thead><tbody><tr>
-<td valign='top' align='right' class='pageextrabg' style='width:25%;padding:$direct_settings[theme_td_padding]'><span class='pageextracontent' style='font-weight:bold'>".(direct_local_get ("core_filter","text")).":</span></td>
-<td valign='middle' align='center' class='pagebg' style='width:75%;padding:$direct_settings[theme_td_padding]'><input type='text' id='{$f_ipoint_id}_f' value=\"$f_text\" size='18' class='pagecontentinputtextnpassword' style='width:55%' /></td>
-</tr><tr>
-<td colspan='2' align='center' class='pagebg' style='padding:$direct_settings[theme_td_padding]'><input type='button' id='{$f_ipoint_id}_b' value=\"$f_button\" class='pagecontentinputbutton' onclick=\"javscript:$f_button_onclick;\" /></td>
+	$direct_globals['output']->header_elements ("<script src='".(direct_linker_dynamic ("url0","s=cache;dsd=dfile+$direct_settings[path_mmedia]/swg_formbuilder.php.js++dbid+".$direct_settings['product_buildid'],true,false))."' type='text/javascript'><!-- // FormBuilder javascript functions // --></script>");
+
+$f_return = ("<table id=\"$f_ipoint_id\" style='width:100%;table-layout:auto'>
+<tbody><tr>
+<td class='pageextrabg' style='width:20%;padding:$direct_settings[theme_form_td_padding];text-align:right;vertical-align:middle'><span class='pageextracontent' style='font-weight:bold'>".(direct_local_get ("core_filter","text")).":</span></td>
+<td class='pagebg' style='width:60%;padding:$direct_settings[theme_form_td_padding];text-align:center;vertical-align:middle'><input type='text' id='{$f_ipoint_id}i' value=\"$f_text\" size='18' class='pagecontentinputtextnpassword' style='width:55%' /></td>
+<td class='pageextrabg' style='width:20%;padding:$direct_settings[theme_form_td_padding];text-align:center;vertical-align:middle'><input type='button' id='{$f_ipoint_id}b' value=\"$f_button\" class='pagecontentinputbutton' /></td>
 </tr></tbody>
 </table>");
 
-	if ($g_js_mode) { $f_return = "djs_swgDOM_replace (\"".(str_replace (array ('"',"\n"),(array ('\"',"\\n\" +\n\"")),$f_return))."\",\"$f_ipoint_id\");"; }
+	if ($g_js_mode) { $f_return = "\"".(str_replace (array ('"',"\n"),(array ('\"',"\\n\" +\n\"")),$f_return))."\""; }
 
 	return $f_return;
 }
 
 //j// Script specific commands
 
-if (!isset ($direct_settings['theme_td_padding'])) { $direct_settings['theme_td_padding'] = "5px"; }
+if (!isset ($direct_settings['theme_form_td_padding'])) { $direct_settings['theme_form_td_padding'] = "3px"; }
 direct_local_integration ("formbuilder");
 
 //j// EOF
