@@ -211,7 +211,6 @@ $f_data = ("<?xml version='1.0' encoding='$direct_local[lang_charset]' ?><!DOCTY
 
 <head>
 <title>$f_subject</title>
-<meta http-equiv='Content-Type' content='application/xhtml+xml; charset=$direct_local[lang_charset]' />
 <meta name='author' content='direct Netware Group' />
 <meta name='creator' content='$direct_settings[product_lcode_txt] by the direct Netware Group' />
 <meta name='description' content='$direct_settings[product_lcode_subtitle_txt]' />

@@ -131,7 +131,7 @@ Informing the system about available functions
 		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -output_theme_class->theme_page ($f_title)- (#echo(__LINE__)#)"); }
 
 		$direct_settings['theme_xhtml_type'] = "application/xhtml+xml; charset=".$direct_local['lang_charset'];
-		header ("Content-Type: ".$direct_settings['theme_xhtml_type'],true);
+		$direct_globals['output']->output_header ("Content-Type",$direct_settings['theme_xhtml_type']);
 
 		if (!isset ($direct_settings['theme_mainmenu'])) { $direct_settings['theme_mainmenu'] = "mainmenu"; }
 
@@ -143,8 +143,7 @@ $this->output_data = ("<?xml version='1.0' encoding='$direct_local[lang_charset]
 
 		if (strlen ($direct_cachedata['output_p3purl'])) { $this->output_data .= "\n<link rel='P3Pv1' href='{$direct_cachedata['output_p3purl']}'>"; }
 
-$this->output_data .= ("\n<meta http-equiv='Content-Type' content='$direct_settings[theme_xhtml_type]' />
-<meta name='author' content='direct Netware Group' />
+$this->output_data .= ("\n<meta name='author' content='direct Netware Group' />
 <meta name='creator' content='$direct_settings[product_lcode_txt] by the direct Netware Group' />
 <meta name='description' content='$direct_settings[product_lcode_subtitle_txt]' />
 <style type='text/css'><![CDATA[
