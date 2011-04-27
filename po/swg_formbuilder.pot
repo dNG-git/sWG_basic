@@ -3,7 +3,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: v0.1.00\n"
-"POT-Creation-Date: 2011-04-04 11:52+0000\n"
+"POT-Creation-Date: 2011-04-27 07:14+0000\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -12,114 +12,114 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural= n == 1 ? 0 : n == 2 ? 1 : 2 \n"
 
-# formbuilder_embed_unsupported_1
+msgctxt "formbuilder_embed_unsupported_1"
 msgid "formbuilder_embed_unsupported_1: Unfortunately required support for frames to view the embedded content is unavailable. Please click "
 msgstr ""
 
-# formbuilder_embed_unsupported_2
+msgctxt "formbuilder_embed_unsupported_2"
 msgid "formbuilder_embed_unsupported_2: here"
 msgstr ""
 
-# formbuilder_embed_unsupported_3
+msgctxt "formbuilder_embed_unsupported_3"
 msgid "formbuilder_embed_unsupported_3:  to load the frame in a seperate window."
 msgstr ""
 
-# formbuilder_error_file_not_found_1
+msgctxt "formbuilder_error_file_not_found_1"
 msgid "formbuilder_error_file_not_found_1: There is no information for viewing available in "
 msgstr ""
 
-# formbuilder_error_file_not_found_2
+msgctxt "formbuilder_error_file_not_found_2"
 msgid "formbuilder_error_file_not_found_2: ."
 msgstr ""
 
-# formbuilder_error_format_invalid
+msgctxt "formbuilder_error_format_invalid"
 msgid "The content of this field does not match the required format."
 msgstr ""
 
-# formbuilder_error_number_max_1
+msgctxt "formbuilder_error_number_max_1"
 msgid "formbuilder_error_number_max_1: A maximal value of "
 msgstr ""
 
-# formbuilder_error_number_max_2
+msgctxt "formbuilder_error_number_max_2"
 msgid "formbuilder_error_number_max_2:  is allowed for this field."
 msgstr ""
 
-# formbuilder_error_number_min_1
+msgctxt "formbuilder_error_number_min_1"
 msgid "formbuilder_error_number_min_1: A minimal value of "
 msgstr ""
 
-# formbuilder_error_number_min_2
+msgctxt "formbuilder_error_number_min_2"
 msgid "formbuilder_error_number_min_2:  is required for this field."
 msgstr ""
 
-# formbuilder_error_password_repetition
+msgctxt "formbuilder_error_password_repetition"
 msgid "The content of the repetition field must be the same one as the defined password."
 msgstr ""
 
-# formbuilder_error_required_element
+msgctxt "formbuilder_error_required_element"
 msgid "This field is required to continue."
 msgstr ""
 
-# formbuilder_error_string_max_1
+msgctxt "formbuilder_error_string_max_1"
 msgid "formbuilder_error_string_max_1: A maximal length of "
 msgstr ""
 
-# formbuilder_error_string_max_2
+msgctxt "formbuilder_error_string_max_2"
 msgid "formbuilder_error_string_max_2:  characters is allowed for this field."
 msgstr ""
 
-# formbuilder_error_string_min_1
+msgctxt "formbuilder_error_string_min_1"
 msgid "formbuilder_error_string_min_1: A minimal length of "
 msgstr ""
 
-# formbuilder_error_string_min_2
+msgctxt "formbuilder_error_string_min_2"
 msgid "formbuilder_error_string_min_2:  characters is required for this field."
 msgstr ""
 
-# formbuilder_error
+msgctxt "formbuilder_error"
 msgid "Form error"
 msgstr ""
 
-# formbuilder_field_accepted
+msgctxt "formbuilder_field_accepted"
 msgid "Accepted"
 msgstr ""
 
-# formbuilder_field_content
+msgctxt "formbuilder_field_content"
 msgid "Content"
 msgstr ""
 
-# formbuilder_field
+msgctxt "formbuilder_field"
 msgid "Field"
 msgstr ""
 
-# formbuilder_form_password_repetition
+msgctxt "formbuilder_form_password_repetition"
 msgid "Please re-enter your password in the following field"
 msgstr ""
 
-# formbuilder_section_administrative
+msgctxt "formbuilder_section_administrative"
 msgid "Administrative data"
 msgstr ""
 
-# formbuilder_section_advanced
+msgctxt "formbuilder_section_advanced"
 msgid "Advanced data"
 msgstr ""
 
-# formbuilder_section_general
+msgctxt "formbuilder_section_general"
 msgid "General data"
 msgstr ""
 
-# formbuilder_section_publishing
+msgctxt "formbuilder_section_publishing"
 msgid "Publishing settings"
 msgstr ""
 
-# formbuilder_size_large
+msgctxt "formbuilder_size_large"
 msgid "Large"
 msgstr ""
 
-# formbuilder_size_medium
+msgctxt "formbuilder_size_medium"
 msgid "Medium"
 msgstr ""
 
-# formbuilder_size_small
+msgctxt "formbuilder_size_small"
 msgid "Small"
 msgstr ""

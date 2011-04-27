@@ -3,7 +3,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: v0.1.00\n"
-"POT-Creation-Date: 2011-04-04 11:52+0000\n"
+"POT-Creation-Date: 2011-04-27 07:14+0000\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -12,486 +12,486 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural= n == 1 ? 0 : n == 2 ? 1 : 2 \n"
 
-# account_actives_1
+msgctxt "account_actives_1"
 msgid "account_actives_1: Users active over the past "
 msgstr ""
 
-# account_actives_2
+msgctxt "account_actives_2"
 msgid "account_actives_2:  minutes"
 msgstr ""
 
-# account_actives_empty
+msgctxt "account_actives_empty"
 msgid "There are no known active users."
 msgstr ""
 
-# account_actives
+msgctxt "account_actives"
 msgid "Active users"
 msgstr ""
 
-# account_avatar
+msgctxt "account_avatar"
 msgid "User avatar"
 msgstr ""
 
-# account_center
+msgctxt "account_center"
 msgid "Account Control Center"
 msgstr ""
 
-# account_details
+msgctxt "account_details"
 msgid "Member information"
 msgstr ""
 
-# account_done_email_change_1
+msgctxt "account_done_email_change_1"
 msgid "account_done_email_change_1: We will have to check the given address before we are able to change the database entry. A confirmation e-Mail has been send to your account. Please follow the given link to complete this task. Your new e-Mail address has been saved temporarily in our database."
 msgstr ""
 
-# account_done_email_change_2
+msgctxt "account_done_email_change_2"
 msgid "account_done_email_change_2: The e-Mail address has been changed successfully."
 msgstr ""
 
-# account_done_email_user_1
+msgctxt "account_done_email_user_1"
 msgid "account_done_email_user_1: A link has been sent to you via e-Mail. Please use this link to confirm the delivery of your message. The message and your sender information have been saved temporarily in the system."
 msgstr ""
 
-# account_done_email_user_2
+msgctxt "account_done_email_user_2"
 msgid "account_done_email_user_2: The message has been send successfully."
 msgstr ""
 
-# account_done_forgotten_password
+msgctxt "account_done_forgotten_password"
 msgid "A new password has been assigned successfully using a valid security ID. The new valid access information have been sent to your e-Mail address."
 msgstr ""
 
-# account_done_language_select
+msgctxt "account_done_language_select"
 msgid "Your language settings have been updated successfully."
 msgstr ""
 
-# swg_lang_file_v1_account_done_lastvisit_reset
+msgctxt "swg_lang_file_v1_account_done_lastvisit_reset"
 msgid "All \"new\" markers have been removed successfully."
 msgstr ""
 
-# account_done_login
+msgctxt "account_done_login"
 msgid "You have been logged in successfully."
 msgstr ""
 
-# account_done_logout
+msgctxt "account_done_logout"
 msgid "You have been logged out successfully."
 msgstr ""
 
-# account_done_password_change
+msgctxt "account_done_password_change"
 msgid "A link has been sent to you via e-Mail. Please use this link to confirm the changed password. Your new password has been saved temporarily in the system."
 msgstr ""
 
-# account_done_profile_delete
+msgctxt "account_done_profile_delete"
 msgid "The defined member has been deleted successfully."
 msgstr ""
 
-# account_done_profile_edit
+msgctxt "account_done_profile_edit"
 msgid "The changed member information have been saved successfully."
 msgstr ""
 
-# account_done_profile_password_reset
+msgctxt "account_done_profile_password_reset"
 msgid "A new password has been assigned successfully and an e-Mail was sent to the member."
 msgstr ""
 
-# account_done_profile_secid_reset
+msgctxt "account_done_profile_secid_reset"
 msgid "A new security ID has been assigned successfully and an e-Mail was sent to the member."
 msgstr ""
 
-# account_done_register
+msgctxt "account_done_register"
 msgid "A link has been sent to you via e-Mail. Please use this link to confirm your account registration. Your account information have been saved temporarily in the system."
 msgstr ""
 
-# account_email_change
+msgctxt "account_email_change"
 msgid "Change your e-Mail-address"
 msgstr ""
 
-# account_email_public
+msgctxt "account_email_public"
 msgid "Other users are allowed to send e-Mails to you"
 msgstr ""
 
-# account_email
+msgctxt "account_email"
 msgid "e-Mail address"
 msgstr ""
 
-# account_email_user_message
+msgctxt "account_email_user_message"
 msgid "e-Mail message"
 msgstr ""
 
-# account_email_user_source
+msgctxt "account_email_user_source"
 msgid "Sender address"
 msgstr ""
 
-# account_email_user
+msgctxt "account_email_user"
 msgid "Send an e-Mail to the member"
 msgstr ""
 
-# account_forgotten_password
+msgctxt "account_forgotten_password"
 msgid "The security ID has been used. Therefore a new password has been assigned to your account. The new valid access information has been listed below."
 msgstr ""
 
-# account_group_desc
+msgctxt "account_group_desc"
 msgid "Group description"
 msgstr ""
 
-# account_group_selector_empty
+msgctxt "account_group_selector_empty"
 msgid "Currently no groups have been defined."
 msgstr ""
 
-# account_group_selector_mark
+msgctxt "account_group_selector_mark"
 msgid "Mark group"
 msgstr ""
 
-# account_group_selector
+msgctxt "account_group_selector"
 msgid "Group selection"
 msgstr ""
 
-# account_group_selector_unmark
+msgctxt "account_group_selector_unmark"
 msgid "Remove marker"
 msgstr ""
 
-# account_group
+msgctxt "account_group"
 msgid "Group"
 msgstr ""
 
-# account_helper_email
+msgctxt "account_helper_email"
 msgid "Every e-Mail address between 5 and 255 characters will be accepted by the system if the address or domain has not been blocked by the administration. Please note that only one account is allowed per e-Mail address."
 msgstr ""
 
-# swg_lang_file_v1_account_helper_secid
+msgctxt "swg_lang_file_v1_account_helper_secid"
 msgid "A security ID has been given to you after registering an account or using the &quot;Forgotten password&quot; option. As previously mentioned it is now required to reset your password."
 msgstr ""
 
-# account_language_select
+msgctxt "account_language_select"
 msgid "Change language settings"
 msgstr ""
 
-# account_language
+msgctxt "account_language"
 msgid "Language"
 msgstr ""
 
-# account_lastvisit
+msgctxt "account_lastvisit"
 msgid "Last visit"
 msgstr ""
 
-# account_online
+msgctxt "account_online"
 msgid "Is online"
 msgstr ""
 
-# account_otp_latest_wrong_password
+msgctxt "account_otp_latest_wrong_password"
 msgid "Latest wrong password entry"
 msgstr ""
 
-# account_otp_list_current_delete
+msgctxt "account_otp_list_current_delete"
 msgid "Delete current list"
 msgstr ""
 
-# account_otp_list_current
+msgctxt "account_otp_list_current"
 msgid "Current one-time-password list"
 msgstr ""
 
-# account_otp_list_entries
+msgctxt "account_otp_list_entries"
 msgid "List entries"
 msgstr ""
 
-# account_otp_list_new_generate
+msgctxt "account_otp_list_new_generate"
 msgid "Generate new list"
 msgstr ""
 
-# account_otp_list_new
+msgctxt "account_otp_list_new"
 msgid "New one-time-password list"
 msgstr ""
 
-# account_otp_list_not_viewable_again
+msgctxt "account_otp_list_not_viewable_again"
 msgid "Please note that this list will not be viewable again."
 msgstr ""
 
-# account_otp_list_remaining_entries
+msgctxt "account_otp_list_remaining_entries"
 msgid "Remaining entries"
 msgstr ""
 
-# account_otp_list
+msgctxt "account_otp_list"
 msgid "One-time-password list"
 msgstr ""
 
-# account_otp_login
+msgctxt "account_otp_login"
 msgid "Login using an one-time-password"
 msgstr ""
 
-# account_otp_position
+msgctxt "account_otp_position"
 msgid "One-time-password position"
 msgstr ""
 
-# account_otp_wrong_passwords
+msgctxt "account_otp_wrong_passwords"
 msgid "Wrong password count"
 msgstr ""
 
-# account_password_change
+msgctxt "account_password_change"
 msgid "Change password"
 msgstr ""
 
-# account_password_new
+msgctxt "account_password_new"
 msgid "New password"
 msgstr ""
 
-# account_password_reset_recommendation
+msgctxt "account_password_reset_recommendation"
 msgid "We recommend to change the password as soon as possible."
 msgstr ""
 
-# account_password_reset
+msgctxt "account_password_reset"
 msgid "A new password has been assigned to your account. The new valid access information have been listed below."
 msgstr ""
 
-# account_profile_delete_confirm
+msgctxt "account_profile_delete_confirm"
 msgid "Really delete the user"
 msgstr ""
 
-# account_profile_delete
+msgctxt "account_profile_delete"
 msgid "Delete user"
 msgstr ""
 
-# account_profile_edit_admin
+msgctxt "account_profile_edit_admin"
 msgid "Administrative options"
 msgstr ""
 
-# account_profile_edit_core
+msgctxt "account_profile_edit_core"
 msgid "Basic settings"
 msgstr ""
 
-# account_profile_edit
+msgctxt "account_profile_edit"
 msgid "Edit profile"
 msgstr ""
 
-# account_profile_password_reset
+msgctxt "account_profile_password_reset"
 msgid "Assign a new password"
 msgstr ""
 
-# account_profile_secid_reset
+msgctxt "account_profile_secid_reset"
 msgid "Assign a new security ID"
 msgstr ""
 
-# account_profile_select
+msgctxt "account_profile_select"
 msgid "Select profile"
 msgstr ""
 
-# account_profile_view
+msgctxt "account_profile_view"
 msgid "Show profile"
 msgstr ""
 
-# account_rating
+msgctxt "account_rating"
 msgid "Member rating"
 msgstr ""
 
-# account_real_address
+msgctxt "account_real_address"
 msgid "Address"
 msgstr ""
 
-# account_real_country
+msgctxt "account_real_country"
 msgid "Country"
 msgstr ""
 
-# account_real_firstname
+msgctxt "account_real_firstname"
 msgid "First name"
 msgstr ""
 
-# account_real_public
+msgctxt "account_real_public"
 msgid "Other users are allowed to access the RealLife data"
 msgstr ""
 
-# account_real_surname
+msgctxt "account_real_surname"
 msgid "Family name"
 msgstr ""
 
-# account_real_title
+msgctxt "account_real_title"
 msgid "Title"
 msgstr ""
 
-# account_real
+msgctxt "account_real"
 msgid "RealLife information"
 msgstr ""
 
-# account_register_control
+msgctxt "account_register_control"
 msgid "Please note that you will receive an e-Mail to check your e-Mail address. You will have to use the given vID there to activate your account."
 msgstr ""
 
-# account_register_tou_accept
+msgctxt "account_register_tou_accept"
 msgid "TOU accepted"
 msgstr ""
 
-# account_register_tou
+msgctxt "account_register_tou"
 msgid "TOU"
 msgstr ""
 
-# account_registered
+msgctxt "account_registered"
 msgid "Member since"
 msgstr ""
 
-# account_registration_welcome
+msgctxt "account_registration_welcome"
 msgid "We want to welcome you once more on behalf of the whole team. If you have questions about available options please have a look at the voluminous help. This private messaging system is likewise available for you. A new message can be written using the function of the same name. Please note that you can only receive an defined amount of messages."
 msgstr ""
 
-# account_secid_howto
+msgctxt "account_secid_howto"
 msgid "A new 96 characters long security ID was assigned to your account. Once you will be able to reset your password using this ID. Please keep this ID in a safe place and delete this e-Mail as soon as possible."
 msgstr ""
 
-# account_secid
+msgctxt "account_secid"
 msgid "Security ID"
 msgstr ""
 
-# account_service_list
+msgctxt "account_service_list"
 msgid "Available functions for your account"
 msgstr ""
 
-# account_signature
+msgctxt "account_signature"
 msgid "Signature"
 msgstr ""
 
-# account_status_ex_login_unverified
+msgctxt "account_status_ex_login_unverified"
 msgid "External verification incomplete"
 msgstr ""
 
-# account_status_ex_login_verified
+msgctxt "account_status_ex_login_verified"
 msgid "External verification sucessful"
 msgstr ""
 
-# account_status_ex
+msgctxt "account_status_ex"
 msgid "External verification"
 msgstr ""
 
-# account_status_ex_validation
+msgctxt "account_status_ex_validation"
 msgid "Verification"
 msgstr ""
 
-# account_status_ex_verification_status
+msgctxt "account_status_ex_verification_status"
 msgid "Status"
 msgstr ""
 
-# account_status_ex_verification_type
+msgctxt "account_status_ex_verification_type"
 msgid "Verification type"
 msgstr ""
 
-# account_title_cp_password_change
+msgctxt "account_title_cp_password_change"
 msgid "Password has been changed"
 msgstr ""
 
-# account_title_email_change
+msgctxt "account_title_email_change"
 msgid "Updating your e-Mail address"
 msgstr ""
 
-# account_title_password_change
+msgctxt "account_title_password_change"
 msgid "Password change request"
 msgstr ""
 
-# account_title_registration
+msgctxt "account_title_registration"
 msgid "Register an account"
 msgstr ""
 
-# account_title_registration_welcome
+msgctxt "account_title_registration_welcome"
 msgid "Welcome"
 msgstr ""
 
-# account_title_secid
+msgctxt "account_title_secid"
 msgid "New Security ID assigned"
 msgstr ""
 
-# account_title_status_ex
+msgctxt "account_title_status_ex"
 msgid "External verification via e-Mail"
 msgstr ""
 
-# account_use_cookie
+msgctxt "account_use_cookie"
 msgid "Use a cookie"
 msgstr ""
 
-# account_user_selector_empty
+msgctxt "account_user_selector_empty"
 msgid "There are currently no registered users in our database."
 msgstr ""
 
-# account_user_selector_mark
+msgctxt "account_user_selector_mark"
 msgid "Select user"
 msgstr ""
 
-# account_user_selector
+msgctxt "account_user_selector"
 msgid "User selection"
 msgstr ""
 
-# account_user_selector_unmark
+msgctxt "account_user_selector_unmark"
 msgid "Remove selection"
 msgstr ""
 
-# account_userdescription
+msgctxt "account_userdescription"
 msgid "Description"
 msgstr ""
 
-# account_usertitle
+msgctxt "account_usertitle"
 msgid "Member title"
 msgstr ""
 
-# account_validation_for_email_1
+msgctxt "account_validation_for_email_1"
 msgid "account_validation_for_email_1: To send your e-Mail to "
 msgstr ""
 
-# account_validation_for_email_2
+msgctxt "account_validation_for_email_2"
 msgid "account_validation_for_email_2:  please click the following link as confirmation. Your message will be send with your e-Mail address as sender to the recipient."
 msgstr ""
 
-# account_validation_for_email_change
+msgctxt "account_validation_for_email_change"
 msgid "Please visit the following URL to confirm the change and that your new e-Mail address is working probertly."
 msgstr ""
 
-# account_validation_for_password_change
+msgctxt "account_validation_for_password_change"
 msgid "To change your password, please use the link given in this e-Mail. This step should ensure, that a third party is unable to change your account password even if the account has been compromised."
 msgstr ""
 
-# account_validation_for_registration
+msgctxt "account_validation_for_registration"
 msgid "To complete the account registration you will have to click the following link."
 msgstr ""
 
-# errors_account_email_blacklisted
+msgctxt "errors_account_email_blacklisted"
 msgid "The defined e-Mail address or domain has been blocked by the administration and can not be used."
 msgstr ""
 
-# errors_account_email_exists
+msgctxt "errors_account_email_exists"
 msgid "The defined e-Mail address does already exist in our database."
 msgstr ""
 
-# errors_account_gid_invalid
+msgctxt "errors_account_gid_invalid"
 msgid "The specified group ID is invalid."
 msgstr ""
 
-# errors_account_password_invalid
+msgctxt "errors_account_password_invalid"
 msgid "The defined password is invalid."
 msgstr ""
 
-# errors_account_secid_invalid
+msgctxt "errors_account_secid_invalid"
 msgid "The defined security ID for the account differs from that one in our database or it has been used but not renewed."
 msgstr ""
 
-# errors_account_status_ex_login_first
+msgctxt "errors_account_status_ex_login_first"
 msgid "Please log in on the external service to log in here."
 msgstr ""
 
-# errors_account_status_ex_verification_expired
+msgctxt "errors_account_status_ex_verification_expired"
 msgid "The log in procedure for the external service has expired. Unfortunately we are unable to complete your log in successfully."
 msgstr ""
 
-# errors_account_status_ex_verify_first
+msgctxt "errors_account_status_ex_verify_first"
 msgid "Please complete the log in procedure of the external service before accessing this restricted function."
 msgstr ""
 
-# swg_lang_file_v1_errors_account_tou_required
+msgctxt "swg_lang_file_v1_errors_account_tou_required"
 msgid "You have to accept the \"Terms Of Use\" (TOU) to continue your registration."
 msgstr ""
 
-# errors_account_username_banned
+msgctxt "errors_account_username_banned"
 msgid "The defined user name has been blocked by the administration. According to the Terms Of Use you are no longer allowed to use the provided services."
 msgstr ""
 
-# errors_account_username_exists
+msgctxt "errors_account_username_exists"
 msgid "The defined user name does already exist in our database."
 msgstr ""
 
-# swg_lang_file_v1_errors_account_username_invalid
+msgctxt "swg_lang_file_v1_errors_account_username_invalid"
 msgid "The defined user name contains characters that are not allowed. Allowed characters are 0-9, a-z, A-Z as well as the following symbols: !\\$%&/(){[]}?@*~#,.-;_"
 msgstr ""
 
-# errors_account_username_locked
+msgctxt "errors_account_username_locked"
 msgid "The defined user name has been locked by the administration or the system."
 msgstr ""

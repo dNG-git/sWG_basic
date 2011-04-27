@@ -92,7 +92,7 @@ $g_entry_array = array (
  ))
 );
 
-		$g_continue_check = ($g_daemon_object ? $g_daemon_object->resource_check () : false);
+		$g_continue_check = $g_daemon_object->resource_check ();
 		if ($g_continue_check) { $g_continue_check = $g_daemon_object->request ("de.direct_netware.psd.plugins.queue.addEntry",$g_entry_array); }
 	}
 	else

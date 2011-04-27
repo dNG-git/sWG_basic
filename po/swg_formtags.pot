@@ -3,7 +3,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: v0.1.00\n"
-"POT-Creation-Date: 2011-04-04 11:52+0000\n"
+"POT-Creation-Date: 2011-04-27 07:14+0000\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -12,54 +12,54 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural= n == 1 ? 0 : n == 2 ? 1 : 2 \n"
 
-# formtags_edit_1
+msgctxt "formtags_edit_1"
 msgid "formtags_edit_1: This content has been edited on "
 msgstr ""
 
-# formtags_edit_2
+msgctxt "formtags_edit_2"
 msgid "formtags_edit_2:  at "
 msgstr ""
 
-# formtags_edit_3
+msgctxt "formtags_edit_3"
 msgid "formtags_edit_3:  by "
 msgstr ""
 
-# formtags_edit_4
+msgctxt "formtags_edit_4"
 msgid "formtags_edit_4: . (Member name might have changed in the meantime)"
 msgstr ""
 
-# formtags_image
+msgctxt "formtags_image"
 msgid "Image"
 msgstr ""
 
-# formtags_overview_document
+msgctxt "formtags_overview_document"
 msgid "Click here for an overview of available FormTags."
 msgstr ""
 
-# formtags_quote_1
+msgctxt "formtags_quote_1"
 msgid "formtags_quote_1: Quote"
 msgstr ""
 
-# formtags_quote_2_1
+msgctxt "formtags_quote_2_1"
 msgid "formtags_quote_2_1: Quote from "
 msgstr ""
 
-# formtags_quote_2_2
+msgctxt "formtags_quote_2_2"
 msgid "formtags_quote_2_2: "
 msgstr ""
 
-# formtags_quote_2_3
+msgctxt "formtags_quote_2_3"
 msgid "formtags_quote_2_3: (Member name might have changed in the meantime)"
 msgstr ""
 
-# formtags_sourcecode
+msgctxt "formtags_sourcecode"
 msgid "Source code"
 msgstr ""
 
-# formtags_sources
+msgctxt "formtags_sources"
 msgid "Source(s)"
 msgstr ""
 
-# formtags_url
+msgctxt "formtags_url"
 msgid "Link"
 msgstr ""

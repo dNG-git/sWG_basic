@@ -118,7 +118,7 @@ Set up the user initialisation code
 			$this->functions['user_init'] = true;
 		}
 
-		$this->user_cache = array ();
+		$this->user_cache = array ("userids" => array (),"usernames" => array ());
 	}
 /*#ifdef(PHP4):
 /**
@@ -307,7 +307,7 @@ Set up the user initialisation code
 
 				if ($f_uuid_array)
 				{
-					if ($direct_globals['kernel']->v_user_check ($f_uuid_array['userid']))
+					if ((isset ($f_uuid_array['userid']))&&($direct_globals['kernel']->v_user_check ($f_uuid_array['userid'])))
 					{
 						if (direct_class_function_check ($direct_globals['kernel'],"v_uuid_write"))
 						{

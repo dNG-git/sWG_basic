@@ -1138,6 +1138,23 @@ djs_var.core_run_onload.push ({ func:'djs_formbuilder_init',params: { id:'$f_lab
 			$f_formbuilder_function_type_selectable = true;
 			break 1;
 		}
+		case "spacer":
+		{
+			$f_formbuilder_function = "entry_add";
+			$f_formbuilder_function_type = "spacer";
+
+			break 1;
+		}
+		case "subtitle":
+		{
+			if ((isset ($f_entry['name']/*#ifndef(PHP4) */,/* #*//*#ifdef(PHP4):) && isset (:#*/$f_entry['title']))&&(strlen ($f_entry['title'])))
+			{
+				$f_formbuilder_function = "entry_add";
+				$f_formbuilder_function_type = "subtitle";
+			}
+
+			break 1;
+		}
 		default:
 		{
 			if ($this->v_call_check ("entry_add_".$f_entry['filter'])) { $f_formbuilder_function = "entry_add_".$f_entry['filter']; }
@@ -1148,7 +1165,7 @@ djs_var.core_run_onload.push ({ func:'djs_formbuilder_init',params: { id:'$f_lab
 		{
 			if ($f_formbuilder_function_type_selectable)
 			{
-				$direct_cachedata["i_".$f_entry['name']] = str_replace ("'","",(isset ($direct_cachedata["i_".$f_entry['name']]) ? $direct_cachedata["i_".$f_entry['name']] : direct_local_get_xml_translation ($f_xml_sub_node_array,"predefined",true,$direct_settings['lang'])));
+				$direct_cachedata["i_".$f_entry['name']] = (isset ($direct_cachedata["i_".$f_entry['name']]) ? str_replace ("'","",$direct_cachedata["i_".$f_entry['name']]) : direct_local_get_xml_translation ($f_xml_sub_node_array,"predefined",true,$direct_settings['lang']));
 				if (isset ($direct_cachedata["i_".$f_entry['name']])) { $direct_cachedata["i_".$f_entry['name']] = str_replace ((array ("<selected value='1' />","<value value='".$direct_cachedata["i_".$f_entry['name']]."' />")),(array ("","<value value='".$direct_cachedata["i_".$f_entry['name']]."' /><selected value='1' />")),$direct_cachedata["i_".$f_entry['name']]); }
 			}
 			elseif (!isset ($direct_cachedata["i_".$f_entry['name']])) { $direct_cachedata["i_".$f_entry['name']] = direct_local_get_xml_translation ($f_xml_sub_node_array,"predefined",true,$direct_settings['lang']); }
@@ -1157,7 +1174,7 @@ djs_var.core_run_onload.push ({ func:'djs_formbuilder_init',params: { id:'$f_lab
 			{
 			case "entry_add":
 			{
-				$this->entry_add_file_ftg ($f_formbuilder_function_type,$f_entry);
+				$this->entry_add ($f_formbuilder_function_type,$f_entry);
 				break 1;
 			}
 			case "entry_add_file_ftg":
@@ -1228,12 +1245,13 @@ djs_var.core_run_onload.push ({ func:'djs_formbuilder_init',params: { id:'$f_lab
 					}
 					else { $f_xml_sub_node_array = array (); }
 
-					if (isset ($f_xml_node_array['value']/*#ifndef(PHP4) */,/* #*//*#ifdef(PHP4):) && isset (:#*/$f_xml_node_array['attributes']['filter']))
+					if (isset ($f_xml_node_array['attributes']['filter']))
 					{
 						$f_entry = $f_xml_node_array['attributes'];
 
 						if (isset ($f_entry['value_translation'])) { $f_entry['title'] = direct_local_get_xml_translation ($f_xml_sub_node_array,"title",true,$direct_settings['lang']); }
-						else { $f_entry['title'] = ((isset ($f_xml_sub_node_array['title']/*#ifndef(PHP4) */,/* #*//*#ifdef(PHP4):) && isset (:#*/$f_xml_sub_node_array['title']['value'])) ? $f_xml_sub_node_array['title']['value'] : $f_xml_node_array['value']); }
+						elseif (isset ($f_xml_sub_node_array['title']/*#ifndef(PHP4) */,/* #*//*#ifdef(PHP4):) && isset (:#*/$f_xml_sub_node_array['title']['value'])) { $f_entry['title'] = $f_xml_sub_node_array['title']['value']; }
+						elseif (isset ($f_xml_node_array['value'])) { $f_entry['title'] = $f_xml_node_array['value']; }
 
 						if (isset ($f_entry['helper_translation'])) { $f_entry['helper_text'] = direct_local_get_xml_translation ($f_xml_sub_node_array,"helper_text",true,$direct_settings['lang']); }
 						elseif (isset ($f_entry['helper_text'])) { $f_entry['helper_text'] = direct_local_get ($f_entry['helper_text']); }

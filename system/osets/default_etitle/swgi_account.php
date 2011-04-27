@@ -111,6 +111,7 @@ $f_return = ("<table class='pageborder1' style='width:100%;table-layout:auto'>
 <td colspan='2' class='pagetitlecellbg' style='padding:$direct_settings[theme_td_padding];text-align:left'><span class='pagetitlecellcontent'>".(direct_local_get ("core_username"))."</span></td>
 </tr></thead><tbody>");
 
+		$f_users_count = count ($f_users_array);
 		$f_user_view = direct_local_get ("account_profile_view");
 
 		foreach ($f_users_array as $f_user_array)
@@ -118,23 +119,31 @@ $f_return = ("<table class='pageborder1' style='width:100%;table-layout:auto'>
 			if ($f_user_array['marked']) { $f_css_class = "extra"; }
 			else { $f_css_class = ""; }
 
-			if (isset ($f_right_switch))
+			if ($f_users_count > 1)
 			{
-				if ($f_right_switch)
+				if (isset ($f_right_switch))
 				{
-					$f_return .= "</td>\n<td class='page{$f_css_class}bg' style='width:50%;padding:$direct_settings[theme_td_padding];text-align:left;vertical-align:middle'>";
-					$f_right_switch = false;
+					if ($f_right_switch)
+					{
+						$f_return .= "</td>\n<td class='page{$f_css_class}bg' style='width:50%;padding:$direct_settings[theme_td_padding];text-align:left;vertical-align:middle'>";
+						$f_right_switch = false;
+					}
+					else
+					{
+						$f_return .= "</td>\n</tr><tr>\n<td class='page{$f_css_class}bg' style='width:50%;padding:$direct_settings[theme_td_padding];text-align:left;vertical-align:middle'>";
+						$f_right_switch = true;
+					}
 				}
 				else
 				{
-					$f_return .= "</td>\n</tr><tr>\n<td class='page{$f_css_class}bg' style='width:50%;padding:$direct_settings[theme_td_padding];text-align:left;vertical-align:middle'>";
+					$f_return .= "<tr>\n<td class='page{$f_css_class}bg' style='width:50%;padding:$direct_settings[theme_td_padding];text-align:left;vertical-align:middle'>";
 					$f_right_switch = true;
 				}
 			}
 			else
 			{
-				$f_return .= "<tr>\n<td class='page{$f_css_class}bg' style='width:50%;padding:$direct_settings[theme_td_padding];text-align:left;vertical-align:middle'>";
-				$f_right_switch = true;
+				$f_return .= "<tr>\n<td colspan='2' class='pagebg' style='padding:$direct_settings[theme_td_padding];text-align:left;vertical-align:middle'>";
+				$f_right_switch = false;
 			}
 
 			$f_user_pageurl = (((isset ($direct_settings['swg_clientsupport']['JSDOMManipulation']))||(substr ($direct_settings['ohandler'],0,5) == "ajax_")) ? "href=\"javascript:djs_dialog(null,{url:'".(str_replace ("?","?xhtml_embedded;",$f_user_array['pageurl']))."'})\"" : "href='{$f_user_array['pageurl']}' target='_blank'");

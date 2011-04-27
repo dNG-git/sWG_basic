@@ -151,6 +151,7 @@ a:focus { text-decoration:underline }
 body { height:100%;margin:0px;padding:0px;background-color:#6A6A6A }
 body { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;font-style:normal;line-height:normal;font-weight:normal }
 form { margin:0px;padding:0px }
+h1, h2, h3, h4, h5, h6 { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:14px;font-style:normal;font-weight:bold }
 html { height:100% }
 img { border:none }
 table { margin:0px;table-layout:fixed;border:none;border-collapse:collapse;border-spacing:0px }

@@ -166,7 +166,7 @@ Stay compatible with old Shadow URLs (<= v0.1.00 (before 03/02/2006))
 			}
 
 			if (strlen ($f_a)) { $direct_settings['a'] = preg_replace ("#[;\/\\\?:@\=\&\. \+]+#","",(urldecode ($f_a))); }
-			$f_iline = (((strlen ($f_dsd))&&(strpos ($f_dsd," ") !== false)) ? "dsd=".(urlencode ($f_dsd)).$f_iline : "dsd=".$f_dsd.$f_iline);
+			$f_iline = (((strlen ($f_dsd))&&(strpos ($f_dsd," ") !== false)) ? "dsd=".(urlencode ($f_dsd)).";".$f_iline : "dsd=".$f_dsd.";".$f_iline);
 		}
 
 /* -------------------------------------------------------------------------

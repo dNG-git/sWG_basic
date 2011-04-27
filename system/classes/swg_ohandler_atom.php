@@ -121,9 +121,9 @@ My parent should be on my side to get the work done
 
 		$this->output_header ("Content-Type","application/atom+xml; charset=".$direct_local['lang_charset']);
 
-		$this->output_data = "<?xml version='1.0' encoding='$direct_local[lang_charset]' ?><feed xmlns='http://www.w3.org/2005/Atom'><generator>$direct_settings[product_lcode_txt] by the direct Netware Group</generator>";
+		$this->output_data = "<?xml version='1.0' encoding='$direct_local[lang_charset]' ?><feed xmlns='http://www.w3.org/2005/Atom' xmlns:history='http://purl.org/syndication/history/1.0'><generator>$direct_settings[product_lcode_txt] by the direct Netware Group</generator>";
 		if ($f_title != NULL) { $this->output_data .= "<title type='xhtml'>".($direct_globals['xml_bridge']->array2xml_item_encoder (array ("tag" => "div","value" => $f_title,"attributes" => array ("xmlns" => "http://www.w3.org/1999/xhtml"))))."</title>"; }
-		$this->output_data .= $this->output_content."</feed>";
+		$this->output_data .= $this->output_content."<history:incremental>true</history:incremental></feed>";
 
 		parent::output_response (NULL,$f_headers);
 	}

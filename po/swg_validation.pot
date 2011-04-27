@@ -3,7 +3,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: v0.1.00\n"
-"POT-Creation-Date: 2011-04-04 11:52+0000\n"
+"POT-Creation-Date: 2011-04-27 07:14+0000\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -12,26 +12,26 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural= n == 1 ? 0 : n == 2 ? 1 : 2 \n"
 
-# errors_validation_email_exists
+msgctxt "errors_validation_email_exists"
 msgid "The specified e-Mail address has already been used in the meantime. Please note that it is not allowed to use an address for more than one account."
 msgstr ""
 
-# errors_validation_unknown_type
+msgctxt "errors_validation_unknown_type"
 msgid "The specified vID requires a service for execution that is unknown to the system."
 msgstr ""
 
-# errors_validation_username_exists
+msgctxt "errors_validation_username_exists"
 msgid "The specified user name has already been used in the meantime. Please note that every user name has to be unique."
 msgstr ""
 
-# errors_validation_vid_invalid
+msgctxt "errors_validation_vid_invalid"
 msgid "The specified vID is invalid. Please make sure that the entire link has been used and try it again. Maybe the given vID is already expired."
 msgstr ""
 
-# validation_done_job
+msgctxt "validation_done_job"
 msgid "The specified vID has been executed successfully."
 msgstr ""
 
-# validation_job
+msgctxt "validation_job"
 msgid "Execute vID"
 msgstr ""

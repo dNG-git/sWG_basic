@@ -332,7 +332,7 @@ $f_entry_array = array (
  ))
 );
 
-					$f_continue_check = ($f_daemon_object ? $f_daemon_object->resource_check () : false);
+					$f_continue_check = $f_daemon_object->resource_check ();
 					if ($f_continue_check) { $f_continue_check = $f_daemon_object->request ("de.direct_netware.psd.plugins.queue.addEntry",$f_entry_array); }
 				}
 				else

@@ -2,10 +2,11 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: v0.1.00\n"
-"POT-Creation-Date: 2011-04-04 11:52+0000\n"
-"PO-Revision-Date: 2011-04-04 14:30+0100\n"
+"POT-Creation-Date: 2011-04-27 07:14+0000\n"
+"PO-Revision-Date: 2011-04-27 09:18+0100\n"
 "Last-Translator: direct Netware Group <web@direct-netware.de>\n"
 "Language-Team: direct Netware Group <noreply@direct-netware.de>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -15,54 +16,80 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 
 # formtags_edit_1
+#, fuzzy
+msgctxt "formtags_edit_1"
 msgid "formtags_edit_1: This content has been edited on "
 msgstr "Dieser Text wurde am "
 
 # formtags_edit_2
+#, fuzzy
+msgctxt "formtags_edit_2"
 msgid "formtags_edit_2:  at "
 msgstr " um "
 
 # formtags_edit_3
+#, fuzzy
+msgctxt "formtags_edit_3"
 msgid "formtags_edit_3:  by "
 msgstr " durch "
 
 # formtags_edit_4
+#, fuzzy
+msgctxt "formtags_edit_4"
 msgid "formtags_edit_4: . (Member name might have changed in the meantime)"
 msgstr " verändert. (Mitgliedsname kann sich seitdem geändert haben)"
 
 # formtags_image
+#, fuzzy
+msgctxt "formtags_image"
 msgid "Image"
 msgstr "Bild"
 
 # formtags_overview_document
+#, fuzzy
+msgctxt "formtags_overview_document"
 msgid "Click here for an overview of available FormTags."
 msgstr "Klicke hier um eine Übersicht verfügbarer FormTags angezeigt zu bekommen."
 
 # formtags_quote_1
+#, fuzzy
+msgctxt "formtags_quote_1"
 msgid "formtags_quote_1: Quote"
 msgstr "Zitat"
 
 # formtags_quote_2_1
+#, fuzzy
+msgctxt "formtags_quote_2_1"
 msgid "formtags_quote_2_1: Quote from "
 msgstr "Zitat von "
 
-# formtags_quote_2_2
+# formtags_quote_1
+#, fuzzy
+msgctxt "formtags_quote_2_2"
 msgid "formtags_quote_2_2: "
-msgstr ""
+msgstr "Zitat"
 
 # formtags_quote_2_3
+#, fuzzy
+msgctxt "formtags_quote_2_3"
 msgid "formtags_quote_2_3: (Member name might have changed in the meantime)"
 msgstr "(Mitgliedsname kann sich seitdem geändert haben)"
 
 # formtags_sourcecode
+#, fuzzy
+msgctxt "formtags_sourcecode"
 msgid "Source code"
 msgstr "Quellcode"
 
 # formtags_sources
+#, fuzzy
+msgctxt "formtags_sources"
 msgid "Source(s)"
 msgstr "Quellenangabe(n)"
 
 # formtags_url
+#, fuzzy
+msgctxt "formtags_url"
 msgid "Link"
 msgstr "Link"
 

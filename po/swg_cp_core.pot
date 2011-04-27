@@ -3,7 +3,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: v0.1.00\n"
-"POT-Creation-Date: 2011-04-04 11:52+0000\n"
+"POT-Creation-Date: 2011-04-27 07:14+0000\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -12,14 +12,14 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural= n == 1 ? 0 : n == 2 ? 1 : 2 \n"
 
-# cp_core_control_panel
+msgctxt "cp_core_control_panel"
 msgid "Control Center"
 msgstr ""
 
-# cp_core_service_list
+msgctxt "cp_core_service_list"
 msgid "Available functions for the Control Center"
 msgstr ""
 
-# errors_cp_core_init_completed
+msgctxt "errors_cp_core_init_completed"
 msgid "The system reports that the defined application has been already initiated successfully."
 msgstr ""

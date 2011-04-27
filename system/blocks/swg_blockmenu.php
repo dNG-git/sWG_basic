@@ -87,17 +87,17 @@ function direct_output_block_blockmenu ($f_options)
 				{
 					$f_continue_check = true;
 
-					if ($f_block_array['attributes']['lang'])
+					if ((isset ($f_block_array['attributes']['lang']))&&($f_block_array['attributes']['lang']))
 					{
 						if ($f_block_array['attributes']['lang'] != $direct_settings['lang']) { $f_continue_check = false; }
 					}
 
-					if ($f_blocks_array[$f_key."_title"]) { $f_block_array['value'] = $f_blocks_array[$f_key."_title"]['value']; }
+					if ((isset ($f_blocks_array[$f_key."_title"]))&&($f_blocks_array[$f_key."_title"])) { $f_block_array['value'] = $f_blocks_array[$f_key."_title"]['value']; }
 					else { $f_continue_check = false; }
 
 					$f_block_array['attributes']['image'] = ((isset ($f_blocks_array[$f_key."_image"])) ? $f_blocks_array[$f_key."_image"]['value'] : "");
 
-					if ($f_blocks_array[$f_key."_link"])
+					if ((isset ($f_blocks_array[$f_key."_link"]))&&($f_blocks_array[$f_key."_link"]))
 					{
 						$f_block_array['attributes']['link'] = $f_blocks_array[$f_key."_link"];
 						$f_block_array['attributes']['link']['type'] = ((isset ($f_block_array['attributes']['link']['attributes']['type'])) ? $f_block_array['attributes']['link']['attributes']['type'] : "");

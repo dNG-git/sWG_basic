@@ -102,8 +102,26 @@ Informing the system about available functions
 		$this->functions['decode'] = true;
 		$this->functions['encode'] = true;
 		$this->functions['parser'] = true;
+		$this->functions['parser_cleanup_contentform'] = true;
+		$this->functions['parser_cleanup_font'] = true;
+		$this->functions['parser_cleanup_img'] = true;
+		$this->functions['parser_cleanup_list'] = true;
+		$this->functions['parser_cleanup_quote'] = true;
+		$this->functions['parser_cleanup_rewrite'] = true;
+		$this->functions['parser_cleanup_sourcecode'] = true;
+		$this->functions['parser_cleanup_sources'] = true;
+		$this->functions['parser_cleanup_title'] = true;
+		$this->functions['parser_cleanup_url'] = true;
+		$this->functions['parser_decode_contentform'] = true;
 		$this->functions['parser_decode_font'] = true;
 		$this->functions['parser_decode_img'] = true;
+		$this->functions['parser_decode_list'] = true;
+		$this->functions['parser_decode_quote'] = true;
+		$this->functions['parser_decode_rewrite'] = true;
+		$this->functions['parser_decode_sourcecode'] = true;
+		$this->functions['parser_decode_sources'] = true;
+		$this->functions['parser_decode_title'] = true;
+		$this->functions['parser_decode_url'] = true;
 		$this->functions['parser_tag_end_find_position'] = true;
 		$this->functions['parser_tag_find_end_position'] = true;
 		$this->functions['parser_tag_parse'] = true;
@@ -138,7 +156,7 @@ Informing the system about available functions
 	{
 		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags_class->cleanup (+f_data,+f_break_urls,+f_newline_mode)- (#echo(__LINE__)#)"); }
 
-		if ($f_withnewline) { $f_data = str_replace (array ("\r","\n","[br]","[newline]"),(array ("","","\n","\n")),$f_data); }
+		if ($f_withnewline) { $f_data = str_replace (array ("\r","\n"),"",$f_data); }
 		else { $f_data = str_replace (array ("[br]","[hr]","[newline]","\r","\n"),"",$f_data); }
 
 		if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($f_data,"[hr]") !== false) { $f_data = str_replace ("[hr]","---\n",$f_data); }
@@ -152,6 +170,7 @@ Informing the system about available functions
 			if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($f_data,"[url") !== false) { $f_data = preg_replace ("#\[url(.*?)\](.+?)\[\/url\]#i"," *".(direct_local_get ("formtags_url","text"))."* ",$f_data); }
 		}
 
+		if ($f_withnewline) { $f_data = str_replace (array ("[br]","[newline]"),(array ("\n","\n")),$f_data); }
 		$this->parser ($f_data,"cleanup");
 		$f_data = trim (str_replace ((array ("&lt;","&gt;","&quot;")),(array ("<",">",'"')),$f_data));
 
@@ -178,12 +197,13 @@ Informing the system about available functions
 
 		$f_data = direct_html_encode_special ($f_data);
 
-		if ($f_withnewline) { $f_data = str_replace (array ("[br]","[newline]","\r","\n"),(array ("<br />\n","<br />\n","","")),$f_data); }
+		if ($f_withnewline) { $f_data = str_replace (array ("\r","\n"),"",$f_data); }
 		else { $f_data = str_replace (array ("[br]","[hr]","[newline]","\r","\n"),"",$f_data); }
 
-		if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($f_data,"[hr]") !== false) { $f_data = str_replace ("[hr]","<div class='pagehr' style='$direct_settings[theme_hr_style]'><img src='".(direct_linker_dynamic ("url0","s=cache;dsd=dfile+$direct_settings[path_mmedia]/spacer.png",true,false))."' width='1' height='1' alt='' title='' style='float:left' /></div>",$f_data); }
+		if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($f_data,"[hr]") !== false) { $f_data = str_replace ("[hr]","<div class='pagehr' style='$direct_settings[theme_hr_style]'><img src='".(direct_linker_dynamic ("url0","s=cache;dsd=dfile+$direct_settings[path_mmedia]/spacer.png",true,false))."' width='1' height='1' alt='' title='' style='float:left' /></div><nobr />",$f_data); }
 
 		$this->parser ($f_data,"sourcecode_decode");
+		if ($f_withnewline) { $f_data = str_replace (array ("[br]","[newline]"),(array ("<br />\n","<br />\n")),$f_data); }
 		$this->parser ($f_data,"decode");
 
 		if (preg_match_all ("#(\[|\])(\w{3,5})\:\/\/(.+?)(\[|\])#i",$f_data,$f_result_array,PREG_SET_ORDER))
@@ -194,7 +214,7 @@ Informing the system about available functions
 		$f_data = str_replace (array ("&lt;","&gt;"),(array ("<",">")),$f_data);
 		$f_data = preg_replace ("#\&amp;(\w{2,4});#i","&\\1;",$f_data);
 
-		return trim (preg_replace ("#</div>(<br />){0,1}#","</div>\n",$f_data));
+		return trim (preg_replace ("#<nobr />(<br />\n){0,1}#","\n",$f_data));
 	}
 
 	//f// direct_formtags->encode ($f_data,$f_withhtml = false,$f_withftg = true)
@@ -319,7 +339,7 @@ $f_data = preg_replace (array ("#\[color\=black\](.+?)\[\/color\]#si","#\[color\
 		}
 		else
 		{
-			$f_tags_array = array ("[-","[img","[url","[font","[quote","[rewrite","[sources]","[contentform");
+			$f_tags_array = array ("[-","[img","[url","[font","[quote","[title","[rewrite","[sources","[contentform");
 			$f_tags_identifier = "[";
 		}
 
@@ -402,12 +422,17 @@ $f_data = preg_replace (array ("#\[color\=black\](.+?)\[\/color\]#si","#\[color\
 					$f_tag_name = "quote";
 					break 1;
 				}
+				case "[title":
+				{
+					$f_tag_name = "title";
+					break 1;
+				}
 				case "[rewrite":
 				{
 					$f_tag_name = "rewrite";
 					break 1;
 				}
-				case "[sources]":
+				case "[sources":
 				{
 					$f_tag_name = "sources";
 					break 1;
@@ -668,8 +693,8 @@ $f_data = preg_replace (array ("#\[color\=black\](.+?)\[\/color\]#si","#\[color\
 			case "elink":
 			case "ilink":
 			{
-				if ($f_tag_array[1] == "elink") { $f_data .= direct_linker ("url1",$f_tag_content,false,false); }
-				else { $f_data .= direct_linker ("url0",$f_tag_content,false); }
+				if ($f_tag_array[1] == "elink") { $f_data .= direct_linker_dynamic ("url1",$f_tag_content,false,false); }
+				else { $f_data .= direct_linker_dynamic ("url0",$f_tag_content,false); }
 
 				break 1;
 			}
@@ -748,6 +773,32 @@ $f_data = preg_replace (array ("#\[color\=black\](.+?)\[\/color\]#si","#\[color\
 		$f_data_closed = mb_substr ($f_data,($f_tag_end_position + 10));
 		$f_tag_content = mb_substr ($f_data,$f_tag_content_position,($f_tag_end_position - $f_tag_content_position));
 		$f_data = ((mb_substr ($f_data,0,$f_tag_start_position)).(direct_local_get ("formtags_sources","text")).":\n$f_tag_content\n*\n".$f_data_closed);
+	}
+
+	//f// direct_formtags->parser_cleanup_title (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false)
+/**
+	* Clean [title] tags.
+	*
+	* @param string &$f_data String that contains convertable data
+	* @param array $f_tag_array Tag for starting a FormTag
+	* @param integer $f_tag_start_position Position where the starting tag has
+	*        been found
+	* @param integer $f_tag_content_position Position where the content is
+	*        starting
+	* @param integer $f_tag_end_position Position where the content is ending
+	* @param boolean $f_nested True for nested items
+	* @param string $f_end_cresult HTML code that should be used
+	* @uses  direct_debug()
+	* @uses  USE_debug_reporting
+	* @since v0.1.00
+*/
+	/*#ifndef(PHP4) */protected /* #*/function parser_cleanup_title (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false)
+	{
+		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags_class->parser_cleanup_title (+f_data,+f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,+f_nested)- (#echo(__LINE__)#)"); }
+
+		$f_data_closed = mb_substr ($f_data,($f_tag_end_position + 8));
+		$f_tag_content = mb_substr ($f_data,$f_tag_content_position,($f_tag_end_position - $f_tag_content_position));
+		$f_data = ((mb_substr ($f_data,0,$f_tag_start_position)).$f_tag_content.$f_data_closed);
 	}
 
 	//f// direct_formtags->parser_cleanup_url (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false)
@@ -858,7 +909,7 @@ $f_data = preg_replace (array ("#\[color\=black\](.+?)\[\/color\]#si","#\[color\
 			case "align":
 			{
 				if ($f_tag_array[2] == "block") { $f_tag_array[2] = "justify"; }
-				$f_data .= "<div style='text-align:{$f_tag_array[2]}'>$f_tag_content</div>";
+				$f_data .= "<div style='text-align:{$f_tag_array[2]}'>$f_tag_content</div><nobr />";
 				break 1;
 			}
 			case "box":
@@ -876,17 +927,17 @@ $f_data = preg_replace (array ("#\[color\=black\](.+?)\[\/color\]#si","#\[color\
 					elseif ($f_tag_array[2] == "right") { $f_css = ";clear:right"; }
 				}
 
-				$f_data .= "<div style='$f_css'>$f_tag_content</div>";
+				$f_data .= "<div style='$f_css'>$f_tag_content</div><nobr />";
 				break 1;
 			}
 			case "colorbox":
 			{
-				$f_data .= (((isset ($f_tag_array[2]))&&(preg_match ("#^(\w{6})$#i",$f_tag_array[2],$f_color_result_array))) ? "<div class='pageborder2{$direct_settings['theme_css_corners']} pageextracontent' style=\"padding:2px;background-color:#{$f_color_result_array[1]}\">$f_tag_content</div>" : "<div class='pageborder2{$direct_settings['theme_css_corners']} pageextracontent' style='margin:5px'>$f_tag_content</div>");
+				$f_data .= (((isset ($f_tag_array[2]))&&(preg_match ("#^(\w{6})$#i",$f_tag_array[2],$f_color_result_array))) ? "<div class='pageborder2{$direct_settings['theme_css_corners']} pageextracontent' style=\"padding:2px;background-color:#{$f_color_result_array[1]}\">$f_tag_content</div><nobr />" : "<div class='pageborder2{$direct_settings['theme_css_corners']} pageextracontent' style='margin:5px'>$f_tag_content</div><nobr />");
 				break 1;
 			}
 			case "css":
 			{
-				$f_data .= "<div class=\"".(str_replace ('"','\"',$f_tag_array[2]))."\">$f_tag_content</div>";
+				$f_data .= "<div class=\"".(str_replace ('"','\"',$f_tag_array[2]))."\">$f_tag_content</div><nobr />";
 				break 1;
 			}
 			case "hidden":
@@ -906,12 +957,12 @@ djs_swgDOM_replace (\"".(str_replace ('"','\"',$f_hidden_code))."\",'swgformtags
 			}
 			case "highlight":
 			{
-				$f_data .= "<div class='pagehighlightborder2{$direct_settings['theme_css_corners']} pagecontent'>$f_tag_content</div>";
+				$f_data .= "<div class='pagehighlightborder2{$direct_settings['theme_css_corners']} pagecontent'>$f_tag_content</div><nobr />";
 				break 1;
 			}
 			case "lineheight":
 			{
-				$f_data .= "<div style='line-height:{$f_tag_array[2]}px'>$f_tag_content</div>";
+				$f_data .= "<div style='line-height:{$f_tag_array[2]}px'>$f_tag_content</div><nobr />";
 				break 1;
 			}
 			case "spacerbox":
@@ -923,12 +974,12 @@ djs_swgDOM_replace (\"".(str_replace ('"','\"',$f_hidden_code))."\",'swgformtags
 				}
 				else { $f_css = (($f_tag_array[2] < 1) ? "padding:1px" : "padding:{$f_tag_array[2]}px"); }
 
-				$f_data .= "<div style='$f_css'>$f_tag_content</div>";
+				$f_data .= "<div style='$f_css'>$f_tag_content</div><nobr />";
 				break 1;
 			}
 			case "textindent":
 			{
-				$f_data .= "<div style='margin-left:{$f_tag_array[2]}px'>$f_tag_content</div>";
+				$f_data .= "<div style='margin-left:{$f_tag_array[2]}px'>$f_tag_content</div><nobr />";
 				break 1;
 			}
 			}
@@ -1069,9 +1120,9 @@ djs_swgDOM_replace (\"".(str_replace ('"','\"',$f_hidden_code))."\",'swgformtags
 
 			if (preg_match ("#^(.*?)\[title:(.+?)\](.*?)$#i",$f_tag_content,$f_result_array))
 			{
-				if (($f_tag_array[0] == ":right")||($f_tag_array[0] == ":right:nobox")) { $f_data .= "<div class='pageborder2{$direct_settings['theme_css_corners']} pageextracontent' style='overflow:auto;margin:5px;float:right;clear:right;text-align:center'><img src=\"".$f_result_array[1].$f_result_array[3]."\" alt='' title='' /><br />\n".$f_result_array[2]."</div>"; }
-				elseif (($f_tag_array[0] == ":left")||($f_tag_array[0] == ":left:nobox")) { $f_data .= "<div class='pageborder2{$direct_settings['theme_css_corners']} pageextracontent' style='overflow:auto;margin:5px;float:left;clear:left;text-align:center'><img src=\"".$f_result_array[1].$f_result_array[3]."\" alt='' title='' /><br />\n".$f_result_array[2]."</div>"; }
-				else { $f_data .= "<div class='pageborder2{$direct_settings['theme_css_corners']} pageextracontent' style='overflow:auto;margin:5px;text-align:center'><img src=\"".$f_result_array[1].$f_result_array[3]."\" alt='' title='' /><br />\n".$f_result_array[2]."</div>"; }
+				if (($f_tag_array[0] == ":right")||($f_tag_array[0] == ":right:nobox")) { $f_data .= "<div class='pageborder2{$direct_settings['theme_css_corners']} pageextracontent' style='overflow:auto;margin:5px;float:right;clear:right;text-align:center'><img src=\"".$f_result_array[1].$f_result_array[3]."\" alt='' title='' /><br />\n".$f_result_array[2]."</div><nobr />"; }
+				elseif (($f_tag_array[0] == ":left")||($f_tag_array[0] == ":left:nobox")) { $f_data .= "<div class='pageborder2{$direct_settings['theme_css_corners']} pageextracontent' style='overflow:auto;margin:5px;float:left;clear:left;text-align:center'><img src=\"".$f_result_array[1].$f_result_array[3]."\" alt='' title='' /><br />\n".$f_result_array[2]."</div><nobr />"; }
+				else { $f_data .= "<div class='pageborder2{$direct_settings['theme_css_corners']} pageextracontent' style='overflow:auto;margin:5px;text-align:center'><img src=\"".$f_result_array[1].$f_result_array[3]."\" alt='' title='' /><br />\n".$f_result_array[2]."</div><nobr />"; }
 			}
 			elseif ($f_tag_array)
 			{
@@ -1105,7 +1156,7 @@ djs_swgDOM_replace (\"".(str_replace ('"','\"',$f_hidden_code))."\",'swgformtags
 				}
 
 				$f_data .= "<img src=\"$f_tag_content\" alt='' title='' />";
-				$f_data .= ($f_box_check ? "</div>" : "</span>");
+				$f_data .= ($f_box_check ? "</div><nobr />" : "</span>");
 			}
 			else { $f_data .= "<span style='overflow:auto'><img src=\"$f_tag_content\" alt='' title='' /></span>"; }
 		}
@@ -1170,7 +1221,7 @@ djs_swgDOM_replace (\"".(str_replace ('"','\"',$f_hidden_code))."\",'swgformtags
 		$f_tag_content = mb_substr ($f_data,$f_tag_content_position,($f_tag_end_position - $f_tag_content_position));
 
 		$f_data = (mb_substr ($f_data,0,$f_tag_start_position));
-		$f_data .= "<div style='$direct_settings[formtags_list_item_style]'>$f_list_symbol</div><div style='$direct_settings[formtags_list_content_style]'>$f_tag_content</div>".$f_data_closed;
+		$f_data .= "<div style='$direct_settings[formtags_list_item_style]'>$f_list_symbol</div><div style='$direct_settings[formtags_list_content_style]'>$f_tag_content</div><nobr />".$f_data_closed;
 	}
 
 	//f// direct_formtags->parser_decode_quote (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false)
@@ -1204,9 +1255,9 @@ djs_swgDOM_replace (\"".(str_replace ('"','\"',$f_hidden_code))."\",'swgformtags
 		{
 			$f_data .= "<div style='margin:0px 20px;text-align:left'><span class='pagecontent' style='$direct_settings[formtags_quote_style]'>".(direct_local_get ("formtags_quote_2_1","text"));
 			$f_data .= ((isset ($f_tag_array[2])) ? "<a href='".(direct_linker ("url0","m=account;s=profile;a=view;dsd=auid+".$f_tag_array[1]))."' target='_blank'>$f_tag_array[2]</a>".(direct_local_get ("formtags_quote_2_2","text")).": </span><span class='pagecontent' style='$direct_settings[formtags_quote_notice_style]'>".(direct_local_get ("formtags_quote_2_3","text"))."</span></div>" : $f_tag_array[1].(direct_local_get ("formtags_quote_2_2","text")).":</span></div>");
-			$f_data .= "<div class='pageborder2{$direct_settings['theme_css_corners']} pageextracontent' style='margin:0px 20px;text-align:left'>$f_tag_content</div>";
+			$f_data .= "<div class='pageborder2{$direct_settings['theme_css_corners']} pageextracontent' style='margin:0px 20px;text-align:left'>$f_tag_content</div><nobr />";
 		}
-		else { $f_data .= "<div style='margin:0px 20px;text-align:left;$direct_settings[formtags_quote_style]'><span class='pagecontent'>".(direct_local_get ("formtags_quote_1","text")).":</span></div><div class='pageborder2{$direct_settings['theme_css_corners']} pageextracontent' style='margin:0px 20px;text-align:left'>$f_tag_content</div>"; }
+		else { $f_data .= "<div style='margin:0px 20px;text-align:left;$direct_settings[formtags_quote_style]'><span class='pagecontent'>".(direct_local_get ("formtags_quote_1","text")).":</span></div><div class='pageborder2{$direct_settings['theme_css_corners']} pageextracontent' style='margin:0px 20px;text-align:left'>$f_tag_content</div><nobr />"; }
 
 		$f_data .= $f_data_closed;
 	}
@@ -1263,8 +1314,8 @@ djs_swgDOM_replace (\"".(str_replace ('"','\"',$f_hidden_code))."\",'swgformtags
 			case "elink":
 			case "ilink":
 			{
-				if ($f_tag_array[1] == "elink") { $f_data .= direct_linker ("url1",$f_tag_content,true,false); }
-				else { $f_data .= direct_linker ("url0",$f_tag_content); }
+				if ($f_tag_array[1] == "elink") { $f_data .= direct_linker_dynamic ("url1",$f_tag_content,true,false); }
+				else { $f_data .= direct_linker_dynamic ("url0",$f_tag_content); }
 
 				break 1;
 			}
@@ -1317,7 +1368,7 @@ djs_swgDOM_replace (\"".(str_replace ('"','\"',$f_hidden_code))."\",'swgformtags
 		{
 			$f_tag_content = $direct_globals['output']->smiley_cleanup ($f_tag_content);
 			$f_tag_content = str_replace (array ("[br]","[newline]","[","]"),(array ("\n","\n","&#91;","&#93;")),$f_tag_content);
-			$f_data = ((mb_substr ($f_data,0,$f_tag_start_position))."<div class='pageborder2{$direct_settings['theme_css_corners']}' style='overflow:auto;padding:5px'><code class='pageextracontent' style='text-align:left;white-space:pre;font-family:\"Courier New\",Courier,mono'>$f_tag_content</code></div>".$f_data_closed);
+			$f_data = ((mb_substr ($f_data,0,$f_tag_start_position))."<div class='pageborder2{$direct_settings['theme_css_corners']}' style='overflow:auto;padding:5px'><code class='pageextracontent' style='text-align:left;white-space:pre;font-family:\"Courier New\",Courier,mono'>$f_tag_content</code></div><nobr />".$f_data_closed);
 		}
 	}
 
@@ -1347,7 +1398,43 @@ djs_swgDOM_replace (\"".(str_replace ('"','\"',$f_hidden_code))."\",'swgformtags
 		$f_tag_content = $direct_globals['output']->smiley_cleanup (mb_substr ($f_data,$f_tag_content_position,($f_tag_end_position - $f_tag_content_position)));
 
 		$f_data = mb_substr ($f_data,0,$f_tag_start_position);
-		$f_data .= ("<div style='$direct_settings[formtags_sources_style]'><span class='pagecontent'><span style='$direct_settings[formtags_sources_title_style]'>".(direct_local_get ("formtags_sources")).":</span> $f_tag_content</span></div>".$f_data_closed);
+		$f_data .= ("<div style='$direct_settings[formtags_sources_style]'><span class='pagecontent'><span style='$direct_settings[formtags_sources_title_style]'>".(direct_local_get ("formtags_sources")).":</span> $f_tag_content</span></div><nobr />".$f_data_closed);
+	}
+
+	//f// direct_formtags->parser_decode_title (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false)
+/**
+	* Decode [title] tags.
+	*
+	* @param string &$f_data String that contains convertable data
+	* @param array $f_tag_array Tag for starting a FormTag
+	* @param integer $f_tag_start_position Position where the starting tag has
+	*        been found
+	* @param integer $f_tag_content_position Position where the content is
+	*        starting
+	* @param integer $f_tag_end_position Position where the content is ending
+	* @param boolean $f_nested True for nested items
+	* @param string $f_end_cresult HTML code that should be used
+	* @uses  direct_debug()
+	* @uses  USE_debug_reporting
+	* @since v0.1.00
+*/
+	/*#ifndef(PHP4) */protected /* #*/function parser_decode_title (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false)
+	{
+		global $direct_settings;
+		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags_class->parser_decode_title (+f_data,+f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,+f_nested)- (#echo(__LINE__)#)"); }
+
+		$f_data_closed = mb_substr ($f_data,($f_tag_end_position + 8));
+		$f_invalid_check = false;
+		$f_tag_content = mb_substr ($f_data,$f_tag_content_position,($f_tag_end_position - $f_tag_content_position));
+
+		$f_data = mb_substr ($f_data,0,$f_tag_start_position);
+
+		if ((isset ($f_tag_array[1]))&&(is_numeric ($f_tag_array[1]))&&($f_tag_array[1] > 0)) { $f_title_heading = ((int)$f_tag_array[1] + $direct_settings['theme_title_min']); }
+		else { $f_title_heading = (1 + $direct_settings['theme_title_min']); }
+
+		if ($f_title_heading > 6) { $f_title_heading = 6; }
+
+		$f_data .= "<h$f_title_heading class='{$direct_settings['theme_css_title']}'>$f_tag_content</h$f_title_heading><nobr />".$f_data_closed;
 	}
 
 	//f// direct_formtags->parser_decode_url (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false)
@@ -1575,7 +1662,9 @@ if (!isset ($direct_settings['swg_textindent_max'])) { $direct_settings['swg_tex
 if (!isset ($direct_settings['swg_url_sbcheck'])) { $direct_settings['swg_url_sbcheck'] = false; }
 if ($direct_settings['swg_url_sbcheck']) { $direct_settings['swg_url_sbcheck'] = $direct_globals['basic_functions']->include_file ($direct_settings['path_system']."/functions/swg_link_sbcheck.php",1); }
 $direct_settings['theme_css_corners'] = ((isset ($direct_settings['theme_css_corners_class'])) ? " ".$direct_settings['theme_css_corners_class'] : " ui-corner-all");
+if (!isset ($direct_settings['theme_css_title'])) { $direct_settings['theme_css_title'] = ""; }
 if (!isset ($direct_settings['theme_hr_style'])) { $direct_settings['theme_hr_style'] = "height:1px;overflow:hidden"; }
+if (!isset ($direct_settings['theme_title_min'])) { $direct_settings['theme_title_min'] = 0; }
 }
 
 //j// EOF

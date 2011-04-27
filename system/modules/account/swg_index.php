@@ -71,7 +71,7 @@ case "actives":
 	$direct_cachedata['output_minutes'] = (isset ($direct_settings['dsd']['aminutes']) ? ($direct_globals['basic_functions']->inputfilter_number ($direct_settings['dsd']['aminutes'])) : 15);
 	if (!in_array ($direct_cachedata['output_minutes'],$direct_settings['account_users_actives_timeshifts'])) { $direct_cachedata['output_minutes'] = 15; }
 
-	$direct_cachedata['page_this'] = "m=account;a=actives;dsd=aminutes+".$direct_cachedata['output_minutes'];
+	$direct_cachedata['page_this'] = $direct_settings['ohandler'].";m=account;a=actives;dsd=aminutes+".$direct_cachedata['output_minutes'];
 	$direct_cachedata['page_backlink'] = "";
 	$direct_cachedata['page_homelink'] = "m=account;a=services";
 
@@ -80,12 +80,14 @@ case "actives":
 	if ($direct_settings['account_users_actives'])
 	{
 	//j// BOA
-
 	if (!$g_mode_atom) { $direct_globals['output']->related_manager ("account_index_actives","pre_module_service_action"); }
 	direct_local_integration ("account");
 
-	$direct_globals['output']->servicemenu ("account");
-	$direct_globals['output']->options_insert (2,"servicemenu","m=account;a=services",(direct_local_get ("core_back")),$direct_settings['serviceicon_default_back'],"url0");
+	if (!$g_mode_atom)
+	{
+		$direct_globals['output']->servicemenu ("account");
+		$direct_globals['output']->options_insert (2,"servicemenu","m=account;a=services",(direct_local_get ("core_back")),$direct_settings['serviceicon_default_back'],"url0");
+	}
 
 	$direct_cachedata['output_users'] = array ();
 
@@ -101,7 +103,7 @@ case "actives":
 
 	if ($g_mode_atom)
 	{
-$direct_globals['output']->output_content .= ("<subtitle type='xhtml'>".($direct_globals['xml_bridge']->array2xml_item_encoder (array ("tag" => "div","value" => (direct_local_get ("account_actives_1","text")).$direct_cachedata['output_minutes'].(direct_local_get ("account_actives_2","text")),"attributes" => array ("xmlns" => "http://www.w3.org/1999/xhtml"))))."</subtitle>
+$direct_globals['output']->output_content = ("<subtitle type='xhtml'>".($direct_globals['xml_bridge']->array2xml_item_encoder (array ("tag" => "div","value" => (direct_local_get ("account_actives_1","text")).$direct_cachedata['output_minutes'].(direct_local_get ("account_actives_2","text")),"attributes" => array ("xmlns" => "http://www.w3.org/1999/xhtml"))))."</subtitle>
 ".($direct_globals['xml_bridge']->array2xml_item_encoder (array ("tag" => "link","attributes" => array ("href" => (direct_linker_dynamic ("url1","atom;m=account;a=actives;dsd=aminutes+".$direct_cachedata['output_minutes'],false,false)),"rel" => "self","type" => "application/atom+xml"))))."
 ".($direct_globals['xml_bridge']->array2xml_item_encoder (array ("tag" => "link","attributes" => array ("href" => (direct_linker_dynamic ("url1","m=account;a=actives;dsd=aminutes+".$direct_cachedata['output_minutes'],false,false)),"rel" => "alternate","type" => "application/xhtml+xml"))))."
 ".($direct_globals['xml_bridge']->array2xml_item_encoder (array ("tag" => "updated","value" => gmdate ("c",$direct_cachedata['core_time']))))."

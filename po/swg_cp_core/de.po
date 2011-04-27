@@ -2,10 +2,11 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: v0.1.00\n"
-"POT-Creation-Date: 2011-04-04 11:52+0000\n"
-"PO-Revision-Date: 2011-04-04 14:20+0100\n"
+"POT-Creation-Date: 2011-04-27 07:14+0000\n"
+"PO-Revision-Date: 2011-04-27 09:18+0100\n"
 "Last-Translator: direct Netware Group <web@direct-netware.de>\n"
 "Language-Team: direct Netware Group <noreply@direct-netware.de>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -15,14 +16,20 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 
 # cp_core_control_panel
+#, fuzzy
+msgctxt "cp_core_control_panel"
 msgid "Control Center"
 msgstr "Kontrollzentrum"
 
 # cp_core_service_list
+#, fuzzy
+msgctxt "cp_core_service_list"
 msgid "Available functions for the Control Center"
 msgstr "Verfügbare Funktionen des Kontrollzentrums"
 
 # errors_cp_core_init_completed
+#, fuzzy
+msgctxt "errors_cp_core_init_completed"
 msgid "The system reports that the defined application has been already initiated successfully."
 msgstr "Das System meldet, dass die ausgewählte Anwendung bereits erfolgreich initialisiert wurde."
 

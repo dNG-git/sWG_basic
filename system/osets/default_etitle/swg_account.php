@@ -69,25 +69,35 @@ $f_return = ("<table class='pageborder1' style='width:100%;table-layout:auto'>
 <td colspan='2' class='pagetitlecellbg' style='padding:$direct_settings[theme_td_padding];text-align:center'><span class='pagetitlecellcontent'>$direct_settings[theme_output_page_title]</span></td>
 </tr></thead><tbody>");
 
+		$f_users_count = count ($direct_cachedata['output_users']);
+
 		foreach ($direct_cachedata['output_users'] as $f_user_array)
 		{
-			if (isset ($f_right_switch))
+			if ($f_users_count > 1)
 			{
-				if ($f_right_switch)
+				if (isset ($f_right_switch))
 				{
-					$f_return .= "</td>\n<td class='pagebg' style='width:50%;padding:$direct_settings[theme_td_padding];text-align:left;vertical-align:middle'>";
-					$f_right_switch = false;
+					if ($f_right_switch)
+					{
+						$f_return .= "</td>\n<td class='pagebg' style='width:50%;padding:$direct_settings[theme_td_padding];text-align:left;vertical-align:middle'>";
+						$f_right_switch = false;
+					}
+					else
+					{
+						$f_return .= "</td>\n</tr><tr>\n<td class='pagebg' style='width:50%;padding:$direct_settings[theme_td_padding];text-align:left;vertical-align:middle'>";
+						$f_right_switch = true;
+					}
 				}
 				else
 				{
-					$f_return .= "</td>\n</tr><tr>\n<td class='pagebg' style='width:50%;padding:$direct_settings[theme_td_padding];text-align:left;vertical-align:middle'>";
+					$f_return .= "<tr>\n<td class='pagebg' style='width:50%;padding:$direct_settings[theme_td_padding];text-align:left;vertical-align:middle'>";
 					$f_right_switch = true;
 				}
 			}
 			else
 			{
-				$f_return .= "<tr>\n<td class='pagebg' style='width:50%;padding:$direct_settings[theme_td_padding];text-align:left;vertical-align:middle'>";
-				$f_right_switch = true;
+				$f_return .= "<tr>\n<td colspan='2' class='pagebg' style='padding:$direct_settings[theme_td_padding];text-align:left;vertical-align:middle'>";
+				$f_right_switch = false;
 			}
 
 			$f_return .= direct_account_oset_parse_user_fullh ($f_user_array,"page");
@@ -161,25 +171,35 @@ $f_return = ("<table class='pageborder1' style='width:100%;table-layout:auto'>
 <td colspan='2' class='pagetitlecellbg' style='padding:$direct_settings[theme_td_padding];text-align:left'><span class='pagetitlecellcontent'>".(direct_local_get ("account_otp_list"))."</span></td>
 </tr></thead><tbody>");
 
+	$f_otp_count = count ($direct_cachedata['output_otp_list']);
+
 	foreach ($direct_cachedata['output_otp_list'] as $f_position => $f_password)
 	{
-		if (isset ($f_right_switch))
+		if ($f_otp_count > 1)
 		{
-			if ($f_right_switch)
+			if (isset ($f_right_switch))
 			{
-				$f_return .= "</td>\n<td class='pagebg' style='width:50%;padding:$direct_settings[theme_td_padding];text-align:center;vertical-align:middle'>";
-				$f_right_switch = false;
+				if ($f_right_switch)
+				{
+					$f_return .= "</td>\n<td class='pagebg' style='width:50%;padding:$direct_settings[theme_td_padding];text-align:center;vertical-align:middle'>";
+					$f_right_switch = false;
+				}
+				else
+				{
+					$f_return .= "</td>\n</tr><tr>\n<td class='pagebg' style='width:50%;padding:$direct_settings[theme_td_padding];text-align:center;vertical-align:middle'>";
+					$f_right_switch = true;
+				}
 			}
 			else
 			{
-				$f_return .= "</td>\n</tr><tr>\n<td class='pagebg' style='width:50%;padding:$direct_settings[theme_td_padding];text-align:center;vertical-align:middle'>";
+				$f_return .= "<tr>\n<td class='pagebg' style='width:50%;padding:$direct_settings[theme_td_padding];text-align:center;vertical-align:middle'>";
 				$f_right_switch = true;
 			}
 		}
 		else
 		{
-			$f_return .= "<tr>\n<td class='pagebg' style='width:50%;padding:$direct_settings[theme_td_padding];text-align:center;vertical-align:middle'>";
-			$f_right_switch = true;
+			$f_return .= "<tr>\n<td colspan='2' class='pagebg' style='padding:$direct_settings[theme_td_padding];text-align:left;vertical-align:middle'>";
+			$f_right_switch = false;
 		}
 
 		$f_return .= "<span class='pagecontent'><span style='font-weight:bold'>$f_position</span><br />\n$f_password</span>";
