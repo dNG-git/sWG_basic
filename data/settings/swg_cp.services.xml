@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' ?>
-<swg_services_file_v1 xmlns="urn:de.direct-netware.xmlns:swg.services.v1">
+<swg_services_file_v1 xmlns="urn:de-direct-netware-xmlns:swg.services.v1">
  <cp>
   <core active='1' position='1' lang=''>
    <title value='Core settings' />

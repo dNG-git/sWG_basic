@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' ?>
-<swg_settings_file_v1 xmlns="urn:de.direct-netware.xmlns:swg.db.v1">
+<swg_settings_file_v1 xmlns="urn:de-direct-netware-xmlns:swg.db.v1">
 <phpexit><![CDATA[<?php exit (); ?>]]></phpexit>
 
 <db>

@@ -32,7 +32,6 @@ NOTE_END //n*/
 * @copyright  (C) direct Netware Group - All rights reserved
 * @package    sWG_basic
 * @subpackage cron
-* @uses       direct_product_iversion
 * @since      v0.1.00
 * @license    http://www.direct-netware.de/redirect.php?licenses;w3c
 *             W3C (R) Software License
@@ -55,12 +54,12 @@ if (!defined ("direct_product_iversion")) { exit (); }
 
 if (USE_debug_reporting) { direct_debug (1,"sWG/#echo(__FILEPATH__)# _main_ (#echo(__LINE__)#)"); }
 
-if ($direct_globals['kernel']->service_init_rboolean ())
+if ($direct_globals['kernel']->serviceInitRBoolean ())
 {
 //j// BOA
-$direct_globals['basic_functions']->require_file ($direct_settings['path_system']."/functions/swg_data_storager.php");
-$direct_globals['basic_functions']->require_file ($direct_settings['path_system']."/functions/swg_log_storager.php");
-$direct_globals['basic_functions']->require_file ($direct_settings['path_system']."/functions/swg_tmp_storager.php");
+$direct_globals['basic_functions']->requireFile ($direct_settings['path_system']."/functions/swg_data_storager.php");
+$direct_globals['basic_functions']->requireFile ($direct_settings['path_system']."/functions/swg_log_storager.php");
+$direct_globals['basic_functions']->requireFile ($direct_settings['path_system']."/functions/swg_tmp_storager.php");
 
 header ("Cache-Control: no-cache, must-revalidate");
 header ("Pragma: no-cache");
@@ -70,17 +69,16 @@ header ("Content-Type: text/plain; charset=UTF-8");
 
 echo "Searching for jobs ... ";
 
-$direct_globals['db']->init_select ($direct_settings['tmp_storage_table']);
-$direct_globals['db']->define_attributes ("*");
+$direct_globals['db']->initSelect ($direct_settings['tmp_storage_table']);
+$direct_globals['db']->defineAttributes ("*");
 
-$g_select_criteria = ("<sqlconditions>
+$direct_globals['db']->defineRowConditions ("<sqlconditions>
 <element1 attribute='ddbtmp_storage_sid' value='9d3bb895f22bf0afa958d68c2a58ded7' type='string' />
-".($direct_globals['db']->define_row_conditions_encode ("ddbtmp_storage_time_min",$direct_cachedata['core_time'],"number","<"))."
+".($direct_globals['db']->defineRowConditionsEncode ("ddbtmp_storage_time_min",$direct_cachedata['core_time'],"number","<"))."
 </sqlconditions>");
 // md5 ("cron")
 
-$direct_globals['db']->define_row_conditions ($g_select_criteria);
-$g_cronjobs_array = $direct_globals['db']->query_exec ("ma");
+$g_cronjobs_array = $direct_globals['db']->queryExec ("ma");
 
 if (empty ($g_cronjobs_array)) { echo "done (".(time ()).")\n> Looks like there is nothing to do"; }
 else
@@ -125,7 +123,7 @@ $g_log_array = array (
 				if (file_exists ($direct_settings['path_system']."/modules/cron/".$direct_cachedata['job_data']['job_control_file']))
 				{
 					echo "done (".(time ()).")";
-					$direct_globals['basic_functions']->include_file ($direct_settings['path_system']."/modules/cron/".$direct_cachedata['job_data']['job_control_file']);
+					$direct_globals['basic_functions']->includeFile ($direct_settings['path_system']."/modules/cron/".$direct_cachedata['job_data']['job_control_file']);
 
 					if ($direct_cachedata['job_data']['job_control_function'])
 					{

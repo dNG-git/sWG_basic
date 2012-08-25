@@ -32,11 +32,14 @@ NOTE_END //n*/
 * @copyright  (C) direct Netware Group - All rights reserved
 * @package    sWG_basic
 * @subpackage cron
-* @uses       direct_product_iversion
 * @since      v0.1.00
 * @license    http://www.direct-netware.de/redirect.php?licenses;w3c
 *             W3C (R) Software License
 */
+
+/*#use(direct_use) */
+use dNG\sWG\directVirtualClass;
+/* #\n*/
 
 /* -------------------------------------------------------------------------
 All comments will be removed in the "production" packages (they will be in
@@ -53,13 +56,8 @@ if (!defined ("direct_product_iversion")) { exit (); }
 
 //j// Functions and classes
 
-/* -------------------------------------------------------------------------
-Testing for required classes
-------------------------------------------------------------------------- */
-
-if (!defined ("CLASS_direct_subkernel_cron"))
+if (!defined ("CLASS_directSubkernelCron"))
 {
-//c// direct_subkernel_cron
 /**
 * Subkernel for: cron
 *
@@ -67,28 +65,25 @@ if (!defined ("CLASS_direct_subkernel_cron"))
 * @copyright  (C) direct Netware Group - All rights reserved
 * @package    sWG_basic
 * @subpackage cron
-* @uses       CLASS_direct_virtual_class
 * @since      v0.1.00
 * @license    http://www.direct-netware.de/redirect.php?licenses;w3c
 *             W3C (R) Software License
 */
-class direct_subkernel_cron extends direct_virtual_class
+class directSubkernelCron extends directVirtualClass
 {
 /* -------------------------------------------------------------------------
 Extend the class using old and new behavior
 ------------------------------------------------------------------------- */
 
-	//f// direct_subkernel_cron->__construct () and direct_subkernel_cron->direct_subkernel_cron ()
 /**
-	* Constructor (PHP5) __construct (direct_subkernel_cron)
+	* Constructor (PHP5) __construct (directSubkernelCron)
 	*
-	* @uses  USE_debug_reporting
 	* @since v0.1.00
 */
 	/*#ifndef(PHP4) */public /* #*/function __construct ()
 	{
 		global $direct_settings;
-		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -kernel_class->__construct (direct_subkernel_cron)- (#echo(__LINE__)#)"); }
+		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -kernel->__construct (directSubkernelCron)- (#echo(__LINE__)#)"); }
 
 /* -------------------------------------------------------------------------
 My parent should be on my side to get the work done
@@ -100,45 +95,43 @@ My parent should be on my side to get the work done
 Informing the system about the available function
 ------------------------------------------------------------------------- */
 
-		$direct_settings['swg_force_notheme'] = true;
-		$this->functions['subkernel_init'] = true;
+		$direct_settings['swg_theme_deactivated'] = true;
+		$this->functions['subkernelInit'] = true;
 	}
 /*#ifdef(PHP4):
 /**
-	* Constructor (PHP4) direct_subkernel_cron (direct_subkernel_cron)
+	* Constructor (PHP4) directSubkernelCron
 	*
 	* @since v0.1.00
 *\/
-	function direct_subkernel_cron () { $this->__construct (); }
+	function directSubkernelCron () { $this->__construct (); }
 :#*/
-	//f// direct_subkernel_cron->subkernel_init ($f_threshold_id = "")
 /**
 	* Running subkernel specific checkups.
 	*
 	* @param  string $f_threshold_id This parameter is used to determine if
 	*         a request to write data is below the threshold (timeout).
-	* @uses   USE_debug_reporting
 	* @return boolean True if the checkup finishes successfully
 	* @since  v0.1.00
 */
-	/*#ifndef(PHP4) */public /* #*/function subkernel_init ($f_threshold_id = "")
+	/*#ifndef(PHP4) */public /* #*/function subkernelInit ($f_threshold_id = "")
 	{
 		global $direct_globals,$direct_settings;
-		if (USE_debug_reporting) { direct_debug (2,"sWG/#echo(__FILEPATH__)# -kernel_class->subkernel_init ($f_threshold_id)- (#echo(__LINE__)#)"); }
+		if (USE_debug_reporting) { direct_debug (2,"sWG/#echo(__FILEPATH__)# -kernel->subkernelInit ($f_threshold_id)- (#echo(__LINE__)#)"); }
 
-		if (($direct_globals['basic_functions']->include_file ($direct_settings['path_system']."/classes/swg_db.php"))&&(direct_class_init ("db"))) { $f_return = array (); }
-		else { $f_return = array ("errors_core_unknown_error","FATAL ERROR: Unable to instantiate &quot;db&quot;.","sWG/#echo(__FILEPATH__)# -kernel_class->subkernel_init ()- (#echo(__LINE__)#)"); }
+		if (($direct_globals['basic_functions']->includeClass ('dNG\sWG\directDB'))&&(direct_class_init ("db"))) { $f_return = array (); }
+		else { $f_return = array ("errors_core_unknown_error","FATAL ERROR: Unable to instantiate &quot;db&quot;.","sWG/#echo(__FILEPATH__)# -kernel->subkernelInit ()- (#echo(__LINE__)#)"); }
 
 		if (empty ($f_return))
 		{
-			if ($direct_globals['db']->v_connect ())
+			if ($direct_globals['db']->vConnect ())
 			{
 				if ((isset ($direct_settings['swg_cron_client']))&&($direct_settings['user_ip'] != $direct_settings['swg_cron_client'])) { $f_return = array ("core_access_denied","","sWG/#echo(__FILEPATH__)# _main_ (#echo(__LINE__)#)"); }
 			}
-			else { $f_return = array ("core_database_error","FATAL ERROR: Error while setting up a database connection","sWG/#echo(__FILEPATH__)# -kernel_class->subkernel_init ()- (#echo(__LINE__)#)"); }
+			else { $f_return = array ("core_database_error","FATAL ERROR: Error while setting up a database connection","sWG/#echo(__FILEPATH__)# -kernel->subkernelInit ()- (#echo(__LINE__)#)"); }
 		}
 
-		return /*#ifdef(DEBUG):direct_debug (7,"sWG/#echo(__FILEPATH__)# -kernel_class->subkernel_init ()- (#echo(__LINE__)#)",:#*/$f_return/*#ifdef(DEBUG):,true):#*/;
+		return /*#ifdef(DEBUG):direct_debug (7,"sWG/#echo(__FILEPATH__)# -kernel->subkernelInit ()- (#echo(__LINE__)#)",:#*/$f_return/*#ifdef(DEBUG):,true):#*/;
 	}
 }
 
@@ -146,13 +139,14 @@ Informing the system about the available function
 Mark this class as the most up-to-date one
 ------------------------------------------------------------------------- */
 
-$direct_globals['@names']['subkernel_cron'] = "direct_subkernel_cron";
-define ("CLASS_direct_subkernel_cron",true);
+define ("CLASS_directSubkernelCron",true);
 
 //j// Script specific commands
 
+$direct_globals['@names']['subkernel_cron'] = "directSubkernelCron";
+
 direct_class_init ("subkernel_cron");
-$direct_globals['kernel']->v_call_set ("v_subkernel_init",$direct_globals['subkernel_cron'],"subkernel_init");
+$direct_globals['kernel']->vCallSet ("vSubkernelInit",$direct_globals['subkernel_cron'],"subkernelInit");
 }
 
 //j// EOF

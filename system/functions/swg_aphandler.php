@@ -33,7 +33,6 @@ NOTE_END //n*/
 * @copyright  (C) direct Netware Group - All rights reserved
 * @package    sWG_basic
 * @subpackage aphandler
-* @uses       direct_product_iversion
 * @since      v0.1.00
 * @license    http://www.direct-netware.de/redirect.php?licenses;w3c
 *             W3C (R) Software License
@@ -54,13 +53,10 @@ if (!defined ("direct_product_iversion")) { exit (); }
 
 //j// Functions and classes
 
-//f// direct_aphandler_elapsed ($f_seconds)
 /**
 * Splits the given value in seconds into hours, minutes and seconds.
 *
 * @param  integer $f_seconds Number of total item
-* @uses   direct_debug()
-* @uses   USE_debug_reporting
 * @return integer Calucalted percentage
 * @since  v0.1.00
 */
@@ -91,15 +87,12 @@ function direct_aphandler_elapsed ($f_seconds)
 	return /*#ifdef(DEBUG):direct_debug (7,"sWG/#echo(__FILEPATH__)# -direct_aphandler_elapsed ()- (#echo(__LINE__)#)",:#*/$f_return/*#ifdef(DEBUG):,true):#*/;
 }
 
-//f// direct_aphandler_estimated ($f_time_start,$f_items_done,$f_items)
 /**
 * Calculates the estimated time until the process will finish.
 *
 * @param  integer $f_time_start UNIX timestamp
 * @param  integer $f_items_done Completed items
 * @param  integer $f_items Number of total item
-* @uses   direct_debug()
-* @uses   USE_debug_reporting
 * @return integer Calucalted percentage
 * @since  v0.1.00
 */
@@ -141,14 +134,11 @@ function direct_aphandler_estimated ($f_time_start,$f_items_done,$f_items)
 	return /*#ifdef(DEBUG):direct_debug (7,"sWG/#echo(__FILEPATH__)# -direct_aphandler_estimated ()- (#echo(__LINE__)#)",:#*/$f_return/*#ifdef(DEBUG):,true):#*/;
 }
 
-//f// direct_aphandler_percentage ($f_items_done,$f_items)
 /**
 * Calculates and returns the percentage.
 *
 * @param  integer $f_items_done Completed items
 * @param  integer $f_items Number of total item
-* @uses   direct_debug()
-* @uses   USE_debug_reporting
 * @return integer Calucalted percentage
 * @since  v0.1.00
 */

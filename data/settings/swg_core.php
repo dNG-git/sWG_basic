@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' ?>
-<swg_settings_file_v1 xmlns="urn:de.direct-netware.xmlns:swg.settings.v1">
+<swg_settings_file_v1 xmlns="urn:de-direct-netware-xmlns:swg.settings.v1">
 <phpexit><![CDATA[<?php exit (); ?>]]></phpexit>
 
 <administration>
@@ -65,7 +65,7 @@
  </theme>
 
  <title>
-  <html><![CDATA[<span style='font-style:italic'>direct</span> Netware Group - Initial Installation]]></html>
+  <html><![CDATA[<em>direct</em> Netware Group - Initial Installation]]></html>
   <txt value="direct Netware Group - Initial Installation" />
  </title>
 </swg>

@@ -44,18 +44,12 @@ all development packets)
 
 //j// Functions and classes
 
-//f// direct_mods_include ()
 /**
 * Include modifications with a given modname and function if support has been
 * activated. Needed parameters: $f_support (boolean) True if modification
 * support is enabled; $f_modname (string) Modification identifier; $f_function
 * (string) Function to call.
 *
-* @uses   direct_basic_functions::include_file()
-* @uses   direct_basic_functions::memcache_get_file()
-* @uses   direct_debug()
-* @uses   direct_xml_bridge::xml2array()
-* @uses   USE_debug_reporting
 * @return mixed Return whatever is required by the modification specification
 * @since  v0.1.00
 */
@@ -74,12 +68,12 @@ function direct_mods_include ()
 	unset ($f_data[0]);
 	unset ($f_data[1]);
 
-	$f_data[2] = $f_return;
+	$f_data[2] = NULL;
 	$f_data = array_values ($f_data);
 
 	if ($f_support)
 	{
-		$f_file_data = $direct_globals['basic_functions']->memcache_get_file ($direct_settings['path_system']."/mods/$f_modname/swg_modlist.xml");
+		$f_file_data = $direct_globals['basic_functions']->memcacheGetFile ($direct_settings['path_system']."/mods/$f_modname/swg_modlist.xml");
 
 		if ($f_file_data)
 		{
@@ -102,7 +96,7 @@ function direct_mods_include ()
 							{
 								if (isset ($f_xml_sub_node_array['attributes']['module']/*#ifndef(PHP4) */,/* #*//*#ifdef(PHP4):) && isset (:#*/$f_xml_sub_node_array['attributes']['function']))
 								{
-									$direct_globals['basic_functions']->include_file ($direct_settings['path_system']."/mods/$f_modname/swgi_{$f_xml_sub_node_array['attributes']['module']}.php");
+									$direct_globals['basic_functions']->includeFile ($direct_settings['path_system']."/mods/$f_modname/swgi_{$f_xml_sub_node_array['attributes']['module']}.php");
 									$f_function = "direct_mods_{$f_modname}_{$f_xml_sub_node_array['attributes']['function']}_".$f_function_id;
 
 									if (function_exists ($f_function)) { $f_data[0] = $f_function ($f_data); }
@@ -112,7 +106,7 @@ function direct_mods_include ()
 						}
 						elseif (isset ($f_xml_node_array['attributes']['module']/*#ifndef(PHP4) */,/* #*//*#ifdef(PHP4):) && isset (:#*/$f_xml_node_array['attributes']['function']))
 						{
-							$direct_globals['basic_functions']->include_file ($direct_settings['path_system']."/mods/$f_modname/swgi_{$f_xml_node_array['attributes']['module']}.php");
+							$direct_globals['basic_functions']->includeFile ($direct_settings['path_system']."/mods/$f_modname/swgi_{$f_xml_node_array['attributes']['module']}.php");
 							$f_function = "direct_mods_{$f_modname}_{$f_xml_node_array['attributes']['function']}_".$f_function_id;
 
 							if (function_exists ($f_function)) { $f_data[0] = $f_function ($f_data); }

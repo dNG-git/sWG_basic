@@ -44,14 +44,11 @@ all development packets)
 
 //j// Functions and classes
 
-//f// direct_oset_mods_include ($f_modname,$f_modlist)
 /**
 * Include the OSet data returned from the given modifications.
 *
 * @param  string $f_modname Modification name
 * @param  array $f_modlist List of activated modifications.
-* @uses   direct_debug()
-* @uses   USE_debug_reporting
 * @return string Valid XHTML code
 * @since  v0.1.00
 */
@@ -68,7 +65,7 @@ function direct_oset_mods_include ($f_modname,$f_modlist)
 		{
 			if (file_exists ($direct_settings['path_system']."/osets/$direct_settings[theme_oset]/mods/$f_modname/swgi_$f_mod.php"))
 			{
-				$direct_globals['basic_functions']->include_file ($direct_settings['path_system']."/osets/$direct_settings[theme_oset]/mods/$f_modname/swgi_$f_mod.php");
+				$direct_globals['basic_functions']->includeFile ($direct_settings['path_system']."/osets/$direct_settings[theme_oset]/mods/$f_modname/swgi_$f_mod.php");
 
 				$f_function = "direct_oset_mods_{$f_modname}_".$f_mod;
 				if (function_exists ($f_function)) { $f_return .= $f_function (); }

@@ -32,7 +32,6 @@ NOTE_END //n*/
 * @copyright  (C) direct Netware Group - All rights reserved
 * @package    sWG_basic
 * @subpackage extra_functions
-* @uses       direct_product_iversion
 * @since      v0.1.00
 * @license    http://www.direct-netware.de/redirect.php?licenses;w3c
 *             W3C (R) Software License
@@ -53,19 +52,11 @@ if (!defined ("direct_product_iversion")) { exit (); }
 
 //j// Functions and classes
 
-//f// direct_service_list ($f_module,$f_page = 1)
 /**
 * Reads and parses a service list XML file.
 *
 * @param  string $f_module Service list module name
 * @param  integer $f_page Requested page if multiple exist
-* @uses   direct_basic_functions::memcache_get_file_merged_xml()
-* @uses   direct_class_function_check()
-* @uses   direct_debug()
-* @uses   direct_kernel_system::v_group_user_check_right()
-* @uses   direct_kernel_system::v_usertype_get_int()
-* @uses   direct_service_list_parse()
-* @uses   USE_debug_reporting
 * @return array Returns a multi dimensional array containing list information
 *         and the ready to output service list
 * @since  v0.1.00
@@ -78,7 +69,7 @@ function direct_service_list ($f_module,$f_page = 1)
 	$f_module = preg_replace ("#[\/\\\?:@\=\&\. \+]#i","",$f_module);
 	$f_module_file_name = str_replace (";","_",$f_module);
 	$f_return = array ();
-	$f_xml_array = ((file_exists ($direct_settings['path_data']."/settings/swg_{$f_module_file_name}.services.xml")) ? $direct_globals['basic_functions']->memcache_get_file_merged_xml ($direct_settings['path_data']."/settings/swg_{$f_module_file_name}.services.xml") : array ());
+	$f_xml_array = ((file_exists ($direct_settings['path_data']."/settings/swg_{$f_module_file_name}.services.xml")) ? $direct_globals['basic_functions']->memcacheGetFileMergedXml ($direct_settings['path_data']."/settings/swg_{$f_module_file_name}.services.xml") : array ());
 
 	if ((is_array ($f_xml_array))&&(!empty ($f_xml_array)))
 	{
@@ -113,19 +104,19 @@ function direct_service_list ($f_module,$f_page = 1)
 
 				if ($f_xml_array[$f_tag."_members"])
 				{
-					if (($f_xml_array[$f_tag."_members"]['value'])&&(direct_class_function_check ($direct_globals['kernel'],"v_usertype_get_int")))
+					if (($f_xml_array[$f_tag."_members"]['value'])&&(direct_class_function_check ($direct_globals['kernel'],"vUsertypeGetInt")))
 					{
-						if ($direct_globals['kernel']->v_usertype_get_int ($direct_settings['user']['type'])) { $f_right_check = true; }
+						if ($direct_globals['kernel']->vUsertypeGetInt ($direct_settings['user']['type'])) { $f_right_check = true; }
 					}
 				}
 
 				if ((!$f_right_check)&&($f_xml_array[$f_tag."_group_right"]))
 				{
-					if (direct_class_function_check ($direct_globals['kernel'],"v_group_user_check_right"))
+					if (direct_class_function_check ($direct_globals['kernel'],"vGroupUserCheckRight"))
 					{
 						if (isset ($f_xml_array[$f_tag."_group_right"]['value']))
 						{
-							if ($f_xml_array[$f_tag."_group_right"]['value']) { $f_right_check = $direct_globals['kernel']->v_group_user_check_right ($f_xml_array[$f_tag."_group_right"]['value']); }
+							if ($f_xml_array[$f_tag."_group_right"]['value']) { $f_right_check = $direct_globals['kernel']->vGroupUserCheckRight ($f_xml_array[$f_tag."_group_right"]['value']); }
 						}
 						elseif (is_array ($f_xml_array[$f_tag."_group_right"]))
 						{
@@ -136,7 +127,7 @@ function direct_service_list ($f_module,$f_page = 1)
 								if (strlen ($f_group_right_array['value'])) { $f_group_rights_array[] = $f_group_right_array['value']; }
 							}
 
-							$f_right_check = $direct_globals['kernel']->v_group_user_check_right ($f_group_rights_array);
+							$f_right_check = $direct_globals['kernel']->vGroupUserCheckRight ($f_group_rights_array);
 						}
 					}
 				}
@@ -163,17 +154,12 @@ function direct_service_list ($f_module,$f_page = 1)
 	return /*#ifdef(DEBUG):direct_debug (7,"sWG/#echo(__FILEPATH__)# -direct_service_list ()- (#echo(__LINE__)#)",:#*/$f_return/*#ifdef(DEBUG):,true):#*/;
 }
 
-//f// direct_service_list_parse ($f_module,$f_list,$f_page)
 /**
 * Parses internally prepared service list entries for output.
 *
 * @param  string $f_module Service list module name
 * @param  array $f_list List of services
 * @param  integer $f_page Requested page if multiple exist
-* @uses   direct_debug()
-* @uses   direct_linker()
-* @uses   direct_string_translation()
-* @uses   USE_debug_reporting
 * @return mixed Single or multi dimensional array; false on error
 * @since  v0.1.00
 */
@@ -221,7 +207,6 @@ function direct_service_list_parse ($f_module,$f_list,$f_page)
 	return $f_return;
 }
 
-//f// direct_service_list_search ($f_module,$f_sstring,$f_smode = "title-desc_preg",$f_page = 1)
 /**
 * Reads and parses a service list XML file. Returns only results matching
 * the search criteria.
@@ -230,13 +215,6 @@ function direct_service_list_parse ($f_module,$f_list,$f_page)
 * @param  string $f_sstring User defined search string to use
 * @param  string $f_smode Search mode to use
 * @param  integer $f_page Requested page if multiple exist
-* @uses   direct_basic_functions::memcache_get_file_merged_xml()
-* @uses   direct_class_function_check()
-* @uses   direct_debug()
-* @uses   direct_kernel_system::v_group_user_check_right()
-* @uses   direct_kernel_system::v_usertype_get_int()
-* @uses   direct_service_list_parse()
-* @uses   USE_debug_reporting
 * @return array Returns a multi dimensional array containing list information
 *         and the ready to output service list
 * @since  v0.1.00
@@ -250,7 +228,7 @@ function direct_service_list_search ($f_module,$f_sstring,$f_smode = "title_preg
 	$f_module_file_name = str_replace (";","_",$f_module);
 	$f_return = array ();
 	if (($f_smode == "title_preg")||($f_smode == "title-desc_preg")) { $f_sstring = str_replace ("\*","(.+?)",("#".(preg_quote ($f_sstring,"#"))."#si")); }
-	$f_xml_array = ((file_exists ($direct_settings['path_data']."/settings/swg_{$f_module_file_name}.services.xml")) ? $direct_globals['basic_functions']->memcache_get_file_merged_xml ($direct_settings['path_data']."/settings/swg_{$f_module_file_name}.services.xml") : array ());
+	$f_xml_array = ((file_exists ($direct_settings['path_data']."/settings/swg_{$f_module_file_name}.services.xml")) ? $direct_globals['basic_functions']->memcacheGetFileMergedXml ($direct_settings['path_data']."/settings/swg_{$f_module_file_name}.services.xml") : array ());
 
 	if ((is_array ($f_xml_array))&&(!empty ($f_xml_array)))
 	{
@@ -318,19 +296,19 @@ function direct_service_list_search ($f_module,$f_sstring,$f_smode = "title_preg
 
 					if ($f_xml_array[$f_tag."_members"])
 					{
-						if (($f_xml_array[$f_tag."_members"]['value'])&&(direct_class_function_check ($direct_globals['kernel'],"v_usertype_get_int")))
+						if (($f_xml_array[$f_tag."_members"]['value'])&&(direct_class_function_check ($direct_globals['kernel'],"vUsertypeGetInt")))
 						{
-							if ($direct_globals['kernel']->v_usertype_get_int ($direct_settings['user']['type'])) { $f_right_check = true; }
+							if ($direct_globals['kernel']->vUsertypeGetInt ($direct_settings['user']['type'])) { $f_right_check = true; }
 						}
 					}
 
 					if ((!$f_right_check)&&($f_xml_array[$f_tag."_group_right"]))
 					{
-						if (direct_class_function_check ($direct_globals['kernel'],"v_group_user_check_right"))
+						if (direct_class_function_check ($direct_globals['kernel'],"vGroupUserCheckRight"))
 						{
 							if (isset ($f_xml_array[$f_tag."_group_right"]['value']))
 							{
-								if ($f_xml_array[$f_tag."_group_right"]['value']) { $f_right_check = $direct_globals['kernel']->v_group_user_check_right ($f_xml_array[$f_tag."_group_right"]['value']); }
+								if ($f_xml_array[$f_tag."_group_right"]['value']) { $f_right_check = $direct_globals['kernel']->vGroupUserCheckRight ($f_xml_array[$f_tag."_group_right"]['value']); }
 							}
 							elseif (is_array ($f_xml_array[$f_tag."_group_right"]))
 							{
@@ -341,7 +319,7 @@ function direct_service_list_search ($f_module,$f_sstring,$f_smode = "title_preg
 									if (strlen ($f_group_right_array['value'])) { $f_group_rights_array[] = $f_group_right_array['value']; }
 								}
 
-								$f_right_check = $direct_globals['kernel']->v_group_user_check_right ($f_group_rights_array);
+								$f_right_check = $direct_globals['kernel']->vGroupUserCheckRight ($f_group_rights_array);
 							}
 						}
 					}

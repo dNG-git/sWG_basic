@@ -32,7 +32,6 @@ NOTE_END //n*/
 * @copyright  (C) direct Netware Group - All rights reserved
 * @package    sWG_basic
 * @subpackage validation
-* @uses       direct_product_iversion
 * @since      v0.1.00
 * @license    http://www.direct-netware.de/redirect.php?licenses;w3c
 *             W3C (R) Software License
@@ -56,9 +55,9 @@ if (!defined ("direct_product_iversion")) { exit (); }
 $g_mode_ajax_dialog = (($direct_settings['ohandler'] == "ajax_dialog") ? true : false);
 if (USE_debug_reporting) { direct_debug (1,"sWG/#echo(__FILEPATH__)# _main_ (#echo(__LINE__)#)"); }
 
-$g_vid = (isset ($direct_settings['dsd']['idata']) ? ($direct_globals['basic_functions']->inputfilter_basic ($direct_settings['dsd']['idata'])) : "");
-$g_source = (isset ($direct_settings['dsd']['source']) ? ($direct_globals['basic_functions']->inputfilter_basic ($direct_settings['dsd']['source'])) : "");
-$g_target = (isset ($direct_settings['dsd']['target']) ? ($direct_globals['basic_functions']->inputfilter_basic ($direct_settings['dsd']['target'])) : "");
+$g_vid = (isset ($direct_settings['dsd']['idata']) ? ($direct_globals['basic_functions']->inputfilterBasic ($direct_settings['dsd']['idata'])) : "");
+$g_source = (isset ($direct_settings['dsd']['source']) ? ($direct_globals['basic_functions']->inputfilterBasic ($direct_settings['dsd']['source'])) : "");
+$g_target = (isset ($direct_settings['dsd']['target']) ? ($direct_globals['basic_functions']->inputfilterBasic ($direct_settings['dsd']['target'])) : "");
 
 $g_source_url = ($g_source ? base64_decode ($g_source) : "");
 
@@ -69,11 +68,11 @@ else
 	$g_target_url = ($g_source ? $g_source_url : "");
 }
 
-if ($direct_globals['kernel']->service_init_default ())
+if ($direct_globals['kernel']->serviceInitDefault ())
 {
 //j// BOA
-$direct_globals['basic_functions']->require_file ($direct_settings['path_system']."/functions/swg_data_storager.php");
-$direct_globals['basic_functions']->require_file ($direct_settings['path_system']."/functions/swg_tmp_storager.php");
+$direct_globals['basic_functions']->requireFile ($direct_settings['path_system']."/functions/swg_data_storager.php");
+$direct_globals['basic_functions']->requireFile ($direct_settings['path_system']."/functions/swg_tmp_storager.php");
 direct_local_integration ("validation");
 
 $direct_cachedata['page_this'] = "m=validation;dsd=idata+".$g_vid;
@@ -91,23 +90,28 @@ if (trim ($g_vid))
 		{
 			$direct_cachedata['validation_data'] = $g_vid_array;
 			$direct_cachedata['validation_error'] = array ();
+			$direct_cachedata['validation_options_flush'] = true;
 			$direct_cachedata['validation_remove_vid'] = true;
+			$direct_cachedata['validation_target_url'] = "";
 
-			include_once ($direct_settings['path_system']."/modules/validation/swgi_{$g_vid_array['core_vid_module']}.php");
+			$direct_globals['basic_functions']->includeFile ($direct_settings['path_system']."/modules/validation/swgi_{$g_vid_array['core_vid_module']}.php");
 			if ($direct_cachedata['validation_remove_vid']) { direct_tmp_storage_write ("",$g_vid,"","","s"); }
 
 			if (empty ($direct_cachedata['validation_error']))
 			{
+				$g_mode = ($g_mode_ajax_dialog ? "_ajax" : "");
+				$direct_globals['output']->relatedManager ("validation_index","pre_module_service_action".$g_mode);
+
 				$direct_cachedata['output_job'] = direct_local_get ("validation_job");
 				$direct_cachedata['output_job_desc'] = direct_local_get ("validation_done_job");
 
-				if ($g_target_url)
+				if (($direct_cachedata['validation_target_url'])||($g_target_url))
 				{
-					$g_target_link = str_replace ("[oid]","vid_d+{$g_vid}++",$g_target_url);
+					$g_target_link = ($direct_cachedata['validation_target_url'] ? str_replace ("[oid]","vid_d+{$g_vid}++",$direct_cachedata['validation_target_url']) : str_replace ("[oid]","vid_d+{$g_vid}++",$g_target_url));
 
 					$direct_cachedata['output_jsjump'] = 5000;
 					$direct_cachedata['output_pagetarget'] = str_replace ('"',"",(direct_linker ("url0",$g_target_link)));
-					$direct_globals['output']->options_flush (true);
+					if ($direct_cachedata['validation_options_flush']) { $direct_globals['output']->optionsFlush (true); }
 				}
 				else
 				{
@@ -115,27 +119,28 @@ if (trim ($g_vid))
 					$direct_cachedata['output_pagetarget'] = direct_linker ("url0","m=default;s=index;a=index");
 				}
 
+				$direct_globals['output']->relatedManager ("validation_index","post_module_service_action".$g_mode);
+				$direct_globals['output']->oset ("default","done");
+
 				if ($g_mode_ajax_dialog)
 				{
 					$direct_globals['output']->header (false,true);
-					$direct_globals['output']->oset ("default_embedded","ajax_dialog_done");
-					$direct_globals['output']->output_send (direct_local_get ("core_done").": ".$direct_cachedata['output_job']);
+					$direct_globals['output']->outputSend (direct_local_get ("core_done").": ".$direct_cachedata['output_job']);
 				}
 				else
 				{
 					$direct_globals['output']->header (false,true,$direct_settings['p3p_url'],$direct_settings['p3p_cp']);
-					$direct_globals['output']->oset ("default","done");
-					$direct_globals['output']->output_send ($direct_cachedata['output_job']);
+					$direct_globals['output']->outputSend ($direct_cachedata['output_job']);
 				}
 			}
-			elseif (is_array ($direct_cachedata['validation_error'])) { $direct_globals['output']->output_send_error ("standard",$direct_cachedata['validation_error'][0],$direct_cachedata['validation_error'][1],$direct_cachedata['validation_error'][2]); }
-			else { $direct_globals['output']->output_send_error ("standard","validation_unknown_type","FATAL ERROR: The specified vID requires the error reporting module &quot;{$g_vid_array['core_vid_module']}&quot;","sWG/#echo(__FILEPATH__)# _main_ (#echo(__LINE__)#)"); }
+			elseif (is_array ($direct_cachedata['validation_error'])) { $direct_globals['output']->outputSendError ("standard",$direct_cachedata['validation_error'][0],$direct_cachedata['validation_error'][1],$direct_cachedata['validation_error'][2]); }
+			else { $direct_globals['output']->outputSendError ("standard","validation_unknown_type","FATAL ERROR: The specified vID requires the error reporting module &quot;{$g_vid_array['core_vid_module']}&quot;","sWG/#echo(__FILEPATH__)# _main_ (#echo(__LINE__)#)"); }
 		}
-		else { $direct_globals['output']->output_send_error ("standard","validation_unknown_type","FATAL ERROR: The specified vID requires the unknown module &quot;{$g_vid_array['core_vid_module']}&quot;","sWG/#echo(__FILEPATH__)# _main_ (#echo(__LINE__)#)"); }
+		else { $direct_globals['output']->outputSendError ("standard","validation_unknown_type","FATAL ERROR: The specified vID requires the unknown module &quot;{$g_vid_array['core_vid_module']}&quot;","sWG/#echo(__FILEPATH__)# _main_ (#echo(__LINE__)#)"); }
 	}
-	else { $direct_globals['output']->output_send_error ("standard","validation_vid_invalid","","sWG/#echo(__FILEPATH__)# _main_ (#echo(__LINE__)#)"); }
+	else { $direct_globals['output']->outputSendError ("standard","validation_vid_invalid","","sWG/#echo(__FILEPATH__)# _main_ (#echo(__LINE__)#)"); }
 }
-else { $direct_globals['output']->output_send_error ("standard","validation_vid_invalid","","sWG/#echo(__FILEPATH__)# _main_ (#echo(__LINE__)#)"); }
+else { $direct_globals['output']->outputSendError ("standard","validation_vid_invalid","","sWG/#echo(__FILEPATH__)# _main_ (#echo(__LINE__)#)"); }
 //j// EOA
 }
 

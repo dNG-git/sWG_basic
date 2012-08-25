@@ -1,56 +1,59 @@
 .pagebg { background-color:#FFFFFF }
-
-.pageborder1 { background-color:#193879;border-collapse:separate;border-spacing:1px }
-.pageborder2 { border:1px solid #193879;background-color:#D9D9DA;padding:4px }
+.pageborder { border:1px solid #193879;padding:4px }
 
 .pagecontent { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;color:#222222 }
 .pagecontent a, .pagecontent a:link, .pagecontent a:active, .pagecontent a:visited, .pagecontent a:hover, .pagecontent a:focus { color:#000000 }
+
 .pagecontentinputbutton { background-color:#F5F5F5;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;color:#000000 }
 .pagecontentinputcheckbox { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;color:#222222;background-color:#FFFFFF }
 .pagecontentinputfocused { border-color:#193879 }
+
 .pagecontentinputtextnpassword { border:1px solid #C0C0C0;background-color:#F5F5F5 }
 .pagecontentinputtextnpassword { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;color:#222222 }
+
 .pagecontentselect { border:1px solid #C0C0C0;background-color:#F5F5F5 }
 .pagecontentselect { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;color:#222222 }
+
 .pagecontenttextarea { border:1px solid #C0C0C0;background-color:#F5F5F5 }
 .pagecontenttextarea { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;color:#222222 }
 
-.pagecontenttitle { border:1px solid #193879;background-color:#375A9D;padding:5px }
+.pagecontenttitle { border:1px solid #193879;background-color:#375A9D;padding:5px;clear:both }
 .pagecontenttitle { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;font-weight:bold;color:#DDDDDD }
 .pagecontenttitle a, .pagecontenttitle a:link, .pagecontenttitle a:active, .pagecontenttitle a:visited, .pagecontenttitle a:hover, .pagecontenttitle a:focus { color:#FFFFFF }
-h1.pagecontenttitle, h2.pagecontenttitle, h3.pagecontenttitle, h4.pagecontenttitle, h5.pagecontenttitle, h6.pagecontenttitle { border:1px solid #D9D9DA;background-color:#FFFFFF }
-h1.pagecontenttitle, h1.pagecontenttitle a, h1.pagecontenttitle a:link, h1.pagecontenttitle a:active, h1.pagecontenttitle a:visited, h1.pagecontenttitle a:hover, h1.pagecontenttitle a:focus { color:#000000 }
-h2.pagecontenttitle, h2.pagecontenttitle a, h2.pagecontenttitle a:link, h2.pagecontenttitle a:active, h2.pagecontenttitle a:visited, h2.pagecontenttitle a:hover, h2.pagecontenttitle a:focus { color:#000000 }
-h3.pagecontenttitle, h3.pagecontenttitle a, h3.pagecontenttitle a:link, h3.pagecontenttitle a:active, h3.pagecontenttitle a:visited, h3.pagecontenttitle a:hover, h3.pagecontenttitle a:focus { color:#000000 }
-h4.pagecontenttitle, h4.pagecontenttitle a, h4.pagecontenttitle a:link, h4.pagecontenttitle a:active, h4.pagecontenttitle a:visited, h4.pagecontenttitle a:hover, h4.pagecontenttitle a:focus { color:#000000 }
-h5.pagecontenttitle, h5.pagecontenttitle a, h5.pagecontenttitle a:link, h5.pagecontenttitle a:active, h5.pagecontenttitle a:visited, h5.pagecontenttitle a:hover, h5.pagecontenttitle a:focus { color:#000000 }
-h6.pagecontenttitle, h6.pagecontenttitle a, h6.pagecontenttitle a:link, h6.pagecontenttitle a:active, h6.pagecontenttitle a:visited, h6.pagecontenttitle a:hover, h6.pagecontenttitle a:focus { color:#000000 }
 
-.pageembeddedborder1 { background-color:#DDDDDD;border-collapse:separate;border-spacing:1px }
-.pageembeddedborder2 { border:1px solid #DDDDDD;background-color:#FFFFFF;padding:4px }
+.pageembeddedbg { background-color:#FFFFFF }
+.pageembeddedborder { border:1px solid #DDDDDD;padding:4px }
+.pageemptycell { background-color:#FAFAFA }
 
 .pageerrorcontent { font-weight:bold;color:#FF0000 }
 .pageerrorcontent a, .pageerrorcontent a:link, .pageerrorcontent a:active, .pageerrorcontent a:visited, .pageerrorcontent a:hover, .pageerrorcontent a:focus { color:#CC0000 }
 
-.pageextrabg { background-color:#D9D9DA }
+.pageextrabg { background-color:#F5F5F5 }
+
 .pageextracontent { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;color:#222222 }
 .pageextracontent a, .pageextracontent a:link, .pageextracontent a:active, .pageextracontent a:visited, .pageextracontent a:hover, .pageextracontent a:focus { color:#000000 }
 
 .pagehide { display:none }
-.pagehighlightborder1 { background-color:#FF0000;border-collapse:separate;border-spacing:1px }
-.pagehighlightborder2 { border:1px solid #FF0000;background-color:#FBF6CD;padding:4px }
+.pagehighlightbg { background-color:#FBF6CD }
+.pagehighlightborder { border:1px solid #FF0000;padding:4px }
+
+.pagehighlighttable { border-collapse:collapse }
+.pagehighlighttable td, .pagehighlighttable th { border:1px solid #FF0000 }
 
 .pagehoveropacity, .pagehoveropacity:link, .pagehoveropacity:visited { opacity:0.75 }
 .pagehoveropacity:active, .pagehoveropacity:hover, .pagehoveropacity:focus { opacity:1 }
 
 .pagehr { height:1px;overflow:hidden;border-top:1px solid #193879 }
 
-.pageservicemenubg { border:1px solid #D9D9DA;padding:5px }
-.pageservicemenucontent { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10px;color:#222222 }
-.pageservicemenucontent a, .pageservicemenucontent a:link, .pageservicemenucontent a:visited { color:#000000;text-decoration:underline }
-.pageservicemenucontent a:active, .pageservicemenucontent a:hover, .pageservicemenucontent a:focus { color:#444444;text-decoration:none }
+.pageservicemenu { border:1px solid #D9D9DA;padding:5px;clear:both }
+.pageservicemenu { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10px;color:#222222 }
+.pageservicemenu a, .pageservicemenu a:link, .pageservicemenu a:visited { color:#000000;text-decoration:underline }
+.pageservicemenu a:active, .pageservicemenu a:hover, .pageservicemenu a:focus { color:#444444;text-decoration:none }
 
-.pagetitlecellbg { background-color:#375A9D }
-.pagetitlecellcontent { display:block;padding:3px }
-.pagetitlecellcontent { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;font-weight:bold;color:#FFFFFF }
-.pagetitlecellcontent a, .pagetitlecellcontent a:link, .pagetitlecellcontent a:active, .pagetitlecellcontent a:visited, .pagetitlecellcontent a:hover, .pagetitlecellcontent a:focus { color:#FFFFFF }
+.pagetable { border-collapse:collapse }
+.pagetable td, .pagetable th { border:1px solid #193879 }
+
+.pagetitlecell { padding:3px;background-color:#375A9D }
+.pagetitlecell { font-family:Verdana,Arial,Helvetica,sans-serif;font-size:12px;font-weight:bold;color:#FFFFFF }
+.pagetitlecell a, .pagetitlecell a:link, .pagetitlecell a:active, .pagetitlecell a:visited, .pagetitlecell a:hover, .pagetitlecell a:focus { color:#FFFFFF }
+h1.pagetitlecell, h2.pagetitlecell, h3.pagetitlecell, h4.pagetitlecell, h5.pagetitlecell, h6.pagetitlecell { margin:0px }

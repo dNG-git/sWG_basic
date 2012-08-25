@@ -32,7 +32,6 @@ NOTE_END //n*/
 * @copyright  (C) direct Netware Group - All rights reserved
 * @package    sWG_basic
 * @subpackage output_theme
-* @uses       direct_product_iversion
 * @since      v0.1.00
 * @license    http://www.direct-netware.de/redirect.php?licenses;w3c
 *             W3C (R) Software License
@@ -53,13 +52,8 @@ if (!defined ("direct_product_iversion")) { exit (); }
 
 //j// Functions and classes
 
-$g_continue_check = true;
-if (defined ("CLASS_direct_oxhtml_theme_embedded")) { $g_continue_check = false; }
-if (!defined ("CLASS_direct_oxhtml_theme")) { $g_continue_check = false; }
-
-if ($g_continue_check)
+if (!defined ("CLASS_directOThemeEmbedded"))
 {
-//c// direct_oxhtml_theme_embedded
 /**
 * The theme support is "incremental". Our inline theme will be overwritten by
 * the default sWG one. This embedded subtype will overwrite the default one.
@@ -68,67 +62,38 @@ if ($g_continue_check)
 * @copyright  (C) direct Netware Group - All rights reserved
 * @package    sWG_basic
 * @subpackage output_theme
-* @uses       CLASS_direct_output_inline
 * @since      v0.1.00
 * @license    http://www.direct-netware.de/redirect.php?licenses;w3c
 *             W3C (R) Software License
 */
-class direct_oxhtml_theme_embedded extends direct_oxhtml_theme
+class directOThemeEmbedded extends directOTheme
 {
-/* -------------------------------------------------------------------------
-Extend the class using old and new behavior
-------------------------------------------------------------------------- */
-
-	//f// direct_oxhtml_theme_embedded->__construct () and direct_oxhtml_theme_embedded->direct_oxhtml_theme_embedded ()
-/**
-	* Constructor (PHP5) __construct (direct_oxhtml_theme_embedded)
-	*
-	* @uses  direct_debug()
-	* @uses  USE_debug_reporting
-	* @since v0.1.00
-*/
-	/*#ifndef(PHP4) */public /* #*/function __construct ()
-	{
-		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -output_theme_class->__construct (direct_oxhtml_theme_embedded)- (#echo(__LINE__)#)"); }
-
-/* -------------------------------------------------------------------------
-My parent should be on my side to get the work done
-------------------------------------------------------------------------- */
-
-		parent::__construct ();
-
-/* -------------------------------------------------------------------------
-Informing the system about available functions 
-------------------------------------------------------------------------- */
-
-		$this->functions['theme_page'] = true;
-	}
 /*#ifdef(PHP4):
+/* -------------------------------------------------------------------------
+Extend the class using old behavior
+------------------------------------------------------------------------- *\/
+
 /**
-	* Constructor (PHP4) direct_oxhtml_theme_embedded
-	* (direct_oxhtml_theme_embedded)
+	* Constructor (PHP4) directOThemeEmbedded
 	*
 	* @since v0.1.00
 *\/
-	function direct_oxhtml_theme_embedded () { $this->__construct (); }
-:#*/
-	//f// direct_oxhtml_theme_embedded->theme_page ($f_title)
+	function directOThemeEmbedded () { $this->__construct (); }
+:#\n*/
 /**
 	* Prepare an output for a XHTML encoded embedded page with the standard sWG
 	* theme.
 	*
 	* @param string $f_title Valid XHTML page title
-	* @uses  direct_debug()
-	* @uses  USE_debug_reporting
 	* @since v0.1.00
 */
-	/*#ifndef(PHP4) */public /* #*/function theme_page ($f_title)
+	/*#ifndef(PHP4) */public /* #*/function themePage ($f_title)
 	{
 		global $direct_cachedata,$direct_globals,$direct_local,$direct_settings;
-		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -output_theme_class->theme_page ($f_title)- (#echo(__LINE__)#)"); }
+		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -output_theme_class->themePage ($f_title)- (#echo(__LINE__)#)"); }
 
 		$direct_settings['theme_xhtml_type'] = "application/xhtml+xml; charset=".$direct_local['lang_charset'];
-		$direct_globals['output']->output_header ("Content-Type",$direct_settings['theme_xhtml_type']);
+		$direct_globals['output']->outputHeader ("Content-Type",$direct_settings['theme_xhtml_type']);
 
 $this->output_data = ("<?xml version='1.0' encoding='$direct_local[lang_charset]' ?><!DOCTYPE html SYSTEM \"about:legacy-compat\">
 <html xmlns='http://www.w3.org/1999/xhtml' xml:lang='$direct_local[lang_iso_domain]'>
@@ -142,7 +107,7 @@ $this->output_data .= ("\n<meta name='author' content='direct Netware Group' />
 <meta name='creator' content='$direct_settings[product_lcode_txt] by the direct Netware Group' />
 <meta name='description' content='$direct_settings[product_lcode_subtitle_txt]' />
 <style type='text/css'><![CDATA[
-p, td { cursor:default }
+p, td, th { cursor:default }
 
 a { cursor:pointer }
 a:link { text-decoration:underline }
@@ -158,17 +123,20 @@ h1, h2, h3, h4, h5, h6 { font-family:Verdana,Arial,Helvetica,sans-serif;font-siz
 html { height:100% }
 img { border:none }
 table { margin:0px;table-layout:fixed;border:none;border-collapse:collapse;border-spacing:0px }
-td { padding:0px }
+
+td, th { padding:0px }
+td:first-child, th:first-child { border-left:none }
+td:last-child, th:last-child { border-right:none }
 ]]></style>
-".($direct_globals['output']->header_elements ())."
+".($direct_globals['output']->headerElements ())."
 <link href='".(direct_linker_dynamic ("url0","s=cache;dsd=dfile+$direct_settings[path_themes]/swg/v4/swg_theme.php.css++dbid+".$direct_settings['product_buildid'],true,false))."' rel='stylesheet' type='text/css' />
 </head>
 
-<body onload='djs_run_onload ();'><div id='swgAJAX_loading_point' style='display:none'><!-- iPoint // --></div><script type='text/javascript'><![CDATA[
-djs_var.core_run_onload.push ({ func:'djs_swgAJAX_init',params: { position:'center' } });
+<body><div id='swgAJAX_loading_point' style='display:none'><!-- iPoint // --></div><script type='text/javascript'><![CDATA[
+jQuery (function () { djs_swgAJAX_init ({ position:'center' }); });
 ]]></script><table style='width:100%;height:100%'>
 <tbody><tr>
-<td class='pagebg' style='padding:5px;text-align:left;vertical-align:middle'>".$direct_globals['output']->output_content."</td>
+<td class='pagebg pagecontent' style='padding:5px;text-align:left;vertical-align:middle'>".$direct_globals['output']->output_content."</td>
 </tr></tbody>
 </table>
 </body>
@@ -177,8 +145,12 @@ djs_var.core_run_onload.push ({ func:'djs_swgAJAX_init',params: { position:'cent
 	}
 }
 
-$direct_globals['@names']['output_theme'] = "direct_oxhtml_theme_embedded";
-define ("CLASS_direct_oxhtml_theme_embedded",true);
+define ("CLASS_directOThemeEmbedded",true);
+
+//j// Script specific commands
+
+$direct_globals['@names']['output_theme'] = "directOThemeEmbedded";
+if (!isset ($direct_settings['theme_jquery_ui'])) { $direct_settings['theme_jquery_ui'] = "smoothness"; }
 }
 
 //j// EOF

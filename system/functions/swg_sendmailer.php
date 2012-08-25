@@ -33,11 +33,14 @@ NOTE_END //n*/
 * @copyright  (C) direct Netware Group - All rights reserved
 * @package    sWG_basic
 * @subpackage extra_functions
-* @uses       direct_product_iversion
 * @since      v0.1.00
 * @license    http://www.direct-netware.de/redirect.php?licenses;w3c
 *             W3C (R) Software License
 */
+
+/*#use(direct_use) */
+use dNG\sWG\directSendmailer;
+/* #\n*/
 
 /* -------------------------------------------------------------------------
 All comments will be removed in the "production" packages (they will be in
@@ -54,11 +57,6 @@ if (!defined ("direct_product_iversion")) { exit (); }
 
 //j// Functions and classes
 
-/* -------------------------------------------------------------------------
-Function to send plain text e-Mails without attachments.
-------------------------------------------------------------------------- */
-
-//f// direct_sendmail ($f_type,$f_from,$f_target,$f_subject,$f_msg)
 /**
 * Function to send plain text e-Mails without attachments.
 *
@@ -70,7 +68,6 @@ Function to send plain text e-Mails without attachments.
 *         address).
 * @param  string $f_subject Subject for the e-Mail
 * @param  string $f_msg Content of the e-Mail
-* @uses   USE_debug_reporting
 * @return boolean True on success
 * @since  v0.1.00
 */
@@ -80,26 +77,22 @@ function direct_sendmail ($f_type,$f_from,$f_target,$f_subject,$f_msg)
 	if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -direct_sendmail ($f_type,$f_from,$f_target,$f_subject,+f_msg)- (#echo(__LINE__)#)"); }
 
 	$f_return = true;
-	$f_sendmailer_object = new direct_sendmailer ();
+	$f_sendmailer_object = new directSendmailer ();
 	$f_target_array = explode (",",$f_target);
 
 	foreach ($f_target_array as $f_target)
 	{
-		if ($f_return) { $f_return = $f_sendmailer_object->recipients_define ($f_target); }
+		if ($f_return) { $f_return = $f_sendmailer_object->recipientsDefine ($f_target); }
 	}
 
 	if ($f_return)
 	{
-		$f_sendmailer_object->text_set ($direct_local['lang_charset'],$f_msg);
+		$f_sendmailer_object->textSet ($direct_local['lang_charset'],$f_msg);
 		$f_return = $f_sendmailer_object->send ($f_type,$f_from,$f_subject);
 	}
 
 	return /*#ifdef(DEBUG):direct_debug (7,"sWG/#echo(__FILEPATH__)# -direct_sendmail ()- (#echo(__LINE__)#)",:#*/$f_return/*#ifdef(DEBUG):,true):#*/;
 }
-
-//j// Script specific commands
-
-$direct_globals['basic_functions']->require_file ($direct_settings['path_system']."/classes/swg_sendmailer.php");
 
 //j// EOF
 ?>

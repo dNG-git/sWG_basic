@@ -33,7 +33,6 @@ NOTE_END //n*/
 * @copyright  (C) direct Netware Group - All rights reserved
 * @package    sWG_basic
 * @subpackage extra_functions
-* @uses       direct_product_iversion
 * @since      v0.1.00
 * @license    http://www.direct-netware.de/redirect.php?licenses;w3c
 *             W3C (R) Software License
@@ -54,7 +53,6 @@ if (!defined ("direct_product_iversion")) { exit (); }
 
 //j// Functions and classes
 
-//f// direct_tmp_storage_get ($f_type,$f_id,$f_sid = "",$f_identifier = "")
 /**
 * Reads an entry from the "tmp_storage" table.
 *
@@ -63,17 +61,6 @@ if (!defined ("direct_product_iversion")) { exit (); }
 * @param  string $f_id Entry ID
 * @param  string $f_sid Required service ID for selection
 * @param  string $f_identifier Required identifier for selection
-* @uses   direct_db::define_attributes()
-* @uses   direct_db::define_limit()
-* @uses   direct_db::define_row_conditions()
-* @uses   direct_db::define_row_conditions_encode()
-* @uses   direct_db::init_delete()
-* @uses   direct_db::init_select()
-* @uses   direct_db::optimize_random()
-* @uses   direct_db::query_exec()
-* @uses   direct_debug()
-* @uses   direct_evars_get()
-* @uses   USE_debug_reporting
 * @return mixed Array, parsed evars array or string; false on error
 * @since  v0.1.00
 */
@@ -86,42 +73,42 @@ function direct_tmp_storage_get ($f_type,$f_id,$f_sid = "",$f_identifier = "")
 
 	if ((((mt_rand (0,30)) > 20))&&(!$direct_settings['swg_auto_maintenance']))
 	{
-		$direct_globals['db']->init_delete ($direct_settings['tmp_storage_table']);
+		$direct_globals['db']->initDelete ($direct_settings['tmp_storage_table']);
 
 $f_delete_criteria = ("<sqlconditions>
 <element1 attribute='{$direct_settings['tmp_storage_table']}.ddbtmp_storage_time_max' value='0' type='number' operator='>' />
-".($direct_globals['db']->define_row_conditions_encode ($direct_settings['tmp_storage_table'].".ddbtmp_storage_time_max",$direct_cachedata['core_time'],"number","<"))."
+".($direct_globals['db']->defineRowConditionsEncode ($direct_settings['tmp_storage_table'].".ddbtmp_storage_time_max",$direct_cachedata['core_time'],"number","<"))."
 <element2 attribute='{$direct_settings['tmp_storage_table']}.ddbtmp_storage_sid' value='9d3bb895f22bf0afa958d68c2a58ded7' type='string' operator='!=' />
 <element3 attribute='{$direct_settings['tmp_storage_table']}.ddbtmp_storage_maintained' value='0' type='number' />
 </sqlconditions>");
 
-		$direct_globals['db']->define_row_conditions ($f_delete_criteria);
+		$direct_globals['db']->defineRowConditions ($f_delete_criteria);
 
-		if (($direct_globals['db']->query_exec ("ar"))&&(!$direct_settings['swg_auto_maintenance'])) { $direct_globals['db']->optimize_random ($direct_settings['tmp_storage_table']); }
+		if (($direct_globals['db']->queryExec ("ar"))&&(!$direct_settings['swg_auto_maintenance'])) { $direct_globals['db']->optimizeRandom ($direct_settings['tmp_storage_table']); }
 	}
 
 	$f_id = $direct_globals['basic_functions']->tmd5 ($f_id);
 
-	$direct_globals['db']->init_select ($direct_settings['tmp_storage_table']);
-	$direct_globals['db']->define_attributes (array ($direct_settings['tmp_storage_table'].".ddbtmp_storage_data"));
+	$direct_globals['db']->initSelect ($direct_settings['tmp_storage_table']);
+	$direct_globals['db']->defineAttributes (array ($direct_settings['tmp_storage_table'].".ddbtmp_storage_data"));
 
 $f_select_criteria = ("<sqlconditions>
-".($direct_globals['db']->define_row_conditions_encode ($direct_settings['tmp_storage_table'].".ddbtmp_storage_id",$f_id,"string"))."
+".($direct_globals['db']->defineRowConditionsEncode ($direct_settings['tmp_storage_table'].".ddbtmp_storage_id",$f_id,"string"))."
 <sub1 type='sublevel'>
 <element1 attribute='{$direct_settings['tmp_storage_table']}.ddbtmp_storage_time_max' value='0' type='number' condition='or' />
-".($direct_globals['db']->define_row_conditions_encode ($direct_settings['tmp_storage_table'].".ddbtmp_storage_time_max",$direct_cachedata['core_time'],"number",">","or"))."
+".($direct_globals['db']->defineRowConditionsEncode ($direct_settings['tmp_storage_table'].".ddbtmp_storage_time_max",$direct_cachedata['core_time'],"number",">","or"))."
 </sub1>
-".($direct_globals['db']->define_row_conditions_encode ($direct_settings['tmp_storage_table'].".ddbtmp_storage_time_min",$direct_cachedata['core_time'],"number","<=")));
+".($direct_globals['db']->defineRowConditionsEncode ($direct_settings['tmp_storage_table'].".ddbtmp_storage_time_min",$direct_cachedata['core_time'],"number","<=")));
 
-	if ($f_sid) { $f_select_criteria .= $direct_globals['db']->define_row_conditions_encode ($direct_settings['tmp_storage_table'].".ddbtmp_storage_sid",$f_sid,"string"); }
-	if ($f_identifier) { $f_select_criteria .= $direct_globals['db']->define_row_conditions_encode ($direct_settings['tmp_storage_table'].".ddbtmp_storage_identifier",$f_identifier,"string"); }
+	if ($f_sid) { $f_select_criteria .= $direct_globals['db']->defineRowConditionsEncode ($direct_settings['tmp_storage_table'].".ddbtmp_storage_sid",$f_sid,"string"); }
+	if ($f_identifier) { $f_select_criteria .= $direct_globals['db']->defineRowConditionsEncode ($direct_settings['tmp_storage_table'].".ddbtmp_storage_identifier",$f_identifier,"string"); }
 
 	$f_select_criteria .= "</sqlconditions>";
 
-	$direct_globals['db']->define_row_conditions ($f_select_criteria);
-	$direct_globals['db']->define_limit (1);
+	$direct_globals['db']->defineRowConditions ($f_select_criteria);
+	$direct_globals['db']->defineLimit (1);
 
-	$f_result = $direct_globals['db']->query_exec ("ss");
+	$f_result = $direct_globals['db']->queryExec ("ss");
 
 	if ($f_result)
 	{
@@ -132,7 +119,6 @@ $f_select_criteria = ("<sqlconditions>
 	return /*#ifdef(DEBUG):direct_debug (7,"sWG/#echo(__FILEPATH__)# -direct_tmp_storage_get ()- (#echo(__LINE__)#)",:#*/$f_return/*#ifdef(DEBUG):,true):#*/;
 }
 
-//f// direct_tmp_storage_write ($f_data,$f_id,$f_sid,$f_identifier = "",$f_type = "evars",$f_mintime = 0,$f_maxtime = 0,$f_maintained = false)
 /**
 * Writes an entry to the "tmp_storage" table.
 *
@@ -146,20 +132,6 @@ $f_select_criteria = ("<sqlconditions>
 * @param  integer $f_maxtime UNIX time stamp when the entry gets deleted (or 0
 *         if it will be deleted manually)
 * @param  boolean $f_maintained True to manually maintain the entry state 
-* @uses   direct_basic_functions::tmd5() 
-* @uses   direct_db::define_values()
-* @uses   direct_db::define_values_encode()
-* @uses   direct_db::define_values_keys()
-* @uses   direct_db::define_row_conditions()
-* @uses   direct_db::define_row_conditions_encode()
-* @uses   direct_db::init_delete()
-* @uses   direct_db::init_replace()
-* @uses   direct_db::optimize_random()
-* @uses   direct_db::query_exec()
-* @uses   direct_dbsync_event()
-* @uses   direct_debug()
-* @uses   direct_evars_write()
-* @uses   USE_debug_reporting
 * @return mixed Array, parsed evars array or string; false on error
 * @since  v0.1.00
 */
@@ -175,39 +147,39 @@ function direct_tmp_storage_write ($f_data,$f_id,$f_sid,$f_identifier = "",$f_ty
 		$f_id = $direct_globals['basic_functions']->tmd5 ($f_id);
 
 		if ($f_type == "evars") { $f_data = direct_evars_write ($f_data); }
-		else { $f_data = (($f_type == "a") ? trim (implode ("\n",$f_data)) : trim ($f_data)); }
+		else { $f_data = trim (($f_type == "a") ? implode ("\n",$f_data) : $f_data); }
 
 		if ($f_data)
 		{
-			$direct_globals['db']->init_replace ($direct_settings['tmp_storage_table']);
+			$direct_globals['db']->initReplace ($direct_settings['tmp_storage_table']);
 
 			$f_replace_attributes = array ($direct_settings['tmp_storage_table'].".ddbtmp_storage_id",$direct_settings['tmp_storage_table'].".ddbtmp_storage_time_min",$direct_settings['tmp_storage_table'].".ddbtmp_storage_time_max",$direct_settings['tmp_storage_table'].".ddbtmp_storage_sid",$direct_settings['tmp_storage_table'].".ddbtmp_storage_identifier",$direct_settings['tmp_storage_table'].".ddbtmp_storage_data",$direct_settings['tmp_storage_table'].".ddbtmp_storage_maintained");
-			$direct_globals['db']->define_values_keys ($f_replace_attributes);
+			$direct_globals['db']->defineValuesKeys ($f_replace_attributes);
 
-			$f_replace_values = "<sqlvalues>".($direct_globals['db']->define_values_encode ($f_id,"string"));
-			$f_replace_values .= ($f_mintime ? $direct_globals['db']->define_values_encode ($f_mintime,"number") : $direct_globals['db']->define_values_encode ($direct_cachedata['core_time'],"number"));
-			$f_replace_values .= ($f_maxtime ? $direct_globals['db']->define_values_encode ($f_maxtime,"number") : "<element1 value='0' type='number' />");
+			$f_replace_values = "<sqlvalues>".($direct_globals['db']->defineValuesEncode ($f_id,"string"));
+			$f_replace_values .= ($f_mintime ? $direct_globals['db']->defineValuesEncode ($f_mintime,"number") : $direct_globals['db']->defineValuesEncode ($direct_cachedata['core_time'],"number"));
+			$f_replace_values .= ($f_maxtime ? $direct_globals['db']->defineValuesEncode ($f_maxtime,"number") : "<element1 value='0' type='number' />");
 
-$f_replace_values .= (($direct_globals['db']->define_values_encode ($f_sid,"string"))."
-".($direct_globals['db']->define_values_encode ($f_identifier,"string"))."
-".($direct_globals['db']->define_values_encode ($f_data,"string")));
+$f_replace_values .= (($direct_globals['db']->defineValuesEncode ($f_sid,"string"))."
+".($direct_globals['db']->defineValuesEncode ($f_identifier,"string"))."
+".($direct_globals['db']->defineValuesEncode ($f_data,"string")));
 
 			$f_replace_values .= ($f_maintained ? "<element2 value='1' type='string' />" : "<element2 value='0' type='string' />");
 			$f_replace_values .= "</sqlvalues>";
 
-			$direct_globals['db']->define_values ($f_replace_values);
+			$direct_globals['db']->defineValues ($f_replace_values);
 
-			$f_return = $direct_globals['db']->query_exec ("co");
-			if (($f_return)&&(function_exists ("direct_dbsync_event"))) { direct_dbsync_event ($direct_settings['tmp_storage_table'],"replace",("<sqlconditions>".($direct_globals['db']->define_row_conditions_encode ($direct_settings['tmp_storage_table'].".ddbtmp_storage_id",$f_id,"string"))."</sqlconditions>")); }
+			$f_return = $direct_globals['db']->queryExec ("co");
+			if (($f_return)&&(function_exists ("direct_dbsync_event"))) { direct_dbsync_event ($direct_settings['tmp_storage_table'],"replace",("<sqlconditions>".($direct_globals['db']->defineRowConditionsEncode ($direct_settings['tmp_storage_table'].".ddbtmp_storage_id",$f_id,"string"))."</sqlconditions>")); }
 		}
 		else
 		{
-			$direct_globals['db']->init_delete ($direct_settings['tmp_storage_table']);
+			$direct_globals['db']->initDelete ($direct_settings['tmp_storage_table']);
 
-			$f_delete_criteria = "<sqlconditions>".($direct_globals['db']->define_row_conditions_encode ($direct_settings['tmp_storage_table'].".ddbtmp_storage_id",$f_id,"string"))."</sqlconditions>";
-			$direct_globals['db']->define_row_conditions ($f_delete_criteria);
+			$f_delete_criteria = "<sqlconditions>".($direct_globals['db']->defineRowConditionsEncode ($direct_settings['tmp_storage_table'].".ddbtmp_storage_id",$f_id,"string"))."</sqlconditions>";
+			$direct_globals['db']->defineRowConditions ($f_delete_criteria);
 
-			$f_return = $direct_globals['db']->query_exec ("ar");
+			$f_return = $direct_globals['db']->queryExec ("ar");
 
 			if ($f_return)
 			{
@@ -215,7 +187,7 @@ $f_replace_values .= (($direct_globals['db']->define_values_encode ($f_sid,"stri
 			}
 		}
 
-		if (!$direct_settings['swg_auto_maintenance']) { $direct_globals['db']->optimize_random ($direct_settings['tmp_storage_table']); }
+		if (!$direct_settings['swg_auto_maintenance']) { $direct_globals['db']->optimizeRandom ($direct_settings['tmp_storage_table']); }
 	}
 
 	return /*#ifdef(DEBUG):direct_debug (7,"sWG/#echo(__FILEPATH__)# -direct_tmp_storage_write ()- (#echo(__LINE__)#)",:#*/$f_return/*#ifdef(DEBUG):,true):#*/;

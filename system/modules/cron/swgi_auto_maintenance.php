@@ -32,7 +32,6 @@ NOTE_END //n*/
 * @copyright  (C) direct Netware Group - All rights reserved
 * @package    sWG_basic
 * @subpackage cron
-* @uses       direct_product_iversion
 * @since      v0.1.00
 * @license    http://www.direct-netware.de/redirect.php?licenses;w3c
 *             W3C (R) Software License
@@ -63,52 +62,50 @@ if (!empty ($direct_cachedata['job_data']))
 
 	$g_threshold = ($direct_cachedata['core_time'] - $direct_settings['log_time_limit']);
 
-	$direct_globals['db']->init_delete ($direct_settings['log_table']);
-	$g_delete_criteria = "<sqlconditions>".($direct_globals['db']->define_row_conditions_encode ($direct_settings['log_table'].".ddblog_time",$g_threshold,"number","<"))."</sqlconditions>";
-	$direct_globals['db']->define_row_conditions ($g_delete_criteria);
+	$direct_globals['db']->initDelete ($direct_settings['log_table']);
+	$g_delete_criteria = "<sqlconditions>".($direct_globals['db']->defineRowConditionsEncode ($direct_settings['log_table'].".ddblog_time",$g_threshold,"number","<"))."</sqlconditions>";
+	$direct_globals['db']->defineRowConditions ($g_delete_criteria);
 
-	$g_continue_check = $direct_globals['db']->query_exec ("co");
+	$g_continue_check = $direct_globals['db']->queryExec ("co");
 
 	if ($g_continue_check)
 	{
 		if (function_exists ("direct_dbsync_event")) { direct_dbsync_event ($direct_settings['log_table'],"delete",$g_delete_criteria); }
-		$direct_globals['db']->optimize_random ($direct_settings['log_table']);
+		$direct_globals['db']->optimizeRandom ($direct_settings['log_table']);
 		echo "done (".(time ()).")";
 	}
 	else { echo "failed (".(time ()).")"; }
 
 	echo "\n> Cleaning up \"$direct_settings[tmp_storage_table]\" ... ";
 
-	$direct_globals['db']->init_delete ($direct_settings['tmp_storage_table']);
+	$direct_globals['db']->initDelete ($direct_settings['tmp_storage_table']);
 
 $g_delete_criteria = ("<sqlconditions>
 <element1 attribute='{$direct_settings['tmp_storage_table']}.ddbtmp_storage_time_max' value='0' type='number' operator='>' />
-".($direct_globals['db']->define_row_conditions_encode ($direct_settings['tmp_storage_table'].".ddbtmp_storage_time_max",$direct_cachedata['core_time'],"number","<"))."
+".($direct_globals['db']->defineRowConditionsEncode ($direct_settings['tmp_storage_table'].".ddbtmp_storage_time_max",$direct_cachedata['core_time'],"number","<"))."
 <element2 attribute='{$direct_settings['tmp_storage_table']}.ddbtmp_storage_maintained' value='0' type='string' />
 </sqlconditions>");
 
-	$direct_globals['db']->define_row_conditions ($g_delete_criteria);
-	$g_continue_check = $direct_globals['db']->query_exec ("co");
+	$direct_globals['db']->defineRowConditions ($g_delete_criteria);
+	$g_continue_check = $direct_globals['db']->queryExec ("co");
 
 	if ($g_continue_check)
 	{
-		$direct_globals['db']->optimize_random ($direct_settings['tmp_storage_table']);
+		if (function_exists ("direct_dbsync_event")) { direct_dbsync_event ($direct_settings['tmp_storage_table'],"delete",$g_delete_criteria); }
+		$direct_globals['db']->optimizeRandom ($direct_settings['tmp_storage_table']);
 		echo "done (".(time ()).")";
 	}
 	else { echo "failed (".(time ()).")"; }
 
 	echo "\n> Cleaning up \"$direct_settings[uuids_table]\" ... ";
 
-	$direct_globals['db']->init_delete ($direct_settings['uuids_table']);
-
-	$g_delete_criteria = "<sqlconditions>".($direct_globals['db']->define_row_conditions_encode ($direct_settings['uuids_table'].".ddbuuids_list_maxage_inactivity",$direct_cachedata['core_time'],"number","<"))."</sqlconditions>";
-	$direct_globals['db']->define_row_conditions ($g_delete_criteria);
-
-	$g_continue_check = $direct_globals['db']->query_exec ("co");
+	$direct_globals['db']->initDelete ($direct_settings['uuids_table']);
+	$direct_globals['db']->defineRowConditions ("<sqlconditions>".($direct_globals['db']->defineRowConditionsEncode ($direct_settings['uuids_table'].".ddbuuids_list_maxage_inactivity",$direct_cachedata['core_time'],"number","<"))."</sqlconditions>");
+	$g_continue_check = $direct_globals['db']->queryExec ("co");
 
 	if ($g_continue_check)
 	{
-		$direct_globals['db']->optimize_random ($direct_settings['uuids_table']);
+		$direct_globals['db']->optimizeRandom ($direct_settings['uuids_table']);
 		echo "done (".(time ()).")";
 	}
 	else { echo "failed (".(time ()).")"; }

@@ -32,11 +32,14 @@ NOTE_END //n*/
 * @copyright  (C) direct Netware Group - All rights reserved
 * @package    sWG_basic
 * @subpackage developer
-* @uses       direct_product_iversion
 * @since      v0.1.00
 * @license    http://www.direct-netware.de/redirect.php?licenses;w3c
 *             W3C (R) Software License
 */
+
+/*#use(direct_use) */
+use dNG\sWG\directVirtualClass;
+/* #\n*/
 
 //j// Basic configuration
 
@@ -44,13 +47,8 @@ if (!defined ("direct_product_iversion")) { exit (); }
 
 //j// Functions and classes
 
-/* -------------------------------------------------------------------------
-Testing for required classes
-------------------------------------------------------------------------- */
-
-if (!defined ("CLASS_direct_subkernel_developer"))
+if (!defined ("CLASS_directSubkernelDeveloper"))
 {
-//c// direct_subkernel_developer
 /**
 * Subkernel for: developer
 *
@@ -58,27 +56,24 @@ if (!defined ("CLASS_direct_subkernel_developer"))
 * @copyright  (C) direct Netware Group - All rights reserved
 * @package    sWG_basic
 * @subpackage developer
-* @uses       CLASS_direct_virtual_class
 * @since      v0.1.00
 * @license    http://www.direct-netware.de/redirect.php?licenses;w3c
 *             W3C (R) Software License
 */
-class direct_subkernel_developer extends direct_virtual_class
+class directSubkernelDeveloper extends directVirtualClass
 {
 /* -------------------------------------------------------------------------
 Extend the class using old and new behavior
 ------------------------------------------------------------------------- */
 
-	//f// direct_subkernel_developer->__construct () and direct_subkernel_developer->direct_subkernel_developer ()
 /**
-	* Constructor (PHP5) __construct (direct_subkernel_developer)
+	* Constructor (PHP5) __construct (directSubkernelDeveloper)
 	*
-	* @uses  USE_debug_reporting
 	* @since v0.1.00
 */
 	/*#ifndef(PHP4) */public /* #*/function __construct ()
 	{
-		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -kernel_class->__construct (direct_subkernel_developer)- (#echo(__LINE__)#)"); }
+		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -kernel->__construct (directSubkernelDeveloper)- (#echo(__LINE__)#)"); }
 
 /* -------------------------------------------------------------------------
 My parent should be on my side to get the work done
@@ -90,78 +85,70 @@ My parent should be on my side to get the work done
 Informing the system about the available function
 ------------------------------------------------------------------------- */
 
-		$this->functions['subkernel_init'] = true;
+		$this->functions['subkernelInit'] = true;
 	}
 /*#ifdef(PHP4):
 /**
-	* Constructor (PHP4) direct_subkernel_developer (direct_subkernel_developer)
+	* Constructor (PHP4) directSubkernelDeveloper
 	*
 	* @since v0.1.00
 *\/
-	function direct_subkernel_developer () { $this->__construct (); }
+	function directSubkernelDeveloper () { $this->__construct (); }
 :#*/
-	//f// direct_subkernel_developer->subkernel_init ($f_threshold_id = "")
 /**
 	* Running subkernel specific checkups.
 	*
 	* @param  string $f_threshold_id This parameter is used to determine if
 	*         a request to write data is below the threshold (timeout).
-	* @uses   USE_debug_reporting
 	* @return boolean True if the checkup finishes successfully
 	* @since  v0.1.00
 */
-	/*#ifndef(PHP4) */public /* #*/function subkernel_init ($f_threshold_id = "")
+	/*#ifndef(PHP4) */public /* #*/function subkernelInit ($f_threshold_id = "")
 	{
 		global $direct_globals,$direct_settings;
-		if (USE_debug_reporting) { direct_debug (2,"sWG/#echo(__FILEPATH__)# -kernel_class->subkernel_init ($f_threshold_id)- (#echo(__LINE__)#)"); }
+		if (USE_debug_reporting) { direct_debug (2,"sWG/#echo(__FILEPATH__)# -kernel->subkernelInit ($f_threshold_id)- (#echo(__LINE__)#)"); }
 
-		if (($direct_globals['basic_functions']->include_file ($direct_settings['path_system']."/classes/swg_db.php"))&&(direct_class_init ("db"))) { $f_return = array (); }
-		else { $f_return = array ("errors_core_unknown_error","FATAL ERROR: Unable to instantiate &quot;db&quot;.","sWG/#echo(__FILEPATH__)# -kernel_class->subkernel_init ()- (#echo(__LINE__)#)"); }
+		if (($direct_globals['basic_functions']->includeClass ('dNG\sWG\directDB'))&&(direct_class_init ("db"))) { $f_return = array (); }
+		else { $f_return = array ("errors_core_unknown_error","FATAL ERROR: Unable to instantiate &quot;db&quot;.","sWG/#echo(__FILEPATH__)# -kernel->subkernelInit ()- (#echo(__LINE__)#)"); }
 
 		if (empty ($f_return))
 		{
-			if ($direct_globals['db']->v_connect ())
+			if ($direct_globals['db']->vConnect ())
 			{
-				$direct_globals['kernel']->v_user_init ($f_threshold_id);
+				$direct_globals['kernel']->vUserInit ($f_threshold_id);
 
 /* -------------------------------------------------------------------------
 Checking up basic rights
 ------------------------------------------------------------------------- */
 
-/*i// LICENSE_WARNING
-----------------------------------------------------------------------------
-The sWG Group Class has been published under the General Public License.
-----------------------------------------------------------------------------
-LICENSE_WARNING_END //i*/
-
-				if (direct_class_function_check ($direct_globals['kernel'],"v_group_user_check_right"))
+				if (direct_class_function_check ($direct_globals['kernel'],"vGroupInit"))
 				{
-					$direct_globals['kernel']->v_group_init ();
+					$direct_globals['kernel']->vGroupInit ();
 
-					if ($direct_globals['kernel']->v_usertype_get_int ($direct_settings['user']['type']) > 2)
+					if ($direct_globals['kernel']->vUsertypeGetInt ($direct_settings['user']['type']) > 2)
 					{
-						if (($direct_globals['kernel']->v_usertype_get_int ($direct_settings['user']['type']) < 4)&&(!$direct_globals['kernel']->v_group_user_check_right ("developer_access"))) { $f_return = array ("core_access_denied","sWG/#echo(__FILEPATH__)# -kernel_class->subkernel_init ()- (#echo(__LINE__)#)"); }
+						if (($direct_globals['kernel']->vUsertypeGetInt ($direct_settings['user']['type']) < 4)&&(!$direct_globals['kernel']->vGroupUserCheckRight ("developer_access"))) { $f_return = array ("core_access_denied","sWG/#echo(__FILEPATH__)# -kernel->subkernelInit ()- (#echo(__LINE__)#)"); }
 					}
-					else { $f_return = array ("core_access_denied","","sWG/#echo(__FILEPATH__)# -kernel_class->subkernel_init ()- (#echo(__LINE__)#)"); }
+					else { $f_return = array ("core_access_denied","","sWG/#echo(__FILEPATH__)# -kernel->subkernelInit ()- (#echo(__LINE__)#)"); }
 				}
 				else
 				{
-					if ($direct_settings['user']['type'] != "ad") { $f_return = array ("core_access_denied","","sWG/#echo(__FILEPATH__)# -kernel_class->subkernel_init ()- (#echo(__LINE__)#)"); }
+					if ($direct_settings['user']['type'] != "ad") { $f_return = array ("core_access_denied","","sWG/#echo(__FILEPATH__)# -kernel->subkernelInit ()- (#echo(__LINE__)#)"); }
 				}
 			}
-			else { $f_return = array ("core_database_error","FATAL ERROR: Error while setting up a database connection","sWG/#echo(__FILEPATH__)# -kernel_class->subkernel_init ()- (#echo(__LINE__)#)"); }
+			else { $f_return = array ("core_database_error","FATAL ERROR: Error while setting up a database connection","sWG/#echo(__FILEPATH__)# -kernel->subkernelInit ()- (#echo(__LINE__)#)"); }
 		}
 
 		if (empty ($f_return))
 		{
-			if ($direct_globals['basic_functions']->settings_get ($direct_settings['path_data']."/settings/swg_developer.php"))
+			if ($direct_globals['basic_functions']->settingsGet ($direct_settings['path_data']."/settings/swg_developer.php"))
 			{
-				if (!$direct_settings['developer']) { $f_return = array ("core_service_inactive","","sWG/#echo(__FILEPATH__)# -kernel_class->subkernel_init ()- (#echo(__LINE__)#)"); }
+				if (!$direct_settings['developer']) { $f_return = array ("core_service_inactive","","sWG/#echo(__FILEPATH__)# -kernel->subkernelInit ()- (#echo(__LINE__)#)"); }
 			}
-			else { $f_return = array ("core_required_object_not_found","FATAL ERROR: &quot;$direct_settings[path_data]/settings/swg_developer.php&quot; was not found","sWG/#echo(__FILEPATH__)# -kernel_class->subkernel_init ()- (#echo(__LINE__)#)"); }
+			else { $f_return = array ("core_required_object_not_found","FATAL ERROR: &quot;$direct_settings[path_data]/settings/swg_developer.php&quot; was not found","sWG/#echo(__FILEPATH__)# -kernel->subkernelInit ()- (#echo(__LINE__)#)"); }
 		}
 
-		return /*#ifdef(DEBUG):direct_debug (7,"sWG/#echo(__FILEPATH__)# -kernel_class->subkernel_init ()- (#echo(__LINE__)#)",:#*/$f_return/*#ifdef(DEBUG):,true):#*/;
+		return /*#ifdef(DEBUG):direct_debug (7,"sWG/#echo(__FILEPATH__)# -kernel->subkernelInit ()- (#echo(__LINE__)#)",:#*/$f_return/*#ifdef(DEBUG):,true):#*/;
 	}
 }
 
@@ -169,13 +156,14 @@ LICENSE_WARNING_END //i*/
 Mark this class as the most up-to-date one
 ------------------------------------------------------------------------- */
 
-$direct_globals['@names']['subkernel_developer'] = "direct_subkernel_developer";
-define ("CLASS_direct_subkernel_developer",true);
+define ("CLASS_directSubkernelDeveloper",true);
 
 //j// Script specific commands
 
+$direct_globals['@names']['subkernel_developer'] = "directSubkernelDeveloper";
+
 direct_class_init ("subkernel_developer");
-$direct_globals['kernel']->v_call_set ("v_subkernel_init",$direct_globals['subkernel_developer'],"subkernel_init");
+$direct_globals['kernel']->vCallSet ("vSubkernelInit",$direct_globals['subkernel_developer'],"subkernelInit");
 }
 
 //j// EOF

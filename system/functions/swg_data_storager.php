@@ -44,19 +44,11 @@ all development packets)
 
 //j// Functions and classes
 
-//f// direct_data_get ($f_id_data)
 /**
 * Reads (document) data from the database.
 *
 * @param  mixed $f_id_data One ID (string) or multiple IDs (array) of the
 *         requested data
-* @uses   direct_db::define_attributes()
-* @uses   direct_db::define_row_conditions()
-* @uses   direct_db::define_row_conditions_encode()
-* @uses   direct_db::init_select()
-* @uses   direct_db::query_exec()
-* @uses   direct_debug()
-* @uses   USE_debug_reporting
 * @return mixed Single or multi dimensional array; false on error
 * @since  v0.1.00
 */
@@ -69,44 +61,35 @@ function direct_data_get ($f_id_data)
 
 	if (is_array ($f_id_data))
 	{
-		$direct_globals['db']->init_select ($direct_settings['data_table']);
-		$direct_globals['db']->define_attributes ($direct_settings['data_table'].".*");
+		$direct_globals['db']->initSelect ($direct_settings['data_table']);
+		$direct_globals['db']->defineAttributes ($direct_settings['data_table'].".*");
 
 		$f_select_criteria = "<sqlconditions>";
-		foreach ($f_id_data as $f_id) { $f_select_criteria .= $direct_globals['db']->define_row_conditions_encode ($direct_settings['data_table'].".ddbdata_id",$f_id,"string","==","or"); }
+		foreach ($f_id_data as $f_id) { $f_select_criteria .= $direct_globals['db']->defineRowConditionsEncode ($direct_settings['data_table'].".ddbdata_id",$f_id,"string","==","or"); }
 		$f_select_criteria .= "</sqlconditions>";
 
-		$direct_globals['db']->define_row_conditions ($f_select_criteria);
-		$f_return = $direct_globals['db']->query_exec ("ma");
+		$direct_globals['db']->defineRowConditions ($f_select_criteria);
+		$f_return = $direct_globals['db']->queryExec ("ma");
 	}
 	else
 	{
-		$direct_globals['db']->init_select ($direct_settings['data_table']);
+		$direct_globals['db']->initSelect ($direct_settings['data_table']);
 
-		$direct_globals['db']->define_attributes ($direct_settings['data_table'].".*");
-		$direct_globals['db']->define_row_conditions ("<sqlconditions>".($direct_globals['db']->define_row_conditions_encode ($direct_settings['data_table'].".ddbdata_id",$f_id_data,"string"))."</sqlconditions>");
+		$direct_globals['db']->defineAttributes ($direct_settings['data_table'].".*");
+		$direct_globals['db']->defineRowConditions ("<sqlconditions>".($direct_globals['db']->defineRowConditionsEncode ($direct_settings['data_table'].".ddbdata_id",$f_id_data,"string"))."</sqlconditions>");
 
-		$f_return = $direct_globals['db']->query_exec ("sa");
+		$f_return = $direct_globals['db']->queryExec ("sa");
 	}
 
 	return /*#ifdef(DEBUG):direct_debug (7,"sWG/#echo(__FILEPATH__)# -direct_data_get ()- (#echo(__LINE__)#)",:#*/$f_return/*#ifdef(DEBUG):,true):#*/;
 }
 
-//f// direct_data_write ($f_data,$f_id_data,$f_id_cat = "")
 /**
 * Writes (document) data to the database.
 *
 * @param  array $f_data Data array
 * @param  string $f_id_data ID of the data element
 * @param  string $f_id_cat ID of the category containing the element
-* @uses   direct_db::define_values()
-* @uses   direct_db::define_values_encode()
-* @uses   direct_db::define_values_keys()
-* @uses   direct_db::init_replace()
-* @uses   direct_db::query_exec()
-* @uses   direct_dbsync_event()
-* @uses   direct_debug()
-* @uses   USE_debug_reporting
 * @return boolean True on success
 * @since  v0.1.00
 */
@@ -134,27 +117,27 @@ $f_replace_array = array (
 
 	if (!empty ($f_replace_array))
 	{
-		$direct_globals['db']->init_replace ($direct_settings['data_table']);
+		$direct_globals['db']->initReplace ($direct_settings['data_table']);
 
 		$f_replace_attributes = array ($direct_settings['data_table'].".ddbdata_id",$direct_settings['data_table'].".ddbdata_id_cat",$direct_settings['data_table'].".ddbdata_owner",$direct_settings['data_table'].".ddbdata_title",$direct_settings['data_table'].".ddbdata_data",$direct_settings['data_table'].".ddbdata_sid",$direct_settings['data_table'].".ddbdata_mode_user",$direct_settings['data_table'].".ddbdata_mode_group",$direct_settings['data_table'].".ddbdata_mode_all");
-		$direct_globals['db']->define_values_keys ($f_replace_attributes);
+		$direct_globals['db']->defineValuesKeys ($f_replace_attributes);
 
 $f_replace_values = ("<sqlvalues>
-".($direct_globals['db']->define_values_encode ($f_id_data,"string"))."
-".($direct_globals['db']->define_values_encode ($f_id_cat,"string"))."
-".($direct_globals['db']->define_values_encode ($f_replace_array['owner'],"string"))."
-".($direct_globals['db']->define_values_encode ($f_replace_array['title'],"string"))."
-".($direct_globals['db']->define_values_encode ($f_replace_array['data'],"string"))."
-".($direct_globals['db']->define_values_encode ($f_replace_array['sid'],"string"))."
-".($direct_globals['db']->define_values_encode ($f_replace_array['mode_user'],"string"))."
-".($direct_globals['db']->define_values_encode ($f_replace_array['mode_group'],"string"))."
-".($direct_globals['db']->define_values_encode ($f_replace_array['mode_all'],"string"))."
+".($direct_globals['db']->defineValuesEncode ($f_id_data,"string"))."
+".($direct_globals['db']->defineValuesEncode ($f_id_cat,"string"))."
+".($direct_globals['db']->defineValuesEncode ($f_replace_array['owner'],"string"))."
+".($direct_globals['db']->defineValuesEncode ($f_replace_array['title'],"string"))."
+".($direct_globals['db']->defineValuesEncode ($f_replace_array['data'],"string"))."
+".($direct_globals['db']->defineValuesEncode ($f_replace_array['sid'],"string"))."
+".($direct_globals['db']->defineValuesEncode ($f_replace_array['mode_user'],"string"))."
+".($direct_globals['db']->defineValuesEncode ($f_replace_array['mode_group'],"string"))."
+".($direct_globals['db']->defineValuesEncode ($f_replace_array['mode_all'],"string"))."
 </sqlvalues>");
 
-		$direct_globals['db']->define_values ($f_replace_values);
-		$f_return = $direct_globals['db']->query_exec ("co");
+		$direct_globals['db']->defineValues ($f_replace_values);
+		$f_return = $direct_globals['db']->queryExec ("co");
 
-		if (($f_return)&&(function_exists ("direct_dbsync_event"))) { direct_dbsync_event ($direct_settings['data_table'],"replace",("<sqlconditions>".($direct_globals['db']->define_row_conditions_encode ($direct_settings['data_table'].".ddbdata_id",$f_id_data,"string"))."</sqlconditions>")); }
+		if (($f_return)&&(function_exists ("direct_dbsync_event"))) { direct_dbsync_event ($direct_settings['data_table'],"replace",("<sqlconditions>".($direct_globals['db']->defineRowConditionsEncode ($direct_settings['data_table'].".ddbdata_id",$f_id_data,"string"))."</sqlconditions>")); }
 	}
 
 	return /*#ifdef(DEBUG):direct_debug (7,"sWG/#echo(__FILEPATH__)# -direct_data_write ()- (#echo(__LINE__)#)",:#*/$f_return/*#ifdef(DEBUG):,true):#*/;

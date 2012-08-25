@@ -1,7 +1,0 @@
-_extras
-.*
-*.mo
-nbproject
-makefile.php
-sWG_basic.*
-system/classes/ext_ipk/*

@@ -32,7 +32,6 @@ NOTE_END //n*/
 * @copyright  (C) direct Netware Group - All rights reserved
 * @package    sWG_basic
 * @subpackage cp
-* @uses       direct_product_iversion
 * @since      v0.1.00
 * @license    http://www.direct-netware.de/redirect.php?licenses;w3c
 *             W3C (R) Software License
@@ -65,25 +64,25 @@ case "services":
 {
 	if (USE_debug_reporting) { direct_debug (1,"sWG/#echo(__FILEPATH__)# _a=services_ (#echo(__LINE__)#)"); }
 
-	$direct_cachedata['output_page'] = (isset ($direct_settings['dsd']['page']) ? ($direct_globals['basic_functions']->inputfilter_number ($direct_settings['dsd']['page'])) : 1);
+	$direct_cachedata['output_page'] = (isset ($direct_settings['dsd']['page']) ? ($direct_globals['basic_functions']->inputfilterNumber ($direct_settings['dsd']['page'])) : 1);
 
 	$direct_cachedata['page_this'] = "m=cp;a=services;dsd=page+".$direct_cachedata['output_page'];
 	$direct_cachedata['page_backlink'] = "";
 	$direct_cachedata['page_homelink'] = "";
 
-	if ($direct_globals['kernel']->service_init_default ())
+	if ($direct_globals['kernel']->serviceInitDefault ())
 	{
 	//j// BOA
-	$direct_globals['output']->related_manager ("cp_index_services","pre_module_service_action");
-	$direct_globals['kernel']->service_https ($direct_settings['cp_https'],$direct_cachedata['page_this']);
-	$direct_globals['basic_functions']->require_file ($direct_settings['path_system']."/classes/swg_formtags.php");
-	$direct_globals['basic_functions']->require_file ($direct_settings['path_system']."/functions/swg_service_list.php");
-	$direct_globals['basic_functions']->require_file ($direct_settings['path_system']."/functions/swg_tmp_storager.php");
+	$direct_globals['output']->relatedManager ("cp_index_services","pre_module_service_action");
+	$direct_globals['kernel']->serviceHttps ($direct_settings['cp_https'],$direct_cachedata['page_this']);
+	$direct_globals['basic_functions']->requireClass ('dNG\sWG\directFormtags');
+	$direct_globals['basic_functions']->requireFile ($direct_settings['path_system']."/functions/swg_service_list.php");
+	$direct_globals['basic_functions']->requireFile ($direct_settings['path_system']."/functions/swg_tmp_storager.php");
 	direct_local_integration ("cp_core");
 
 	direct_class_init ("formtags");
 
-	$g_uuid = $direct_globals['input']->uuid_get ();
+	$g_uuid = $direct_globals['input']->uuidGet ();
 
 	$direct_cachedata['output_filter_fid'] = "cp_services";
 	$direct_cachedata['output_filter_source'] = urlencode (base64_encode ($direct_cachedata['page_this']));
@@ -107,9 +106,9 @@ case "services":
 	$direct_cachedata['output_services_title'] = direct_local_get ("cp_core_service_list");
 
 	$direct_globals['output']->header (false,true,$direct_settings['p3p_url'],$direct_settings['p3p_cp']);
-	$direct_globals['output']->related_manager ("cp_index_services","post_module_service_action");
+	$direct_globals['output']->relatedManager ("cp_index_services","post_module_service_action");
 	$direct_globals['output']->oset ("default","service_list");
-	$direct_globals['output']->output_send (direct_local_get ("cp_core_control_panel"));
+	$direct_globals['output']->outputSend (direct_local_get ("cp_core_control_panel"));
 	//j// EOA
 	}
 
