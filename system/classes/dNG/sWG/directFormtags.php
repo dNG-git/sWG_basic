@@ -71,7 +71,7 @@ Extend the class using old and new behavior
 /**
 	* Constructor (PHP5) __construct (directFormtags)
 	*
-				* @since v0.1.00
+	* @since v0.1.00
 */
 	/*#ifndef(PHP4) */public /* #*/function __construct ()
 	{
@@ -156,7 +156,7 @@ Informing the system about available functions
 			if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($f_data,"[url") !== false) { $f_data = preg_replace ("#\[url(.*?)\](.+?)\[\/url\]#i"," *".(direct_local_get ("formtags_url","text"))."* ",$f_data); }
 		}
 
-		if ($f_withnewline) { $f_data = str_replace (array ("[br]","[newline]"),(array ("\n","\n")),$f_data); }
+		if ($f_withnewline) { $f_data = str_replace (array ("[br]","[newline]"),"[newline]\n[/newline]",$f_data); }
 		$this->parser ($f_data,"cleanup");
 		$f_data = trim (str_replace ((array ("&lt;","&gt;","&quot;")),(array ("<",">",'"')),$f_data));
 
@@ -184,7 +184,7 @@ Informing the system about available functions
 		if (/*#ifndef(PHP4) */stripos/* #*//*#ifdef(PHP4):stristr:#*/ ($f_data,"[hr]") !== false) { $f_data = str_replace ("[hr]","<div class='pagehr' style='$direct_settings[theme_hr_style]'><img src='".(direct_linker_dynamic ("url0","s=cache;dsd=dfile+$direct_settings[path_mmedia]/spacer.png",true,false))."' width='1' height='1' alt='' title='' style='float:left' /></div><nobr />",$f_data); }
 
 		$this->parser ($f_data,"sourcecode_decode");
-		if ($f_withnewline) { $f_data = str_replace (array ("[br]","[newline]"),(array ("<br />\n","<br />\n")),$f_data); }
+		if ($f_withnewline) { $f_data = str_replace (array ("[br]","[newline]"),"[newline]<br />\n[/newline]",$f_data); }
 		$this->parser ($f_data,"decode");
 
 		if (preg_match_all ("#(\[|\])(\w{3,5})\:\/\/(.+?)(\[|\])#i",$f_data,$f_result_array,PREG_SET_ORDER))
@@ -195,7 +195,7 @@ Informing the system about available functions
 		$f_data = str_replace (array ("&lt;","&gt;"),(array ("<",">")),$f_data);
 		$f_data = preg_replace ("#\&amp;(\w{2,4});#i","&\\1;",$f_data);
 
-		return trim (preg_replace ("#<nobr />(<br />\n){0,1}#","\n",$f_data));
+		return trim (str_replace ("<nobr />","",$f_data));
 	}
 
 /**
@@ -292,9 +292,12 @@ $f_data = preg_replace (array ("#\[color\=black\](.+?)\[\/color\]#si","#\[color\
 */
 	/*#ifndef(PHP4) */protected /* #*/function parser (&$f_data,$f_mode = "",$f_data_position = 0,$f_nested_tag = NULL,$f_nested_tag_end_position = NULL)
 	{
+		global $direct_globals,$direct_settings;
 		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags->parser (+f_data,$f_mode)- (#echo(__LINE__)#)"); }
+
 		$f_return = false;
 
+		$f_cached_id = "";
 		$f_mode_cleanup = ((($f_mode == "cleanup")||($f_mode == "pre_cleanup")) ? true : false);
 		$f_mode_decode = ((($f_mode == "decode")||($f_mode == "pre_decode")) ? true : false);
 		$f_mode_precode = ((($f_mode == "pre_cleanup")||($f_mode == "pre_decode")) ? true : false);
@@ -316,7 +319,7 @@ $f_data = preg_replace (array ("#\[color\=black\](.+?)\[\/color\]#si","#\[color\
 		}
 		else
 		{
-			$f_tags_array = array ("[-","[img","[url","[font","[quote","[title","[rewrite","[sources","[contentform");
+			$f_tags_array = array ("[-","[img","[url","[font","[quote","[title","[newline","[rewrite","[sources","[contentform");
 			$f_tags_identifier = "[";
 		}
 
@@ -329,7 +332,22 @@ $f_data = preg_replace (array ("#\[color\=black\](.+?)\[\/color\]#si","#\[color\
 		else
 		{
 			$f_data_position = mb_strpos ($f_data,$f_tags_identifier,$f_data_position);
+			if (($direct_settings['swg_memcache'])&&($direct_settings['formtags_cache_min'])&&($f_data_position !== false)&&(strlen ($f_data) > $direct_settings['formtags_cache_min'])&&(!$f_mode_precode)&&(($f_mode_cleanup)||($f_mode_decode))&&(strpos ($f_data,"[rewrite") === false)) { $f_cached_id = $f_mode."_".(strlen ($f_data))."_".(md5 ($f_data)); }
+
 			$f_nested_check = false;
+		}
+
+		if ($f_cached_id)
+		{
+			$f_cached_file_pathname = $direct_globals['basic_functions']->memcacheGetFilePathName ("cache/$f_cached_id.php",1);
+
+			if ($f_cached_file_pathname)
+			{
+				$f_data = direct_file_get ("s1",$f_cached_file_pathname);
+				$f_data_position = false;
+
+				touch ($f_cached_file_pathname);
+			}
 		}
 
 		if ($f_data_position !== false) { $f_tags_count = count ($f_tags_array); }
@@ -375,7 +393,7 @@ $f_data = preg_replace (array ("#\[color\=black\](.+?)\[\/color\]#si","#\[color\
 					$f_tag_start_end_position = $this->parserTagFindEndPosition ($f_data,($f_data_position + $f_tag_length));
 					$f_list_symbol = mb_substr ($f_data,($f_data_position + 2),($f_tag_start_end_position - $f_data_position - 3));
 
-					$f_tag_name = "list";
+					$f_tag_name = "listItem";
 					$f_tag_end = "[/-$f_list_symbol]";
 					break 1;
 				}
@@ -402,6 +420,11 @@ $f_data = preg_replace (array ("#\[color\=black\](.+?)\[\/color\]#si","#\[color\
 				case "[title":
 				{
 					$f_tag_name = "title";
+					break 1;
+				}
+				case "[newline":
+				{
+					$f_tag_name = "newline";
 					break 1;
 				}
 				case "[rewrite":
@@ -455,13 +478,14 @@ $f_data = preg_replace (array ("#\[color\=black\](.+?)\[\/color\]#si","#\[color\
 			{
 				$f_nested_tag_check = ((($f_nested_check)&&($f_nested_tag == $f_tag)) ? true : false);
 				$f_return = true;
-				$this->{$f_function} ($f_data,$f_tag_array,$f_data_position,$f_tag_start_end_position,$f_tag_end_position,$f_nested_tag_check);
+
+				$f_data_position += $this->{$f_function} ($f_data,$f_tag_array,$f_data_position,$f_tag_start_end_position,$f_tag_end_position,$f_nested_tag_check,$f_nested_tag);
 			}
 			else { $f_data_position += $f_tag_length; }
 
 			if ($f_nested_check)
 			{
-				if ($f_return) { $f_data_position = false; }
+				if (($f_return)&&($f_nested_tag == $f_tag)) { $f_data_position = false; }
 				else
 				{
 					$f_data_position = mb_strpos ($f_data,$f_tags_identifier,$f_data_position);
@@ -470,6 +494,8 @@ $f_data = preg_replace (array ("#\[color\=black\](.+?)\[\/color\]#si","#\[color\
 			}
 			else { $f_data_position = mb_strpos ($f_data,$f_tags_identifier,$f_data_position); }
 		}
+
+		if (($f_cached_id)&&(!isset ($f_cached_file_pathname))) { $direct_globals['basic_functions']->memcacheWriteFile ($f_data,"cache/$f_cached_id.php","s1",true); }
 
 		return $f_return;
 	}
@@ -488,13 +514,15 @@ $f_data = preg_replace (array ("#\[color\=black\](.+?)\[\/color\]#si","#\[color\
 	* @param string $f_end_cresult HTML code that should be used
 	* @since v0.1.00
 */
-	/*#ifndef(PHP4) */protected /* #*/function parserCleanupContentform (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false)
+	/*#ifndef(PHP4) */protected /* #*/function parserCleanupContentform (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false,$f_nested_tag = NULL)
 	{
-		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags->parserCleanupContentform (+f_data,+f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,+f_nested)- (#echo(__LINE__)#)"); }
+		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags->parserCleanupContentform (+f_data,+f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,+f_nested,$f_nested_tag)- (#echo(__LINE__)#)"); }
 
 		$f_data_closed = mb_substr ($f_data,($f_tag_end_position + 14));
 		$f_tag_content = mb_substr ($f_data,$f_tag_content_position,($f_tag_end_position - $f_tag_content_position));
-		$f_data = ((mb_substr ($f_data,0,$f_tag_start_position)).$f_tag_content.$f_data_closed);
+		$f_data = ((mb_substr ($f_data,0,$f_tag_start_position)).$f_last_closing_data.$f_tag_content.$f_data_closed);
+
+		return 0;
 	}
 
 /**
@@ -511,13 +539,15 @@ $f_data = preg_replace (array ("#\[color\=black\](.+?)\[\/color\]#si","#\[color\
 	* @param string $f_end_cresult HTML code that should be used
 	* @since v0.1.00
 */
-	/*#ifndef(PHP4) */protected /* #*/function parserCleanupFont (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false)
+	/*#ifndef(PHP4) */protected /* #*/function parserCleanupFont (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false,$f_nested_tag = NULL)
 	{
-		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags->parserCleanupFont (+f_data,+f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,+f_nested)- (#echo(__LINE__)#)"); }
+		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags->parserCleanupFont (+f_data,+f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,+f_nested,$f_nested_tag)- (#echo(__LINE__)#)"); }
 
 		$f_data_closed = mb_substr ($f_data,($f_tag_end_position + 7));
 		$f_tag_content = mb_substr ($f_data,$f_tag_content_position,($f_tag_end_position - $f_tag_content_position));
-		$f_data = ((mb_substr ($f_data,0,$f_tag_start_position)).$f_tag_content.$f_data_closed);
+		$f_data = ((mb_substr ($f_data,0,$f_tag_start_position)).$f_last_closing_data.$f_tag_content.$f_data_closed);
+
+		return 0;
 	}
 
 /**
@@ -534,13 +564,15 @@ $f_data = preg_replace (array ("#\[color\=black\](.+?)\[\/color\]#si","#\[color\
 	* @param string $f_end_cresult HTML code that should be used
 	* @since v0.1.00
 */
-	/*#ifndef(PHP4) */protected /* #*/function parserCleanupImg (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false)
+	/*#ifndef(PHP4) */protected /* #*/function parserCleanupImg (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false,$f_nested_tag = NULL)
 	{
-		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags->parserCleanupImg (+f_data,+f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,+f_nested)- (#echo(__LINE__)#)"); }
+		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags->parserCleanupImg (+f_data,+f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,+f_nested,$f_nested_tag)- (#echo(__LINE__)#)"); }
 
 		$f_data_closed = mb_substr ($f_data,($f_tag_end_position + 6));
 		$f_tag_content = mb_substr ($f_data,$f_tag_content_position,($f_tag_end_position - $f_tag_content_position));
-		$f_data = ((mb_substr ($f_data,0,$f_tag_start_position)).$f_tag_content.$f_data_closed);
+		$f_data = ((mb_substr ($f_data,0,$f_tag_start_position)).$f_last_closing_data.$f_tag_content.$f_data_closed);
+
+		return 0;
 	}
 
 /**
@@ -557,15 +589,17 @@ $f_data = preg_replace (array ("#\[color\=black\](.+?)\[\/color\]#si","#\[color\
 	* @param string $f_end_cresult HTML code that should be used
 	* @since v0.1.00
 */
-	/*#ifndef(PHP4) */protected /* #*/function parserCleanupList (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false)
+	/*#ifndef(PHP4) */protected /* #*/function parserCleanupListItem (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false,$f_nested_tag = NULL)
 	{
-		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags->parserCleanupList (+f_data,+f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,+f_nested)- (#echo(__LINE__)#)"); }
+		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags->parserCleanupListItem (+f_data,+f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,+f_nested,$f_nested_tag)- (#echo(__LINE__)#)"); }
 
 		$f_list_symbol = mb_substr ($f_tag_array[0],1);
 		$f_data_closed = mb_substr ($f_data,(mb_strlen ($f_list_symbol) + $f_tag_end_position + 4));
 		$f_tag_content = mb_substr ($f_data,$f_tag_content_position,($f_tag_end_position - $f_tag_content_position));
 
-		$f_data = ((mb_substr ($f_data,0,$f_tag_start_position))."\n$f_list_symbol ".$f_tag_content.$f_data_closed);
+		$f_data = ((mb_substr ($f_data,0,$f_tag_start_position)).$f_last_closing_data."\n$f_list_symbol ".$f_tag_content.$f_data_closed);
+
+		return 0;
 	}
 
 /**
@@ -582,14 +616,14 @@ $f_data = preg_replace (array ("#\[color\=black\](.+?)\[\/color\]#si","#\[color\
 	* @param string $f_end_cresult HTML code that should be used
 	* @since v0.1.00
 */
-	/*#ifndef(PHP4) */protected /* #*/function parserCleanupQuote (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false)
+	/*#ifndef(PHP4) */protected /* #*/function parserCleanupQuote (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false,$f_nested_tag = NULL)
 	{
-		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags->parserCleanupQuote (+f_data,+f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,+f_nested)- (#echo(__LINE__)#)"); }
+		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags->parserCleanupQuote (+f_data,+f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,+f_nested,$f_nested_tag)- (#echo(__LINE__)#)"); }
 
 		$f_data_closed = mb_substr ($f_data,($f_tag_end_position + 8));
 		$f_tag_content = mb_substr ($f_data,$f_tag_content_position,($f_tag_end_position - $f_tag_content_position));
 
-		$f_data = mb_substr ($f_data,0,$f_tag_start_position);
+		$f_data = (mb_substr ($f_data,0,$f_tag_start_position).$f_last_closing_data);
 
 		if (isset ($f_tag_array[1]))
 		{
@@ -599,6 +633,33 @@ $f_data = preg_replace (array ("#\[color\=black\](.+?)\[\/color\]#si","#\[color\
 		else { $f_data .= "\n* ".(direct_local_get ("formtags_quote_1","text")).":\n$f_tag_content\n*\n"; }
 
 		$f_data .= $f_data_closed;
+
+		return 0;
+	}
+
+/**
+	* Clean [newline] tags.
+	*
+	* @param string &$f_data String that contains convertable data
+	* @param array $f_tag_array Tag for starting a FormTag
+	* @param integer $f_tag_start_position Position where the starting tag has
+	*        been found
+	* @param integer $f_tag_content_position Position where the content is
+	*        starting
+	* @param integer $f_tag_end_position Position where the content is ending
+	* @param boolean $f_nested True for nested items
+	* @param string $f_end_cresult HTML code that should be used
+	* @since v0.1.00
+*/
+	/*#ifndef(PHP4) */protected /* #*/function parserCleanupNewline (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false,$f_nested_tag = NULL)
+	{
+		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags->parserCleanupNewline (+f_data,+f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,+f_nested,$f_nested_tag)- (#echo(__LINE__)#)"); }
+
+		$f_data_closed = mb_substr ($f_data,($f_tag_end_position + 10));
+		$f_tag_content = mb_substr ($f_data,$f_tag_content_position,($f_tag_end_position - $f_tag_content_position));
+		$f_data = ((mb_substr ($f_data,0,$f_tag_start_position)).$f_last_closing_data.$f_tag_content.$f_data_closed);
+
+		return 0;
 	}
 
 /**
@@ -615,16 +676,16 @@ $f_data = preg_replace (array ("#\[color\=black\](.+?)\[\/color\]#si","#\[color\
 	* @param string $f_end_cresult HTML code that should be used
 	* @since v0.1.00
 */
-	/*#ifndef(PHP4) */protected /* #*/function parserCleanupRewrite (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false)
+	/*#ifndef(PHP4) */protected /* #*/function parserCleanupRewrite (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false,$f_nested_tag = NULL)
 	{
 		global $direct_cachedata,$direct_globals,$direct_settings;
-		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags->parserCleanupRewrite (+f_data,+f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,+f_nested)- (#echo(__LINE__)#)"); }
+		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags->parserCleanupRewrite (+f_data,+f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,+f_nested,$f_nested_tag)- (#echo(__LINE__)#)"); }
 
 		$f_data_closed = mb_substr ($f_data,($f_tag_end_position + 10));
 		$f_invalid_check = false;
 		$f_tag_content = mb_substr ($f_data,$f_tag_content_position,($f_tag_end_position - $f_tag_content_position));
 
-		$f_data = mb_substr ($f_data,0,$f_tag_start_position);
+		$f_data = (mb_substr ($f_data,0,$f_tag_start_position).$f_last_closing_data);
 
 		if ((!isset ($f_tag_array[1]))||(($f_tag_array[1] != "data")&&($f_tag_array[1] != "edit")&&($f_tag_array[1] != "elink")&&($f_tag_array[1] != "ilink")&&($f_tag_array[1] != "local")&&($f_tag_array[1] != "related"))) { $f_invalid_check = true; }
 		elseif (($f_tag_array[1] == "edit")&&(!isset ($f_tag_array[2],$f_tag_array[3]))) { $f_invalid_check = true; }
@@ -671,6 +732,8 @@ $f_data = preg_replace (array ("#\[color\=black\](.+?)\[\/color\]#si","#\[color\
 		}
 
 		$f_data .= $f_data_closed;
+
+		return 0;
 	}
 
 /**
@@ -687,19 +750,21 @@ $f_data = preg_replace (array ("#\[color\=black\](.+?)\[\/color\]#si","#\[color\
 	* @param string $f_end_cresult HTML code that should be used
 	* @since v0.1.00
 */
-	/*#ifndef(PHP4) */protected /* #*/function parserCleanupSourcecode (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false)
+	/*#ifndef(PHP4) */protected /* #*/function parserCleanupSourcecode (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false,$f_nested_tag = NULL)
 	{
-		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags->parserCleanupSourcecode (+f_data,+f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,+f_nested)- (#echo(__LINE__)#)"); }
+		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags->parserCleanupSourcecode (+f_data,+f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,+f_nested,$f_nested_tag)- (#echo(__LINE__)#)"); }
 
 		$f_data_closed = mb_substr ($f_data,($f_tag_end_position + 13));
 		$f_tag_content = mb_substr ($f_data,$f_tag_content_position,($f_tag_end_position - $f_tag_content_position));
 
-		if ($f_nested) { $f_data = ((mb_substr ($f_data,0,$f_tag_start_position))."&#91;sourcecode&#93;$f_tag_content&#91;/sourcecode&#93;".$f_data_closed); }
+		if ($f_nested) { $f_data = ((mb_substr ($f_data,0,$f_tag_start_position)).$f_last_closing_data."&#91;sourcecode&#93;$f_tag_content&#91;/sourcecode&#93;".$f_data_closed); }
 		else
 		{
 			$f_tag_content = str_replace (array ("[","]"),(array ("&#91;","&#93;")),$f_tag_content);
-			$f_data = ((mb_substr ($f_data,0,$f_tag_start_position))."\n* ".(direct_local_get ("formtags_sourcecode","text")).":\n$f_tag_content\n*\n".$f_data_closed);
+			$f_data = ((mb_substr ($f_data,0,$f_tag_start_position)).$f_last_closing_data."\n* ".(direct_local_get ("formtags_sourcecode","text")).":\n$f_tag_content\n*\n".$f_data_closed);
 		}
+
+		return 0;
 	}
 
 /**
@@ -716,13 +781,15 @@ $f_data = preg_replace (array ("#\[color\=black\](.+?)\[\/color\]#si","#\[color\
 	* @param string $f_end_cresult HTML code that should be used
 	* @since v0.1.00
 */
-	/*#ifndef(PHP4) */protected /* #*/function parserCleanupSources (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false)
+	/*#ifndef(PHP4) */protected /* #*/function parserCleanupSources (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false,$f_nested_tag = NULL)
 	{
-		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags->parserCleanupSources (+f_data,+f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,+f_nested)- (#echo(__LINE__)#)"); }
+		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags->parserCleanupSources (+f_data,+f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,+f_nested,$f_nested_tag)- (#echo(__LINE__)#)"); }
 
 		$f_data_closed = mb_substr ($f_data,($f_tag_end_position + 10));
 		$f_tag_content = mb_substr ($f_data,$f_tag_content_position,($f_tag_end_position - $f_tag_content_position));
-		$f_data = ((mb_substr ($f_data,0,$f_tag_start_position)).(direct_local_get ("formtags_sources","text")).":\n$f_tag_content\n*\n".$f_data_closed);
+		$f_data = ((mb_substr ($f_data,0,$f_tag_start_position)).$f_last_closing_data.(direct_local_get ("formtags_sources","text")).":\n$f_tag_content\n*\n".$f_data_closed);
+
+		return 0;
 	}
 
 /**
@@ -739,13 +806,15 @@ $f_data = preg_replace (array ("#\[color\=black\](.+?)\[\/color\]#si","#\[color\
 	* @param string $f_end_cresult HTML code that should be used
 	* @since v0.1.00
 */
-	/*#ifndef(PHP4) */protected /* #*/function parserCleanupTitle (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false)
+	/*#ifndef(PHP4) */protected /* #*/function parserCleanupTitle (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false,$f_nested_tag = NULL)
 	{
-		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags->parserCleanupTitle (+f_data,+f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,+f_nested)- (#echo(__LINE__)#)"); }
+		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags->parserCleanupTitle (+f_data,+f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,+f_nested,$f_nested_tag)- (#echo(__LINE__)#)"); }
 
 		$f_data_closed = mb_substr ($f_data,($f_tag_end_position + 8));
 		$f_tag_content = mb_substr ($f_data,$f_tag_content_position,($f_tag_end_position - $f_tag_content_position));
-		$f_data = ((mb_substr ($f_data,0,$f_tag_start_position)).$f_tag_content.$f_data_closed);
+		$f_data = ((mb_substr ($f_data,0,$f_tag_start_position)).$f_last_closing_data.$f_tag_content.$f_data_closed);
+
+		return 0;
 	}
 
 /**
@@ -762,15 +831,15 @@ $f_data = preg_replace (array ("#\[color\=black\](.+?)\[\/color\]#si","#\[color\
 	* @param string $f_end_cresult HTML code that should be used
 	* @since v0.1.00
 */
-	/*#ifndef(PHP4) */protected /* #*/function parserCleanupUrl (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false)
+	/*#ifndef(PHP4) */protected /* #*/function parserCleanupUrl (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false,$f_nested_tag = NULL)
 	{
 		global $direct_settings;
-		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags->parserCleanupUrl (+f_data,+f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,+f_nested)- (#echo(__LINE__)#)"); }
+		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags->parserCleanupUrl (+f_data,+f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,+f_nested,$f_nested_tag)- (#echo(__LINE__)#)"); }
 
 		$f_data_closed = mb_substr ($f_data,($f_tag_end_position + 6));
 		$f_tag_content = mb_substr ($f_data,$f_tag_content_position,($f_tag_end_position - $f_tag_content_position));
 
-		$f_data = mb_substr ($f_data,0,$f_tag_start_position);
+		$f_data = (mb_substr ($f_data,0,$f_tag_start_position).$f_last_closing_data);
 
 		if ($f_nested) { $f_data .= $f_tag_content; }
 		else
@@ -795,6 +864,8 @@ $f_data = preg_replace (array ("#\[color\=black\](.+?)\[\/color\]#si","#\[color\
 		}
 
 		$f_data .= $f_data_closed;
+
+		return 0;
 	}
 
 /**
@@ -811,16 +882,16 @@ $f_data = preg_replace (array ("#\[color\=black\](.+?)\[\/color\]#si","#\[color\
 	* @param string $f_end_cresult HTML code that should be used
 	* @since v0.1.00
 */
-	/*#ifndef(PHP4) */protected /* #*/function parserDecodeContentform (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false)
+	/*#ifndef(PHP4) */protected /* #*/function parserDecodeContentform (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false,$f_nested_tag = NULL)
 	{
 		global $direct_settings;
-		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags->parserDecodeContentform (+f_data,+f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,+f_nested)- (#echo(__LINE__)#)"); }
+		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags->parserDecodeContentform (+f_data,+f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,+f_nested,$f_nested_tag)- (#echo(__LINE__)#)"); }
 
 		$f_data_closed = mb_substr ($f_data,($f_tag_end_position + 14));
 		$f_invalid_check = false;
 		$f_tag_content = mb_substr ($f_data,$f_tag_content_position,($f_tag_end_position - $f_tag_content_position));
 
-		$f_data = mb_substr ($f_data,0,$f_tag_start_position);
+		$f_data = (mb_substr ($f_data,0,$f_tag_start_position).$f_last_closing_data);
 
 		if ((!isset ($f_tag_array[1]))||(($f_tag_array[1] != "align")&&($f_tag_array[1] != "box")&&($f_tag_array[1] != "colorbox")&&($f_tag_array[1] != "css")&&($f_tag_array[1] != "hidden")&&($f_tag_array[1] != "highlight")&&($f_tag_array[1] != "linehight")&&($f_tag_array[1] != "spacerbox")&&($f_tag_array[1] != "textindent"))) { $f_invalid_check = true; }
 		else
@@ -937,6 +1008,8 @@ djs_DOM_replace (\"".(str_replace ('"','\"',$f_hidden_code))."\",'swgformtags_hi
 		}
 
 		$f_data .= $f_data_closed;
+
+		return 0;
 	}
 
 /**
@@ -953,16 +1026,16 @@ djs_DOM_replace (\"".(str_replace ('"','\"',$f_hidden_code))."\",'swgformtags_hi
 	* @param string $f_end_cresult HTML code that should be used
 	* @since v0.1.00
 */
-	/*#ifndef(PHP4) */protected /* #*/function parserDecodeFont (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false)
+	/*#ifndef(PHP4) */protected /* #*/function parserDecodeFont (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false,$f_nested_tag = NULL)
 	{
 		global $direct_settings;
-		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags->parserDecodeFont (+f_data,+f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,+f_nested)- (#echo(__LINE__)#)"); }
+		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags->parserDecodeFont (+f_data,+f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,+f_nested,$f_nested_tag)- (#echo(__LINE__)#)"); }
 
 		$f_data_closed = mb_substr ($f_data,($f_tag_end_position + 7));
 		$f_invalid_check = false;
 		$f_tag_content = mb_substr ($f_data,$f_tag_content_position,($f_tag_end_position - $f_tag_content_position));
 
-		$f_data = mb_substr ($f_data,0,$f_tag_start_position);
+		$f_data = (mb_substr ($f_data,0,$f_tag_start_position).$f_last_closing_data);
 
 		if ((!isset ($f_tag_array[1]))||(($f_tag_array[1] != "bold")&&($f_tag_array[1] != "color")&&($f_tag_array[1] != "face")&&($f_tag_array[1] != "italic")&&($f_tag_array[1] != "overline")&&($f_tag_array[1] != "size")&&($f_tag_array[1] != "strike")&&($f_tag_array[1] != "underline"))) { $f_invalid_check = true; }
 		else
@@ -1035,6 +1108,8 @@ djs_DOM_replace (\"".(str_replace ('"','\"',$f_hidden_code))."\",'swgformtags_hi
 		}
 
 		$f_data .= $f_data_closed;
+
+		return 0;
 	}
 
 /**
@@ -1051,19 +1126,19 @@ djs_DOM_replace (\"".(str_replace ('"','\"',$f_hidden_code))."\",'swgformtags_hi
 	* @param string $f_end_cresult HTML code that should be used
 	* @since v0.1.00
 */
-	/*#ifndef(PHP4) */protected /* #*/function parserDecodeImg (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false)
+	/*#ifndef(PHP4) */protected /* #*/function parserDecodeImg (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false,$f_nested_tag = NULL)
 	{
 		global $direct_settings;
-		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags->parserDecodeImg (+f_data,+f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,+f_nested)- (#echo(__LINE__)#)"); }
+		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags->parserDecodeImg (+f_data,+f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,+f_nested,$f_nested_tag)- (#echo(__LINE__)#)"); }
 
 		$f_data_closed = mb_substr ($f_data,($f_tag_end_position + 6));
 
-		if ($f_nested) { $f_data = (mb_substr ($f_data,0,$f_tag_start_position)); }
+		if ($f_nested) { $f_data = (mb_substr ($f_data,0,$f_tag_start_position).$f_last_closing_data); }
 		else
 		{
 			$f_tag_content = mb_substr ($f_data,$f_tag_content_position,($f_tag_end_position - $f_tag_content_position));
 
-			$f_data = mb_substr ($f_data,0,$f_tag_start_position);
+			$f_data = (mb_substr ($f_data,0,$f_tag_start_position).$f_last_closing_data);
 
 			if (preg_match ("#^(.*?)\[title:(.+?)\](.*?)$#i",$f_tag_content,$f_result_array))
 			{
@@ -1109,6 +1184,8 @@ djs_DOM_replace (\"".(str_replace ('"','\"',$f_hidden_code))."\",'swgformtags_hi
 		}
 
 		$f_data .= $f_data_closed;
+
+		return 0;
 	}
 
 /**
@@ -1125,10 +1202,10 @@ djs_DOM_replace (\"".(str_replace ('"','\"',$f_hidden_code))."\",'swgformtags_hi
 	* @param string $f_end_cresult HTML code that should be used
 	* @since v0.1.00
 */
-	/*#ifndef(PHP4) */protected /* #*/function parserDecodeList (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false)
+	/*#ifndef(PHP4) */protected /* #*/function parserDecodeListItem (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false,$f_nested_tag = NULL)
 	{
 		global $direct_settings;
-		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags->parserDecodeList (+f_data,+f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,+f_nested)- (#echo(__LINE__)#)"); }
+		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags->parserDecodeListItem (+f_data,+f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,+f_nested,$f_nested_tag)- (#echo(__LINE__)#)"); }
 
 		$f_list_symbol = mb_substr ($f_tag_array[0],1);
 
@@ -1166,6 +1243,42 @@ djs_DOM_replace (\"".(str_replace ('"','\"',$f_hidden_code))."\",'swgformtags_hi
 
 		$f_data = (mb_substr ($f_data,0,$f_tag_start_position));
 		$f_data .= "<div style='$direct_settings[formtags_list_item_style]'>$f_list_symbol</div><div style='$direct_settings[formtags_list_content_style]'>$f_tag_content</div><nobr />".$f_data_closed;
+
+		return 0;
+	}
+
+/**
+	* Decode [newline] tags.
+	*
+	* @param string &$f_data String that contains convertable data
+	* @param array $f_tag_array Tag for starting a FormTag
+	* @param integer $f_tag_start_position Position where the starting tag has
+	*        been found
+	* @param integer $f_tag_content_position Position where the content is
+	*        starting
+	* @param integer $f_tag_end_position Position where the content is ending
+	* @param boolean $f_nested True for nested items
+	* @param string $f_end_cresult HTML code that should be used
+	* @since v0.1.00
+*/
+	/*#ifndef(PHP4) */protected /* #*/function parserDecodeNewline (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false,$f_nested_tag = NULL)
+	{
+		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags->parserDecodeNewline (+f_data,+f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,+f_nested,$f_nested_tag)- (#echo(__LINE__)#)"); }
+		$f_return = 0;
+
+		$f_data_closed = mb_substr ($f_data,($f_tag_end_position + 10));
+		$f_tag_content = mb_substr ($f_data,$f_tag_content_position,($f_tag_end_position - $f_tag_content_position));
+		$f_data = mb_substr ($f_data,0,$f_tag_start_position);
+
+		if (($f_tag_start_position < 8)||(substr ($f_data,-8) != "<nobr />")) { $f_data .= $f_last_closing_data.$f_tag_content; }
+		else
+		{
+			$f_data = mb_substr ($f_data,0,-8);
+			$f_return = -8;
+		}
+
+		$f_data .= $f_data_closed;
+		return $f_return;
 	}
 
 /**
@@ -1182,15 +1295,15 @@ djs_DOM_replace (\"".(str_replace ('"','\"',$f_hidden_code))."\",'swgformtags_hi
 	* @param string $f_end_cresult HTML code that should be used
 	* @since v0.1.00
 */
-	/*#ifndef(PHP4) */protected /* #*/function parserDecodeQuote (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false)
+	/*#ifndef(PHP4) */protected /* #*/function parserDecodeQuote (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false,$f_nested_tag = NULL)
 	{
 		global $direct_globals,$direct_settings;
-		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags->parserDecodeQuote (+f_data,+f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,+f_nested)- (#echo(__LINE__)#)"); }
+		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags->parserDecodeQuote (+f_data,+f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,+f_nested,$f_nested_tag)- (#echo(__LINE__)#)"); }
 
 		$f_data_closed = mb_substr ($f_data,($f_tag_end_position + 8));
 		$f_tag_content = $direct_globals['output']->smileyCleanup (mb_substr ($f_data,$f_tag_content_position,($f_tag_end_position - $f_tag_content_position)));
 
-		$f_data = mb_substr ($f_data,0,$f_tag_start_position);
+		$f_data = (mb_substr ($f_data,0,$f_tag_start_position).$f_last_closing_data);
 
 		if (isset ($f_tag_array[1]))
 		{
@@ -1201,6 +1314,8 @@ djs_DOM_replace (\"".(str_replace ('"','\"',$f_hidden_code))."\",'swgformtags_hi
 		else { $f_data .= "<div style='margin:0px 20px;text-align:left;$direct_settings[formtags_quote_style]'><span class='pagecontent'>".(direct_local_get ("formtags_quote_1","text")).":</span></div><div class='pageborder{$direct_settings['theme_css_corners']}' style='margin:0px 20px;text-align:left'>$f_tag_content</div><nobr />"; }
 
 		$f_data .= $f_data_closed;
+
+		return 0;
 	}
 
 /**
@@ -1217,16 +1332,16 @@ djs_DOM_replace (\"".(str_replace ('"','\"',$f_hidden_code))."\",'swgformtags_hi
 	* @param string $f_end_cresult HTML code that should be used
 	* @since v0.1.00
 */
-	/*#ifndef(PHP4) */protected /* #*/function parserDecodeRewrite (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false)
+	/*#ifndef(PHP4) */protected /* #*/function parserDecodeRewrite (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false,$f_nested_tag = NULL)
 	{
 		global $direct_cachedata,$direct_globals,$direct_settings;
-		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags->parserDecodeRewrite (+f_data,+f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,+f_nested)- (#echo(__LINE__)#)"); }
+		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags->parserDecodeRewrite (+f_data,+f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,+f_nested,$f_nested_tag)- (#echo(__LINE__)#)"); }
 
 		$f_data_closed = mb_substr ($f_data,($f_tag_end_position + 10));
 		$f_invalid_check = false;
 		$f_tag_content = mb_substr ($f_data,$f_tag_content_position,($f_tag_end_position - $f_tag_content_position));
 
-		$f_data = mb_substr ($f_data,0,$f_tag_start_position);
+		$f_data = (mb_substr ($f_data,0,$f_tag_start_position).$f_last_closing_data);
 
 		if ((!isset ($f_tag_array[1]))||(($f_tag_array[1] != "data")&&($f_tag_array[1] != "edit")&&($f_tag_array[1] != "elink")&&($f_tag_array[1] != "ilink")&&($f_tag_array[1] != "local")&&($f_tag_array[1] != "related"))) { $f_invalid_check = true; }
 		elseif (($f_tag_array[1] == "edit")&&(!isset ($f_tag_array[2],$f_tag_array[3]))) { $f_invalid_check = true; }
@@ -1274,6 +1389,8 @@ djs_DOM_replace (\"".(str_replace ('"','\"',$f_hidden_code))."\",'swgformtags_hi
 		}
 
 		$f_data .= $f_data_closed;
+
+		return 0;
 	}
 
 /**
@@ -1290,21 +1407,23 @@ djs_DOM_replace (\"".(str_replace ('"','\"',$f_hidden_code))."\",'swgformtags_hi
 	* @param string $f_end_cresult HTML code that should be used
 	* @since v0.1.00
 */
-	/*#ifndef(PHP4) */protected /* #*/function parserDecodeSourcecode (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false)
+	/*#ifndef(PHP4) */protected /* #*/function parserDecodeSourcecode (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false,$f_nested_tag = NULL)
 	{
 		global $direct_globals,$direct_settings;
-		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags->parserDecodeSourcecode (+f_data,+f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,+f_nested)- (#echo(__LINE__)#)"); }
+		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags->parserDecodeSourcecode (+f_data,+f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,+f_nested,$f_nested_tag)- (#echo(__LINE__)#)"); }
 
 		$f_data_closed = mb_substr ($f_data,($f_tag_end_position + 13));
 		$f_tag_content = mb_substr ($f_data,$f_tag_content_position,($f_tag_end_position - $f_tag_content_position));
 
-		if ($f_nested) { $f_data = ((mb_substr ($f_data,0,$f_tag_start_position))."&#91;sourcecode&#93;$f_tag_content&#91;/sourcecode&#93;".$f_data_closed); }
+		if ($f_nested) { $f_data = ((mb_substr ($f_data,0,$f_tag_start_position)).$f_last_closing_data."&#91;sourcecode&#93;$f_tag_content&#91;/sourcecode&#93;".$f_data_closed); }
 		else
 		{
 			$f_tag_content = $direct_globals['output']->smileyCleanup ($f_tag_content);
 			$f_tag_content = str_replace (array ("[br]","[newline]","[","]"),(array ("\n","\n","&#91;","&#93;")),$f_tag_content);
-			$f_data = ((mb_substr ($f_data,0,$f_tag_start_position))."<div class='pageborder{$direct_settings['theme_css_corners']}' style='overflow:auto;padding:5px'><code class='pageextracontent' style='text-align:left;white-space:pre;font-family:\"Courier New\",Courier,mono'>$f_tag_content</code></div><nobr />".$f_data_closed);
+			$f_data = ((mb_substr ($f_data,0,$f_tag_start_position)).$f_last_closing_data."<div class='pageborder{$direct_settings['theme_css_corners']}' style='overflow:auto;padding:5px'><code class='pageextracontent' style='text-align:left;white-space:pre;font-family:\"Courier New\",Courier,mono'>$f_tag_content</code></div><nobr />".$f_data_closed);
 		}
+
+		return 0;
 	}
 
 /**
@@ -1321,16 +1440,18 @@ djs_DOM_replace (\"".(str_replace ('"','\"',$f_hidden_code))."\",'swgformtags_hi
 	* @param string $f_end_cresult HTML code that should be used
 	* @since v0.1.00
 */
-	/*#ifndef(PHP4) */protected /* #*/function parserDecodeSources (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false)
+	/*#ifndef(PHP4) */protected /* #*/function parserDecodeSources (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false,$f_nested_tag = NULL)
 	{
 		global $direct_globals,$direct_settings;
-		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags->parserDecodeSources (+f_data,+f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,+f_nested)- (#echo(__LINE__)#)"); }
+		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags->parserDecodeSources (+f_data,+f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,+f_nested,$f_nested_tag)- (#echo(__LINE__)#)"); }
 
 		$f_data_closed = mb_substr ($f_data,($f_tag_end_position + 10));
 		$f_tag_content = $direct_globals['output']->smileyCleanup (mb_substr ($f_data,$f_tag_content_position,($f_tag_end_position - $f_tag_content_position)));
 
-		$f_data = mb_substr ($f_data,0,$f_tag_start_position);
+		$f_data = (mb_substr ($f_data,0,$f_tag_start_position).$f_last_closing_data);
 		$f_data .= ("<div style='$direct_settings[formtags_sources_style]'><span class='pagecontent'><span style='$direct_settings[formtags_sources_title_style]'>".(direct_local_get ("formtags_sources")).":</span> $f_tag_content</span></div><nobr />".$f_data_closed);
+
+		return 0;
 	}
 
 /**
@@ -1347,16 +1468,16 @@ djs_DOM_replace (\"".(str_replace ('"','\"',$f_hidden_code))."\",'swgformtags_hi
 	* @param string $f_end_cresult HTML code that should be used
 	* @since v0.1.00
 */
-	/*#ifndef(PHP4) */protected /* #*/function parserDecodeTitle (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false)
+	/*#ifndef(PHP4) */protected /* #*/function parserDecodeTitle (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false,$f_nested_tag = NULL)
 	{
 		global $direct_settings;
-		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags->parserDecodeTitle (+f_data,+f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,+f_nested)- (#echo(__LINE__)#)"); }
+		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags->parserDecodeTitle (+f_data,+f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,+f_nested,$f_nested_tag)- (#echo(__LINE__)#)"); }
 
 		$f_data_closed = mb_substr ($f_data,($f_tag_end_position + 8));
 		$f_invalid_check = false;
 		$f_tag_content = mb_substr ($f_data,$f_tag_content_position,($f_tag_end_position - $f_tag_content_position));
 
-		$f_data = mb_substr ($f_data,0,$f_tag_start_position);
+		$f_data = (mb_substr ($f_data,0,$f_tag_start_position).$f_last_closing_data);
 
 		if ((isset ($f_tag_array[1]))&&(is_numeric ($f_tag_array[1]))&&($f_tag_array[1] > 0)) { $f_title_heading = ((int)$f_tag_array[1] + $direct_settings['theme_title_min']); }
 		else { $f_title_heading = (1 + $direct_settings['theme_title_min']); }
@@ -1365,6 +1486,8 @@ djs_DOM_replace (\"".(str_replace ('"','\"',$f_hidden_code))."\",'swgformtags_hi
 		$f_title_css = ($direct_settings['theme_css_title'] ? " class='{$direct_settings['theme_css_title']}'" : "");
 
 		$f_data .= "<h".$f_title_heading.$f_title_css.">$f_tag_content</h$f_title_heading><nobr />".$f_data_closed;
+
+		return 0;
 	}
 
 /**
@@ -1381,15 +1504,15 @@ djs_DOM_replace (\"".(str_replace ('"','\"',$f_hidden_code))."\",'swgformtags_hi
 	* @param string $f_end_cresult HTML code that should be used
 	* @since v0.1.00
 */
-	/*#ifndef(PHP4) */protected /* #*/function parserDecodeUrl (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false)
+	/*#ifndef(PHP4) */protected /* #*/function parserDecodeUrl (&$f_data,$f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,$f_nested = false,$f_nested_tag = NULL)
 	{
 		global $direct_settings;
-		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags->parserDecodeUrl (+f_data,+f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,+f_nested)- (#echo(__LINE__)#)"); }
+		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -formtags->parserDecodeUrl (+f_data,+f_tag_array,$f_tag_start_position,$f_tag_content_position,$f_tag_end_position,+f_nested,$f_nested_tag)- (#echo(__LINE__)#)"); }
 
 		$f_data_closed = mb_substr ($f_data,($f_tag_end_position + 6));
 		$f_tag_content = mb_substr ($f_data,$f_tag_content_position,($f_tag_end_position - $f_tag_content_position));
 
-		$f_data = mb_substr ($f_data,0,$f_tag_start_position);
+		$f_data = (mb_substr ($f_data,0,$f_tag_start_position).$f_last_closing_data);
 
 		if ($f_nested) { $f_data .= $f_tag_content; }
 		else
@@ -1417,6 +1540,8 @@ djs_DOM_replace (\"".(str_replace ('"','\"',$f_hidden_code))."\",'swgformtags_hi
 		}
 
 		$f_data .= $f_data_closed;
+
+		return 0;
 	}
 
 /**
@@ -1545,6 +1670,7 @@ define ("CLASS_directFormtags",true);
 global $direct_globals,$direct_settings;
 $direct_globals['@names']['formtags'] = 'dNG\sWG\directFormtags';
 
+if (!isset ($direct_settings['formtags_cache_min'])) { $direct_settings['formtags_cache_min'] = 0; }
 if (!isset ($direct_settings['formtags_edit_style'])) { $direct_settings['formtags_edit_style'] = "font-size:10px;font-style:italic"; }
 if (!isset ($direct_settings['formtags_list_item_style'])) { $direct_settings['formtags_list_item_style'] = "padding-right:0.5em;float:left;clear:left"; }
 if (!isset ($direct_settings['formtags_list_content_style'])) { $direct_settings['formtags_list_content_style'] = "padding-left:1.2em"; }
