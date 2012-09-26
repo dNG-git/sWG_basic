@@ -24,25 +24,9 @@ if (!isset ($direct_settings['theme_form_td_padding'])) { $direct_settings['them
 
 $g_block = (isset ($direct_settings['dsd']['dblock']) ? $direct_settings['dsd']['dblock'] : "");
 $g_lang_js = substr ($direct_settings['lang'],0,2);
-
-if ($g_block == "djs_formbuilder_datetime") {
 ?>
-function djs_formbuilder_datetime (f_params)
-{
-	if (!('panel' in f_params)) { f_params['panel'] = true; }
-
-	var f_options = { altField:"#" + f_params.id + "i",altFormat:'@.3',changeMonth:true,changeYear:true,dateFormat:'yy-mm-dd',showButtonPanel:f_params.panel,showAnim:'fadeIn' };
-	if ('months' in f_params) { f_options['numberOfMonths'] = f_params.months; }
-
-	var f_jquery_object = jQuery("#" + f_params.id).datepicker(f_options);
-	if ((f_params.lang != "<?php echo $g_lang_js; ?>")&&(f_params.lang in jQuery.datepicker.regional)) { f_jquery_object.datepicker ('option',jQuery.datepicker.regional[f_params.lang]); }
-}
-<?php } ?>
-
-<?php if ($g_block == "") { ?>
 djs_var['basic_formbuilder_accordion_ready'] = false;
 djs_var['basic_formbuilder_button_ready'] = false;
-djs_var['basic_formbuilder_datetime_ready'] = false;
 djs_var['basic_formbuilder_form_ready'] = false;
 if (!('basic_formbuilder_focused_class' in djs_var)) { djs_var['basic_formbuilder_focused_class'] = 'pagecontentinputfocused'; }
 if (!('basic_formbuilder_focused_timeout' in djs_var)) { djs_var['basic_formbuilder_focused_timeout'] = 750; }
@@ -81,41 +65,12 @@ djs_load_functions ([
 
 	if (f_type == 'datepicker')
 	{
-		var f_data = jQuery ("#" + f_params.id + "i5");
-		var f_node = f_data.get (0);
-
-		if (('valueAsDate' in f_node)&&('valueAsNumber' in f_node)&&(!isNaN (f_node.valueAsNumber)))
+		djs_load_functions([ { file:'ext_djs/djs_html5_datetime.min.js' } ]).done (function ()
 		{
-			f_data.attr("id",f_params.id + "p").attr('name',"p_" + f_params.name).css ('display','block');
-
-			f_data = f_data.on('change',function ()
-			{
-				var f_timestamp = String (jQuery(this).get(0).valueAsNumber);
-				jQuery("#" + f_params.id + "i").val (f_timestamp.substring (0,(f_timestamp.length - 3)));
-			}).wrap('<div />').parent ();
-
-			var f_timestamp = String (f_node.valueAsNumber);
-			f_data.append ("<input type='hidden' name='" + f_params.name + "' value=\"" + (f_timestamp.substring (0,(f_timestamp.length - 3))) + "\" id='" + f_params.id + "i' />");
-
-			djs_DOM_replace ({ data:f_data,id:f_params.id,onReplace:{ func:'djs_formbuilder_init',params:{ id:f_params.id + "p" } } });
-		}
-		else
-		{
-			if (!djs_var.basic_formbuilder_datetime_ready)
-			{
-				djs_load_functions ({ file:'swg_formbuilder.php.js',block:'djs_formbuilder_datetime' });
-				djs_load_functions ({ file:'ext_jquery/jquery.ui.core.min.js' });
-				djs_load_functions ({ file:'ext_jquery/jquery.ui.datepicker.min.js' });
-<?php if (file_exists ($direct_settings['path_mmedia']."/ext_jquery/jquery.ui.datepicker.$g_lang_js.min.js")) { echo "\tdjs_load_functions ({ file:'ext_jquery/jquery.ui.datepicker.$g_lang_js.min.js' });"; } ?>
-				djs_var.basic_formbuilder_datetime_ready = true;
-			}
-
-			var f_datepicker_params = { date:f_params.value,id:f_params.id,lang:"<?php echo $g_lang_js; ?>" };
-			if ('months' in f_params) { f_datepicker_params['months'] = f_params.months; }
-			f_data = "<div><input type='hidden' name='" + f_params.name + "' value=\"\" id='" + f_params.id + "i' /></div>";
-
-			djs_DOM_replace ({ data:f_data,id:f_params.id,onReplace:{ func:'djs_formbuilder_datetime',params:f_datepicker_params } });
-		}
+			if (!('css_classes' in f_params)) { f_params['css_classes'] = null; }
+			if (!('css_classes_replaced' in f_params)) { f_params['css_classes_replaced'] = null; }
+			djs_html5_datetime ({ datetime_lang:"<?php echo $direct_local['lang_iso_domain']; ?>",id:f_params.id,onCompleted:{ func:'djs_formbuilder_set_select_css',params:f_params } });
+		});
 	}
 
 	if (f_type == 'form')
@@ -130,7 +85,6 @@ djs_load_functions ([
 		{
 djs_load_functions ([
  { file:'swg_AJAX.php.js',block:'djs_swgAJAX_insert' },
- { file:'swg_formbuilder.php.js',block:'djs_formbuilder_submit' },
  { file:'ext_jquery/jquery.ui.core.min.js' },
  { file:'ext_jquery/jquery.effects.core.min.js' },
  { file:'ext_jquery/jquery.effects.transfer.min.js' }
@@ -228,24 +182,12 @@ djs_load_functions ([
 
 	if (f_type == 'timepicker')
 	{
-		var f_data = jQuery ("#" + f_params.id + "i5");
-		var f_node = f_data.get (0);
-
-		if (('valueAsDate' in f_node)&&('valueAsNumber' in f_node)&&(!isNaN (f_node.valueAsNumber)))
+		djs_load_functions([ { file:'ext_djs/djs_html5_datetime.min.js' } ]).done (function ()
 		{
-			f_data.attr('id',f_params.id + "p").attr('name',"p_" + f_params.name).css ('display','block');
-
-			f_data = f_data.on('change',function ()
-			{
-				var f_timestamp = String (jQuery(this).get(0).valueAsNumber);
-				jQuery("#" + f_params.id + "i").val (f_timestamp.substring (0,(f_timestamp.length - 3)));
-			}).wrap('<div />').parent ();
-
-			var f_timestamp = String (f_node.valueAsNumber);
-			f_data.append ("<input type='hidden' name='" + f_params.name + "' value=\"" + (f_timestamp.substring (0,(f_timestamp.length - 3))) + "\" id='" + f_params.id + "i' />");
-
-			djs_DOM_replace ({ data:f_data,id:f_params.id });
-		}
+			if (!('css_classes' in f_params)) { f_params['css_classes'] = null; }
+			if (!('css_classes_replaced' in f_params)) { f_params['css_classes_replaced'] = null; }
+			djs_html5_datetime ({ datetime_lang:"<?php echo $direct_local['lang_iso_domain']; ?>",id:f_params.id,onCompleted:{ func:'djs_formbuilder_set_select_css',params:f_params } });
+		});
 	}
 
 	if (f_type == 'url')
@@ -254,9 +196,7 @@ djs_load_functions ([
 		if (!('formNoValidate' in f_data.get (0))) { djs_DOM_replace ({ animate:false,data:(f_data.clone().attr ('type','text')),id:f_params.id,onReplace:{ func:'djs_formbuilder_init',params:{ id:f_params.id } } }); }
 	}
 }
-<?php } ?>
 
-<?php if ($g_block == "djs_formbuilder_range") { ?>
 function djs_formbuilder_range (f_params) { f_jquery_object = jQuery("#" + f_params.id + "s").slider(f_params).on ('slide',function (f_event,f_ui) { djs_formbuilder_range_slide (f_params,f_ui.value); }); }
 
 function djs_formbuilder_range_slide (f_params,f_value)
@@ -264,9 +204,22 @@ function djs_formbuilder_range_slide (f_params,f_value)
 	jQuery("#" + f_params.id + "i").val (f_value);
 	jQuery("#" + f_params.id + "o").text (f_value);
 }
-<?php } ?>
 
-<?php if ($g_block == "djs_formbuilder_submit") { ?>
+function djs_formbuilder_set_select_css (f_params)
+{
+	if (('css_classes' in f_params)&&('css_classes_replaced' in f_params)&&('id' in f_params)&&(f_params.css_classes !== null)&&(f_params.css_classes_replaced !== null))
+	{
+		var f_jquery_object = jQuery ("#" + f_params.id);
+
+		if (f_jquery_object.data ('djsHtml5Replaced') == true) { f_jquery_object.find("select").filter(':visible').addClass (f_params.css_classes_replaced); }
+		else
+		{
+			f_jquery_object.addClass (f_params.css_classes);
+			djs_formbuilder_tabindex (f_params);
+		}
+	}
+}
+
 function djs_formbuilder_submit (f_id,f_url,f_id_button)
 {
 	var f_jquery_object = jQuery ("#" + f_id);
@@ -275,9 +228,7 @@ function djs_formbuilder_submit (f_id,f_url,f_id_button)
 
 	return false;
 }
-<?php } ?>
 
-<?php if ($g_block == "") { ?>
 djs_var['basic_formbuilder_tabindex'] = 1;
 
 function djs_formbuilder_tabindex (f_params)
@@ -291,6 +242,5 @@ function djs_formbuilder_tabindex (f_params)
 }
 
 function djs_formbuilder_unfocus (f_id) { jQuery("#" + f_id).removeClass (djs_var.basic_formbuilder_focused_class); }
-<?php } ?>
 
 //j// EOF

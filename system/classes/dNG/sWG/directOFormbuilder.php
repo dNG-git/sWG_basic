@@ -139,7 +139,7 @@ Informing the system about available functions
 		if (!isset ($f_data['title']))
 		{
 $f_return = ("<tr>
-<td colspan='2' class='pagebg pagecontent' style='padding:$direct_settings[theme_form_td_padding];text-align:center'><div class='pagecontent' style='display:inline-block;text-align:left'>$f_data[content]</div>$f_js_helper</td>
+<td colspan='2' class='pagebg pagecontent' style='padding:$direct_settings[theme_form_td_padding];text-align:center'><div style='display:inline-block;text-align:left'>$f_data[content]</div>$f_js_helper</td>
 </tr>");
 		}
 		elseif (strlen ($f_data['content']))
@@ -154,7 +154,7 @@ $f_return = ("<tr>
 				$f_return .= $f_data['title'].":</strong></td>";
 			}
 
-$f_return .= ("\n<td class='pagebg pagecontent' style='width:75%;padding:$direct_settings[theme_form_td_padding];text-align:center'><div class='pagecontent' style='display:inline-block;text-align:left'>$f_data[content]</div>$f_js_helper</td>
+$f_return .= ("\n<td class='pagebg pagecontent' style='width:75%;padding:$direct_settings[theme_form_td_padding];text-align:center'><div style='display:inline-block;text-align:left'>$f_data[content]</div>$f_js_helper</td>
 </tr>");
 		}
 
@@ -292,7 +292,7 @@ $f_return = ("<tr>
 		if (!isset ($f_data['title']))
 		{
 $f_return .= ("<tr>
-<td colspan='2' class='pagebg pagecontent' style='padding:$direct_settings[theme_form_td_padding];text-align:center'><div class='pagecontent' style='display:inline-block;text-align:left;font-size:10px'>$f_data[content]</div>$f_js_helper</td>
+<td colspan='2' class='pagebg pagecontent' style='padding:$direct_settings[theme_form_td_padding];text-align:center'><div style='display:inline-block;text-align:left;font-size:10px'>$f_data[content]</div>$f_js_helper</td>
 </tr>");
 		}
 		elseif (strlen ($f_data['content']))
@@ -307,7 +307,7 @@ $f_return .= ("<tr>
 				$f_return .= $f_data['title'].":</strong></td>";
 			}
 
-			$f_return .= "\n<td class='pagebg pagecontent' style='width:75%;padding:$direct_settings[theme_form_td_padding];text-align:center'><div class='pagecontent' style='display:inline-block;text-align:left'>$f_data[content]</div>$f_js_helper</td>\n</tr>";
+			$f_return .= "\n<td class='pagebg pagecontent' style='width:75%;padding:$direct_settings[theme_form_td_padding];text-align:center'><div style='display:inline-block;text-align:left'>$f_data[content]</div>$f_js_helper</td>\n</tr>";
 		}
 
 		return $f_return;
@@ -369,7 +369,7 @@ $f_return .= ("<select name='{$f_data['name']}[]' id='$f_js_id'$f_required size=
 jQuery (function () { {$direct_settings['theme_form_js_init']} ({ id:'$f_js_id',type:'resizeable' }); });
 ]]></script>");
 		}
-		else { $f_return .= "<div class='pagecontent' style='display:inline-block;text-align:left'>$f_content</div>"; }
+		else { $f_return .= "<div style='display:inline-block;text-align:left'>$f_content</div>"; }
 
 		$f_return .= $f_js_helper."</td>\n</tr>";
 
@@ -526,7 +526,7 @@ jQuery (function () { {$direct_settings['theme_form_js_init']} ({ id:'{$f_choice
 		if ($f_data['required']) { $f_return .= $direct_settings['swg_required_marker']." "; }
 
 $f_return .= ($f_data['title'].":</strong></td>
-<td class='pagebg pagecontent' style='width:75%;padding:$direct_settings[theme_form_td_padding];text-align:center;vertical-align:middle'><div class='pagecontent' style='display:inline-block;text-align:left'>$f_content</div>$f_js_helper</td>
+<td class='pagebg pagecontent' style='width:75%;padding:$direct_settings[theme_form_td_padding];text-align:center;vertical-align:middle'><div style='display:inline-block;text-align:left'>$f_content</div>$f_js_helper</td>
 </tr>");
 
 		return $f_return;
@@ -566,7 +566,7 @@ $f_return .= ($f_data['title'].":</strong></td>
 
 		$f_unit = (isset ($f_data['unit']) ? "<br />\n<span style='font-size:10px'>($f_data[unit])</span>" : "");
 
-$f_return .= ("<div class='pagecontent' style='width:$f_css_width;margin:auto;text-align:center'><input name='$f_data[name]' id='$f_js_id'$f_required type='range' min=\"$f_data[min]\" max=\"$f_data[max]\" value=\"$f_data[content]\" class='pagecontentinputtextnpassword' style='width:$f_css_width' />$f_unit<script type='text/javascript'><![CDATA[
+$f_return .= ("<div style='width:$f_css_width;margin:auto;text-align:center'><input name='$f_data[name]' id='$f_js_id'$f_required type='range' min=\"$f_data[min]\" max=\"$f_data[max]\" value=\"$f_data[content]\" class='pagecontentinputtextnpassword' style='width:$f_css_width' />$f_unit<script type='text/javascript'><![CDATA[
 jQuery (function () { {$direct_settings['theme_form_js_init']} ({ id:'$f_js_id',type:'range' }); });
 ]]></script></div>$f_js_helper</td>
 </tr>");

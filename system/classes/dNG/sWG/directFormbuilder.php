@@ -24,7 +24,7 @@ NOTE_END //n*/
 * e-Mail-address is no longer required. Our FormBuilder will create forms and
 * check the input automatically.
 *
-* @internal   We are usixng phpDocumentor to automate the documentation process
+* @internal   We are using phpDocumentor to automate the documentation process
 *             for creating the Developer's Manual. All sections including
 *             these special comments will be removed from the release source
 *             code.

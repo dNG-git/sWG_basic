@@ -333,7 +333,6 @@ $f_data = preg_replace (array ("#\[color\=black\](.+?)\[\/color\]#si","#\[color\
 		{
 			$f_data_position = mb_strpos ($f_data,$f_tags_identifier,$f_data_position);
 			if (($direct_settings['swg_memcache'])&&($direct_settings['formtags_cache_min'])&&($f_data_position !== false)&&(strlen ($f_data) > $direct_settings['formtags_cache_min'])&&(!$f_mode_precode)&&(($f_mode_cleanup)||($f_mode_decode))&&(strpos ($f_data,"[rewrite") === false)) { $f_cached_id = $f_mode."_".(strlen ($f_data))."_".(md5 ($f_data)); }
-
 			$f_nested_check = false;
 		}
 
@@ -485,7 +484,7 @@ $f_data = preg_replace (array ("#\[color\=black\](.+?)\[\/color\]#si","#\[color\
 
 			if ($f_nested_check)
 			{
-				if (($f_return)&&($f_nested_tag == $f_tag)) { $f_data_position = false; }
+				if ($f_return) { $f_data_position = false; }
 				else
 				{
 					$f_data_position = mb_strpos ($f_data,$f_tags_identifier,$f_data_position);
