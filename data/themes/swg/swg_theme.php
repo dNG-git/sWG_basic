@@ -109,7 +109,7 @@ jQuery(function ()
 ]]></script>","script_pngfix");
 		}
 
-		$direct_globals['output']->headerElements ("<link href='$direct_settings[path_mmedia]/ext_jquery/themes/$direct_settings[theme_jquery_ui]/jquery-ui-1.8.23.css' rel='stylesheet' type='text/css' />","link_stylesheet_jquery_ui");
+		$direct_globals['output']->headerElements ("<link href='$direct_settings[path_mmedia]/ext_jquery/themes/$direct_settings[theme_jquery_ui]/jquery-ui-1.9.1.min.css' rel='stylesheet' type='text/css' />","link_stylesheet_jquery_ui");
 
 		$direct_globals['output']->cssHeader ();
 		$direct_globals['output']->jsHeader ();

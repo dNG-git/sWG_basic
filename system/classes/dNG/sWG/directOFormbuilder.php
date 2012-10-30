@@ -132,14 +132,15 @@ Informing the system about available functions
 		global $direct_globals,$direct_settings;
 		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -outputFormbuilder->entryAddElement (+f_data)- (#echo(__LINE__)#)"); }
 
-		$f_return = "";
+		$f_js_id = "swg_formbuilder_".$direct_cachedata['formbuilder_element_counter'];
+		$direct_cachedata['formbuilder_element_counter']++;
 
-		$f_js_helper = ($f_data['helper_text'] ? "\n<p class='pagehelperactivator'>".($direct_globals['output']->jsHelper ($f_data['helper_text'],$f_data['helper_url'],$f_data['helper_closing']))."</p>" : "");
+		$f_js_helper = ($f_data['helper_text'] ? "\n".($direct_globals['output']->jsHelper ($f_data['helper_text'],$f_data['helper_url'],$f_js_id)) : "");
 
 		if (!isset ($f_data['title']))
 		{
 $f_return = ("<tr>
-<td colspan='2' class='pagebg pagecontent' style='padding:$direct_settings[theme_form_td_padding];text-align:center'><div style='display:inline-block;text-align:left'>$f_data[content]</div>$f_js_helper</td>
+<td colspan='2' class='pagebg pagecontent' style='padding:$direct_settings[theme_form_td_padding];text-align:center'><div id='$f_js_id' style='display:inline-block;text-align:left'>$f_data[content]</div>$f_js_helper</td>
 </tr>");
 		}
 		elseif (strlen ($f_data['content']))
@@ -154,9 +155,10 @@ $f_return = ("<tr>
 				$f_return .= $f_data['title'].":</strong></td>";
 			}
 
-$f_return .= ("\n<td class='pagebg pagecontent' style='width:75%;padding:$direct_settings[theme_form_td_padding];text-align:center'><div style='display:inline-block;text-align:left'>$f_data[content]</div>$f_js_helper</td>
+$f_return .= ("\n<td class='pagebg pagecontent' style='width:75%;padding:$direct_settings[theme_form_td_padding];text-align:center'><div id='$f_js_id' style='display:inline-block;text-align:left'>$f_data[content]</div>$f_js_helper</td>
 </tr>");
 		}
+		else { $f_return = ""; }
 
 		return $f_return;
 	}
@@ -182,7 +184,10 @@ $f_return .= ("\n<td class='pagebg pagecontent' style='width:75%;padding:$direct
 		global $direct_globals,$direct_settings;
 		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -outputFormbuilder->entryAddEmbed (+f_data)- (#echo(__LINE__)#)"); }
 
-		if (!$f_data['iframe_only']) { $f_embed_url_ajax = direct_linker ("asis","ajax_content;".$f_data['url']); }
+		$f_js_id = "swg_formbuilder_".$direct_cachedata['formbuilder_element_counter'];
+		$direct_cachedata['formbuilder_element_counter']++;
+
+		if (!$f_data['iframe_only']) { $f_embed_url_ajax = direct_linker ("asisuuid","ajax_content;uuid=[uuid];{$f_data['url']}"); }
 		$f_embed_url_iframe = direct_linker ("url0","xhtml_embedded;".$f_data['url']);
 		$f_embed_url_error = direct_linker ("url0",$f_data['url']);
 
@@ -190,7 +195,7 @@ $f_return .= ("\n<td class='pagebg pagecontent' style='width:75%;padding:$direct
 		elseif ($f_data['size'] == "m") { $f_height = 315; }
 		else { $f_height = 400; }
 
-		$f_js_helper = ($f_data['helper_text'] ? "\n<p class='pagehelperactivator'>".($direct_globals['output']->jsHelper ($f_data['helper_text'],$f_data['helper_url'],$f_data['helper_closing']))."</p>" : "");
+		$f_js_helper = ($f_data['helper_text'] ? "\n".($direct_globals['output']->jsHelper ($f_data['helper_text'],$f_data['helper_url'],$f_js_id)) : "");
 
 		if (isset ($f_data['title']))
 		{
@@ -201,6 +206,7 @@ $f_return .= ("\n<td class='pagebg pagecontent' style='width:75%;padding:$direct
 		else { $f_return = "<tr>\n<td colspan='2' class='pagebg pagecontent' style='padding:$direct_settings[theme_form_td_padding];text-align:center'>"; }
 
 		$f_embedded_code = (($f_data['size'] == "l") ? "<p id='swgAJAX_embed_{$f_data['content']}_point'>".(direct_local_get ("core_loading","text"))."</p>" : "<div id='swgAJAX_embed_box_{$f_data['content']}' class='pageembeddedborder{$direct_settings['theme_css_corners']} pageembeddedbg pageextracontent' style='margin:auto;height:{$f_height}px;overflow:auto'><p id='swgAJAX_embed_{$f_data['content']}_point'>".(direct_local_get ("core_loading","text"))."</p></div>");
+		$f_return .= "<div id='$f_js_id'>";
 
 		if ((!$f_data['iframe_only'])&&(isset ($direct_settings['swg_clientsupport']['JSDOMManipulation']))) { $f_return .= $f_embedded_code; }
 		else { $f_return .= "<iframe src='$f_embed_url_iframe' id='swgAJAX_embed_{$f_data['content']}_point' class='pageembeddedborder{$direct_settings['theme_css_corners']} pageembeddedbg pageextracontent' style='width:100%;height:{$f_height}px'><strong>".(direct_local_get ("formbuilder_embed_unsupported_1"))."<a href='$f_embed_url_error' target='_blank'>".(direct_local_get ("formbuilder_embed_unsupported_2"))."</a>".(direct_local_get ("formbuilder_embed_unsupported_3"))."</strong></iframe>"; }
@@ -219,7 +225,7 @@ $f_return .= ("\n<td class='pagebg pagecontent' style='width:75%;padding:$direct
 		}
 
 $f_return .= (" });
-]]></script>$f_js_helper</td>
+]]></script></div>$f_js_helper</td>
 </tr>");
 
 		return $f_return;
@@ -285,14 +291,15 @@ $f_return = ("<tr>
 		global $direct_globals,$direct_settings;
 		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -outputFormbuilder->entryAddInfo (+f_data)- (#echo(__LINE__)#)"); }
 
-		$f_return = "";
+		$f_js_id = "swg_formbuilder_".$direct_cachedata['formbuilder_element_counter'];
+		$direct_cachedata['formbuilder_element_counter']++;
 
-		$f_js_helper = ($f_data['helper_text'] ? "\n<p class='pagehelperactivator'>".($direct_globals['output']->jsHelper ($f_data['helper_text'],$f_data['helper_url'],$f_data['helper_closing']))."</p>" : "");
+		$f_js_helper = ($f_data['helper_text'] ? "\n".($direct_globals['output']->jsHelper ($f_data['helper_text'],$f_data['helper_url'],$f_js_id)) : "");
 
 		if (!isset ($f_data['title']))
 		{
 $f_return .= ("<tr>
-<td colspan='2' class='pagebg pagecontent' style='padding:$direct_settings[theme_form_td_padding];text-align:center'><div style='display:inline-block;text-align:left;font-size:10px'>$f_data[content]</div>$f_js_helper</td>
+<td colspan='2' class='pagebg pagecontent' style='padding:$direct_settings[theme_form_td_padding];text-align:center'><div id='$f_js_id' style='display:inline-block;text-align:left;font-size:10px'>$f_data[content]</div>$f_js_helper</td>
 </tr>");
 		}
 		elseif (strlen ($f_data['content']))
@@ -307,8 +314,9 @@ $f_return .= ("<tr>
 				$f_return .= $f_data['title'].":</strong></td>";
 			}
 
-			$f_return .= "\n<td class='pagebg pagecontent' style='width:75%;padding:$direct_settings[theme_form_td_padding];text-align:center'><div style='display:inline-block;text-align:left'>$f_data[content]</div>$f_js_helper</td>\n</tr>";
+			$f_return .= "\n<td class='pagebg pagecontent' style='width:75%;padding:$direct_settings[theme_form_td_padding];text-align:center'><div id='$f_js_id' style='display:inline-block;text-align:left'>$f_data[content]</div>$f_js_helper</td>\n</tr>";
 		}
+		else { $f_return = ""; }
 
 		return $f_return;
 	}
@@ -328,7 +336,7 @@ $f_return .= ("<tr>
 		$f_js_id = "swg_formbuilder_".$direct_cachedata['formbuilder_element_counter'];
 		$direct_cachedata['formbuilder_element_counter']++;
 
-		$f_js_helper = ($f_data['helper_text'] ? "\n<p class='pagehelperactivator'>".($direct_globals['output']->jsHelper ($f_data['helper_text'],$f_data['helper_url'],$f_data['helper_closing']))."</p>" : "");
+		$f_js_helper = ($f_data['helper_text'] ? "\n".($direct_globals['output']->jsHelper ($f_data['helper_text'],$f_data['helper_url'],$f_js_id)) : "");
 
 		if ($f_data['size'] == "s") { $f_rows = 2; }
 		elseif ($f_data['size'] == "m") { $f_rows = 5; }
@@ -400,7 +408,7 @@ jQuery (function () { {$direct_settings['theme_form_js_init']} ({ id:'$f_js_id',
 		$f_js_id = "swg_formbuilder_".$direct_cachedata['formbuilder_element_counter'];
 		$direct_cachedata['formbuilder_element_counter']++;
 
-		$f_js_helper = ($f_data['helper_text'] ? "\n<p class='pagehelperactivator'>".($direct_globals['output']->jsHelper ($f_data['helper_text'],$f_data['helper_url'],$f_data['helper_closing']))."</p>" : "");
+		$f_js_helper = ($f_data['helper_text'] ? "\n".($direct_globals['output']->jsHelper ($f_data['helper_text'],$f_data['helper_url'],$f_js_id)) : "");
 
 		if ($f_data['size'] == "s")
 		{
@@ -418,7 +426,7 @@ jQuery (function () { {$direct_settings['theme_form_js_init']} ({ id:'$f_js_id',
 			$f_css_width = "80%";
 		}
 
-		$f_return = "<tr>\n<td class='pageextrabg pageextracontent' style='width:25%;padding:$direct_settings[theme_form_td_padding];text-align:right;vertical-align:top'><strong>";
+		$f_return = "<tr>\n<td class='pageextrabg pageextracontent' style='width:25%;padding:$direct_settings[theme_form_td_padding];text-align:right;vertical-align:middle'><strong>";
 
 		if ($f_data['required'])
 		{
@@ -451,7 +459,7 @@ jQuery (function () { {$direct_settings['theme_form_js_init']} ({ id:'$f_js_id' 
 		$f_js_id = "swg_formbuilder_".$direct_cachedata['formbuilder_element_counter'];
 		$direct_cachedata['formbuilder_element_counter']++;
 
-		$f_js_helper = ($f_data['helper_text'] ? "\n<p class='pagehelperactivator'>".($direct_globals['output']->jsHelper ($f_data['helper_text'],$f_data['helper_url'],$f_data['helper_closing']))."</p>" : "");
+		$f_js_helper = ($f_data['helper_text'] ? "\n".($direct_globals['output']->jsHelper ($f_data['helper_text'],$f_data['helper_url'],$f_js_id)) : "");
 
 		if ($f_data['size'] == "s")
 		{
@@ -505,7 +513,10 @@ jQuery (function ()
 		global $direct_globals,$direct_settings;
 		if (USE_debug_reporting) { direct_debug (5,"sWG/#echo(__FILEPATH__)# -outputFormbuilder->entryAddRadio (+f_data)- (#echo(__LINE__)#)"); }
 
-		$f_js_helper = ($f_data['helper_text'] ? "\n<p class='pagehelperactivator'>".($direct_globals['output']->jsHelper ($f_data['helper_text'],$f_data['helper_url'],$f_data['helper_closing']))."</p>" : "");
+		$f_js_id = "swg_formbuilder_".$direct_cachedata['formbuilder_element_counter'];
+		$direct_cachedata['formbuilder_element_counter']++;
+
+		$f_js_helper = ($f_data['helper_text'] ? "\n".($direct_globals['output']->jsHelper ($f_data['helper_text'],$f_data['helper_url'],$f_js_id)) : "");
 
 		$f_content = "";
 		$f_input_required = ($f_data['required'] ? " required='required'" : "");
@@ -526,7 +537,7 @@ jQuery (function () { {$direct_settings['theme_form_js_init']} ({ id:'{$f_choice
 		if ($f_data['required']) { $f_return .= $direct_settings['swg_required_marker']." "; }
 
 $f_return .= ($f_data['title'].":</strong></td>
-<td class='pagebg pagecontent' style='width:75%;padding:$direct_settings[theme_form_td_padding];text-align:center;vertical-align:middle'><div style='display:inline-block;text-align:left'>$f_content</div>$f_js_helper</td>
+<td class='pagebg pagecontent' style='width:75%;padding:$direct_settings[theme_form_td_padding];text-align:center;vertical-align:middle'><div id='$f_js_id' style='display:inline-block;text-align:left'>$f_content</div>$f_js_helper</td>
 </tr>");
 
 		return $f_return;
@@ -547,9 +558,9 @@ $f_return .= ($f_data['title'].":</strong></td>
 		$f_js_id = "swg_formbuilder_".$direct_cachedata['formbuilder_element_counter'];
 		$direct_cachedata['formbuilder_element_counter']++;
 
-		$f_js_helper = ($f_data['helper_text'] ? "\n<p class='pagehelperactivator'>".($direct_globals['output']->jsHelper ($f_data['helper_text'],$f_data['helper_url'],$f_data['helper_closing']))."</p>" : "");
+		$f_js_helper = ($f_data['helper_text'] ? "\n".($direct_globals['output']->jsHelper ($f_data['helper_text'],$f_data['helper_url'],$f_js_id)) : "");
 
-		$f_return = "<tr>\n<td class='pageextrabg pageextracontent' style='width:25%;padding:$direct_settings[theme_form_td_padding];text-align:right;vertical-align:top'><strong>";
+		$f_return = "<tr>\n<td class='pageextrabg pageextracontent' style='width:25%;padding:$direct_settings[theme_form_td_padding];text-align:right;vertical-align:middle'><strong>";
 
 		if ($f_data['required'])
 		{
@@ -611,7 +622,7 @@ jQuery (function () { {$direct_settings['theme_form_js_init']} ({ id:'$f_js_id',
 		$f_js_id = "swg_formbuilder_".$direct_cachedata['formbuilder_element_counter'];
 		$direct_cachedata['formbuilder_element_counter']++;
 
-		$f_js_helper = ($f_data['helper_text'] ? "\n<p class='pagehelperactivator'>".($direct_globals['output']->jsHelper ($f_data['helper_text'],$f_data['helper_url'],$f_data['helper_closing']))."</p>" : "");
+		$f_js_helper = ($f_data['helper_text'] ? "\n".($direct_globals['output']->jsHelper ($f_data['helper_text'],$f_data['helper_url'],$f_js_id)) : "");
 
 		if ($f_data['size'] == "s") { $f_rows = 1; }
 		elseif ($f_data['size'] == "m") { $f_rows = 4; }
@@ -627,7 +638,7 @@ jQuery (function () { {$direct_settings['theme_form_js_init']} ({ id:'$f_js_id',
 			else { $f_content .= "<option value=\"{$f_choice_array['value']}\">{$f_choice_array['text']}</option>"; }
 		}
 
-		$f_return = "<tr>\n<td class='pageextrabg pageextracontent' style='width:25%;padding:$direct_settings[theme_form_td_padding];text-align:right;vertical-align:top'><strong>";
+		$f_return = "<tr>\n<td class='pageextrabg pageextracontent' style='width:25%;padding:$direct_settings[theme_form_td_padding];text-align:right;vertical-align:".(($f_data['size'] == "s") ? "middle" : "top")."'><strong>";
 
 		if ($f_data['required'])
 		{
@@ -690,7 +701,7 @@ jQuery (function () { {$direct_settings['theme_form_js_init']} ({ id:'$f_js_id'$
 		$f_js_id = "swg_formbuilder_".$direct_cachedata['formbuilder_element_counter'];
 		$direct_cachedata['formbuilder_element_counter']++;
 
-		$f_js_helper = ($f_data['helper_text'] ? "\n<p class='pagehelperactivator'>".($direct_globals['output']->jsHelper ($f_data['helper_text'],$f_data['helper_url'],$f_data['helper_closing']))."</p>" : "");
+		$f_js_helper = ($f_data['helper_text'] ? "\n".($direct_globals['output']->jsHelper ($f_data['helper_text'],$f_data['helper_url'],$f_js_id)) : "");
 
 		if ($f_data['size'] == "s")
 		{
@@ -708,7 +719,7 @@ jQuery (function () { {$direct_settings['theme_form_js_init']} ({ id:'$f_js_id'$
 			$f_css_width = "80%";
 		}
 
-		$f_return = "<tr>\n<td class='pageextrabg pageextracontent' style='width:25%;padding:$direct_settings[theme_form_td_padding];text-align:right;vertical-align:top'><strong>";
+		$f_return = "<tr>\n<td class='pageextrabg pageextracontent' style='width:25%;padding:$direct_settings[theme_form_td_padding];text-align:right;vertical-align:middle'><strong>";
 
 		if ($f_data['required'])
 		{
@@ -743,7 +754,7 @@ $f_return .= ($f_rcp_active ? ("jQuery (function () {
 		$f_js_id = "swg_formbuilder_".$direct_cachedata['formbuilder_element_counter'];
 		$direct_cachedata['formbuilder_element_counter']++;
 
-		$f_js_helper = ($f_data['helper_text'] ? "\n<p class='pagehelperactivator'>".($direct_globals['output']->jsHelper ($f_data['helper_text'],$f_data['helper_url'],$f_data['helper_closing']))."</p>" : "");
+		$f_js_helper = ($f_data['helper_text'] ? "\n".($direct_globals['output']->jsHelper ($f_data['helper_text'],$f_data['helper_url'],$f_js_id)) : "");
 
 		if ($f_data['size'] == "s") { $f_rows = 5; }
 		elseif ($f_data['size'] == "m") { $f_rows = 10; }

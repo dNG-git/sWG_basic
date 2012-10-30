@@ -86,8 +86,8 @@ djs_load_functions ([
 djs_load_functions ([
  { file:'swg_AJAX.php.js',block:'djs_swgAJAX_insert' },
  { file:'ext_jquery/jquery.ui.core.min.js' },
- { file:'ext_jquery/jquery.effects.core.min.js' },
- { file:'ext_jquery/jquery.effects.transfer.min.js' }
+ { file:'ext_jquery/jquery.ui.effect.min.js' },
+ { file:'ext_jquery/jquery.ui.effect-transfer.min.js' }
 ]).done (function ()
 {
 	djs_var.basic_formbuilder_form_ready = true;
@@ -101,7 +101,7 @@ djs_load_functions ([
 		if (djs_var.basic_formbuilder_accordion_ready)
 		{
 			jQuery("#" + f_params.id + " > .ui-accordion-header").removeClass ('pagecontenttitle');
-			jQuery("#" + f_params.id).accordion({ autoHeight:false,header:".ui-accordion-header" }).on ('accordionchange',function (f_event,f_ui) { f_ui.newContent.find(':input').first().trigger ('focus'); });
+			jQuery("#" + f_params.id).accordion({ header:'.ui-accordion-header',heightStyle:'content' }).on ('activate',function (f_event,f_ui) { f_ui.newPanel.find(':input').first().trigger ('focus'); });
 		}
 		else
 		{
